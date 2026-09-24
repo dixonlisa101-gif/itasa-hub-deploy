@@ -115,6 +115,21 @@
     }
     function classFor(id){return classes.find(function(x){return x.program_id===id})||null}
     function fmtDate(v){if(!v)return '';var d=new Date(v);if(isNaN(d.getTime()))return '';return d.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}
+function easternDateKey(value){
+  const d=value?new Date(value):new Date(); if(isNaN(d.getTime()))return '';
+  const parts=new Intl.DateTimeFormat('en-CA',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(d),obj={};
+  parts.forEach(function(p){if(p.type!=='literal')obj[p.type]=p.value});return obj.year+'-'+obj.month+'-'+obj.day;
+}
+function classCountdown(row){
+  if(!row||!row.start_date)return 'ITASA will confirm your class start date.';
+  const today=easternDateKey(new Date()),start=easternDateKey(row.start_date);
+  const a=new Date(today+'T12:00:00Z'),b=new Date(start+'T12:00:00Z'),days=Math.round((b-a)/86400000);
+  if(days>1)return days+' days until the first day of class';
+  if(days===1)return 'Class begins tomorrow';
+  if(days===0)return 'First day of class is today';
+  return 'Class is in progress';
+}
+
 
     async function loadClasses(){
       try{
@@ -132,6 +147,7 @@
       let html='<div class="eyebrow">Your Learning Space</div><h2>'+esc(programName(id))+'</h2>';
       if(row){
         html+='<div class="summary">';
+        html+='<div>Class status</div><div><strong>'+esc(classCountdown(row))+'</strong></div>';
         html+='<div>Start</div><div>'+esc(row.start_date?fmtDate(row.start_date):'ITASA will confirm your cohort start date')+'</div>';
         html+='<div>Schedule</div><div>'+esc(row.meeting_time_label||'ITASA will confirm your class schedule')+'</div>';
         html+='</div>';
