@@ -22,7 +22,22 @@ label{display:block;font-weight:800;margin:.7rem 0 .3rem}input{width:100%;paddin
   <div class="card">
     <div class="eyebrow">Instructor Workspace</div><h1>Welcome to your ITASA work space.</h1>
     <p class="muted">Manage your classes, teaching resources, readiness, and student-facing work from one protected staff entry point.</p>
-    <div id="login-shell"><form id="login-form" style="max-width:520px"><label for="staff-email">ITASA Staff Email</label><input id="staff-email" type="email" autocomplete="username" required><label for="staff-password">Password</label><input id="staff-password" type="password" autocomplete="current-password" required><button id="login-btn" type="submit" style="margin-top:14px">Sign In</button></form><div id="login-status" class="notice" hidden></div></div>
+    <div id="login-shell"><form id="login-form" style="max-width:520px"><label for="staff-email">ITASA Staff Email</label><input id="staff-email" type="email" autocomplete="username" required><label for="staff-password">Password</label><input id="staff-password" type="password" autocomplete="current-password" required><button id="login-btn" type="submit" style="margin-top:14px">Sign In</button></form>
+    <div class="card" style="margin-top:16px;background:#f8fbfb">
+      <div class="eyebrow">Review Account</div>
+      <p class="muted">Need a password for the dedicated Test Instructor account?</p>
+      <button id="send-review-reset" class="secondary" type="button">Send Test Instructor Password Reset</button>
+      <div id="reset-status" class="notice" hidden></div>
+    </div>
+    <div id="password-reset-shell" class="card" hidden>
+      <div class="eyebrow">Set Review Password</div>
+      <h3>Create the Test Instructor password</h3>
+      <label for="new-review-password">New password</label>
+      <input id="new-review-password" type="password" autocomplete="new-password" placeholder="Use a strong review password">
+      <button id="save-review-password" type="button" style="margin-top:10px">Save New Password</button>
+      <div id="password-reset-status" class="notice" hidden></div>
+    </div>
+    <div id="login-status" class="notice" hidden></div></div>
     <div id="workspace-header" hidden><div class="toolbar"><div><strong id="staff-name"></strong><div id="staff-meta" class="muted"></div></div><button id="refresh" class="secondary push">Refresh</button><button id="signout" class="secondary">Sign Out</button></div></div>
   </div>
 
@@ -98,7 +113,7 @@ function classClock(c){
   if(d===0)return 'First day today'+(open?' · registration open subject to availability':'');
   return 'Class started '+Math.abs(d)+' day'+(Math.abs(d)===1?'':'s')+' ago';
 }
-function activeStudent(s){return !/cancelled|canceled|declined|refunded|withdrawn/i.test(String(s.enrollment_status||''))}
+function activeStudent(s){return !/cancelled|canceled|declined|refunded|withdrawn|review test/i.test(String(s.enrollment_status||''))}
 function seatsTaken(c){return state.students.filter(s=>activeStudent(s)&&(s.cohort_id===c.class_key||(!s.cohort_id&&s.program_id===c.program_id))).length}
 function renderCourses(){
   document.getElementById('course-grid').innerHTML=state.classes.map(function(c){
@@ -136,6 +151,28 @@ function sync(){
     document.getElementById('ops-tab').hidden=String(st.role||'').toLowerCase()!=='administrator';load();
   }else{document.getElementById('login-shell').hidden=false;document.getElementById('workspace-header').hidden=true;document.getElementById('workspace').hidden=true}
 }
+document.getElementById('send-review-reset').onclick=async function(){
+  var s=document.getElementById('reset-status');hide(s);
+  try{
+    var redirect=window.location.origin+window.location.pathname;
+    var r=await window.ItasaStaffHub.client.auth.resetPasswordForEmail('dixonlisa101+instructor@gmail.com',{redirectTo:redirect});
+    if(r.error)throw r.error;
+    show(s,'Password-reset email sent to the Test Instructor review address. Open the email and return here from the recovery link.','good');
+  }catch(e){show(s,e.message||String(e),'error')}
+};
+if(window.location.hash.includes('type=recovery')||window.location.search.includes('type=recovery')){
+  document.getElementById('password-reset-shell').hidden=false;
+}
+document.getElementById('save-review-password').onclick=async function(){
+  var s=document.getElementById('password-reset-status'),pw=document.getElementById('new-review-password').value;hide(s);
+  if(!pw||pw.length<10){show(s,'Use a password with at least 10 characters.','error');return}
+  try{
+    var r=await window.ItasaStaffHub.client.auth.updateUser({password:pw});
+    if(r.error)throw r.error;
+    show(s,'Test Instructor password updated. You can now sign in with the review email and your new password.','good');
+  }catch(e){show(s,e.message||String(e),'error')}
+};
+
 document.getElementById('login-form').onsubmit=async function(ev){ev.preventDefault();var b=document.getElementById('login-btn'),s=document.getElementById('login-status');b.disabled=true;b.textContent='Signing in…';hide(s);var r=await window.ItasaStaffHub.signIn(document.getElementById('staff-email').value,document.getElementById('staff-password').value);document.getElementById('staff-password').value='';b.disabled=false;b.textContent='Sign In';if(!r.ok)show(s,r.error&&r.error.message||'Sign-in failed.','error');else sync()}
 document.getElementById('signout').onclick=async function(){await window.ItasaStaffHub.signOut();sync()}
 document.getElementById('refresh').onclick=load;window.ItasaStaffHub.onSessionChange(function(s){if(s.resolved)sync()});
