@@ -28,6 +28,7 @@
   <a class="brand" href="index.html"><img src="assets/itasa-circular-brand-logo.png" alt="ITASA logo"><span>ITASA<small>Learning Center</small></span></a>
   <a href="student-portal-cutover-preview.html">Student Home</a>
   <a href="index.html">Learning Center Home</a>
+  <button id="student-signout" class="btn secondary" type="button" hidden>Sign Out</button>
 </nav></header>
 <main>
   <section class="hero">
@@ -38,7 +39,7 @@
 
   <section id="login-card" class="card">
     <h2>Enter your learning space</h2>
-    <p class="muted">Use the same student email and Learning Center access code ITASA sent after payment confirmation.</p>
+    <p class="muted">Sign in here only if you opened this learning space directly. If you entered through Student Sign In, your validated session will carry you here automatically.</p>
     <form id="login-form">
       <label for="email">Student email</label><input id="email" type="email" autocomplete="username" required>
       <label for="code">Learning Center access code</label><input id="code" type="password" autocomplete="current-password" required>
@@ -59,10 +60,10 @@
       <div id="schedule-box" class="schedule"><div>Loading</div><div>Current class information…</div></div>
     </div>
 
-    <div class="grid3">
+    <div class="grid">
       <div class="card quick orange"><div class="eyebrow">Class Access</div><h3>Join your scheduled class</h3><div id="class-access"><p class="muted">Checking your secure class-access details…</p></div></div>
       <div class="card quick"><div class="eyebrow">Learning Materials</div><h3>Your assigned materials</h3><div id="materials"><p class="muted">ITASA-assigned Skills Refresher materials will appear here as they are added to your class.</p></div></div>
-      <div class="card quick"><div class="eyebrow">Progress</div><h3>Keep moving forward</h3><div id="progress"><p class="muted">Your current learning status will appear here.</p></div></div>
+
     </div>
 
     <div class="grid">
@@ -75,7 +76,7 @@
     </div>
 
     <div class="card">
-      <div class="eyebrow">Completion</div><h2>Progress &amp; certificate</h2>
+      <div class="eyebrow">Completion</div><h2>Completion &amp; Certificate</h2>
       <div id="completion"><p class="muted">Checking your completion information…</p></div>
     </div>
 
@@ -144,11 +145,10 @@ function renderAccess(a){
   box.innerHTML=html;
 }
 function renderLearning(ws,st){
-  const materials=document.getElementById('materials'),progress=document.getElementById('progress');
+  const materials=document.getElementById('materials');
   const enrollments=Array.isArray(ws&&ws.enrollments)?ws.enrollments:[];
   if(enrollments.length){
     const e=enrollments[0]||{},sections=Array.isArray(e.sections)?e.sections:[];
-    progress.innerHTML='<p><strong>Enrollment:</strong> '+esc(e.status||st.enrollmentStatus||'Active')+'</p><p class="muted">'+sections.length+' learning section(s) currently available.</p>';
     if(sections.length){
       materials.innerHTML=sections.map(function(s,i){
         const title=s.public_name||s.title||s.section_title||('Learning Section '+(i+1));
@@ -157,7 +157,6 @@ function renderLearning(ws,st){
       }).join('');
     }
   }else{
-    progress.innerHTML='<p><strong>Enrollment status:</strong> '+esc(st.enrollmentStatus||'')+'</p><p class="muted">Your secure class access can still be used while ITASA adds learning materials to this space.</p>';
   }
 }
 function renderCertificates(certs){
@@ -192,16 +191,27 @@ form.addEventListener('submit',async function(ev){
       showStatus('<strong>Access not opened.</strong><br>'+esc(m[login.status]||'ITASA could not validate this access right now.'),'warn');return;
     }
     const st=login.student;
+    window.ItasaStudentPortal.setSessionCredentials(email,code);
     if(st.programId!==PROGRAM){showStatus('<strong>This student account is valid, but it is not assigned to this class.</strong><br><a href="student-portal-cutover-preview.html">Return to Student Home</a>','warn');return}
     document.getElementById('student-welcome').textContent='Welcome, '+((st.first_name||'').trim()||'Student');
     renderSchedule();
     const results=await Promise.all([window.ItasaStudentPortal.getZoomAccess(email,code),window.ItasaStudentPortal.getLearningWorkspace(email,code),window.ItasaStudentPortal.getCertificates(email,code)]);
     renderAccess(results[0]);renderLearning(results[1],st);renderCertificates(results[2]);
     await loadClassAnnouncements();
-    workspace.classList.add('active');showStatus('<strong>Welcome to your Skills Refresher Learning Space.</strong> Your access was validated securely.','ok');document.getElementById('code').value='';workspace.scrollIntoView({behavior:'smooth',block:'start'});
+    document.getElementById('login-card').hidden=true;document.getElementById('student-signout').hidden=false;workspace.classList.add('active');showStatus('<strong>Welcome to your Skills Refresher Learning Space.</strong>','ok');document.getElementById('code').value='';workspace.scrollIntoView({behavior:'smooth',block:'start'});
   }catch(err){console.error(err);showStatus('<strong>Unable to open this learning space right now.</strong> No student records were changed.','error')}
   finally{btn.disabled=false;btn.textContent='Enter Skills Refresher Learning Space'}
 });
+document.getElementById('student-signout').addEventListener('click',function(){
+  window.ItasaStudentPortal.clearSessionCredentials();
+  window.location.href='student-portal-cutover-preview.html';
+});
+const cached=window.ItasaStudentPortal.getSessionCredentials();
+if(cached){
+  document.getElementById('email').value=cached.email;
+  document.getElementById('code').value=cached.accessCode;
+  setTimeout(function(){form.requestSubmit();},0);
+}
 })();
 </script>
 </body></html>
