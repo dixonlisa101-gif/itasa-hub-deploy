@@ -174,8 +174,8 @@
         return '<div class="card" style="margin:0"><h3>'+esc(x.name||'ITASA Class')+'</h3>'+
           '<p class="muted">'+esc(x.notes||'')+'</p>'+
           '<div class="kv"><div>Status</div><div>'+esc(x.registration_status||'')+'</div>'+
-          '<div>Start</div><div>'+esc(x.start_date?new Date(x.start_date).toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'}):'')+'</div>'+
-          '<div>Class time</div><div>'+esc(x.meeting_time_label||'')+'</div></div></div>';
+          '<div>Start</div><div>'+esc(x.start_date?new Date(x.start_date).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}):'Current cohort start date pending confirmation')+'</div>'+
+          '<div>Schedule</div><div>'+esc(x.meeting_time_label||'Schedule details pending confirmation')+'</div></div></div>';
       }).join('') || '<p class="muted">No class records available.</p>';
 
       if(anns.length){
