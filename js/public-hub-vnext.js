@@ -13,13 +13,12 @@
   var SUPABASE_URL = 'https://eigkebtzkhyglsqdfpvr.supabase.co';
   var SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_yXPEpK3gC5p91PH8-tmJgw_BuM8Y5Zv';
 
-  // Preserved, confirmed Pay-in-Full checkout configuration from the existing
-  // ITASA source. Non-full/promotional choices intentionally have no invented
-  // checkout URL; ITASA follow-up completes those choices.
+  // Pricing choices are preserved. NCLEX and Skills checkout destinations load
+  // from client-approved database settings; missing links require ITASA follow-up.
   var PAYMENT_CONFIG = {
     review: {
       standardPrice: '$1,199',
-      checkoutUrl: 'https://buy.stripe.com/3cI9AT02q6ErdgIer67Vm01',
+      checkoutUrl: null,
       options: [
         { key: 'full', label: 'Pay in Full', amountText: '$1,199' },
         { key: '2pay', label: '2 Payments', amountText: '$650 × 2 = $1,300' },
@@ -36,7 +35,7 @@
     },
     skills: {
       standardPrice: '$1,999',
-      checkoutUrl: 'https://buy.stripe.com/28E28r9D04wj5Og1Ek7Vm03',
+      checkoutUrl: null,
       options: [
         { key: 'full', label: 'Pay in Full', amountText: '$1,999' },
         { key: '2pay', label: '2 Payments', amountText: '$1,050 × 2 = $2,100' },
@@ -117,13 +116,43 @@
     return all;
   }
 
+  var currentCheckoutLinks = {};
+
+  async function loadCheckoutLinks() {
+    currentCheckoutLinks = {};
+    var c = client();
+    if (!c) return;
+    try {
+      var response = await c.from('itasa_payment_links')
+        .select('program_id,payment_option,payment_number,checkout_url,checkout_stage,is_current')
+        .eq('checkout_stage', 'registration')
+        .eq('is_current', true);
+      if (response.error) return;
+      (response.data || []).forEach(function (row) {
+        if (['review', 'skills'].indexOf(row.program_id) === -1 ||
+            ['full', '2pay'].indexOf(row.payment_option) === -1 ||
+            Number(row.payment_number) !== 1 ||
+            row.checkout_stage !== 'registration' || row.is_current !== true ||
+            !/^https:\/\/buy[.]stripe[.]com\/[A-Za-z0-9]+$/.test(row.checkout_url || '')) return;
+        currentCheckoutLinks[row.program_id + ':' + row.payment_option] = row.checkout_url;
+      });
+    } catch (err) {
+      // Keep registration available; ITASA follows up when checkout is unavailable.
+      currentCheckoutLinks = {};
+    }
+  }
+
   function checkoutFor(courseId, paymentOptionKey) {
+    if (courseId === 'review' || courseId === 'skills') {
+      return currentCheckoutLinks[courseId + ':' + paymentOptionKey] || null;
+    }
     var cfg = PAYMENT_CONFIG[courseId];
     if (!cfg || paymentOptionKey !== 'full') return null;
     return cfg.checkoutUrl || null;
   }
 
   async function getClasses() {
+    await loadCheckoutLinks();
     if (window.ItasaSharedContentSupabase) {
       var result = await window.ItasaSharedContentSupabase.fetchCollection('classes');
       if (result.error) throw result.error;
