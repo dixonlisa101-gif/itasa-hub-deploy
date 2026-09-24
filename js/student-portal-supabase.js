@@ -109,6 +109,47 @@
     return window.__itasaStudentPortalClient;
   }
 
+  var SESSION_KEY = 'itasa_student_session_v1';
+  var SESSION_TTL_MS = 8 * 60 * 60 * 1000;
+
+  function setSessionCredentials(email, accessCode) {
+    try {
+      sessionStorage.setItem(SESSION_KEY, JSON.stringify({
+        email: (email || '').trim().toLowerCase(),
+        accessCode: accessCode || '',
+        savedAt: Date.now()
+      }));
+      return true;
+    } catch (e) {
+      console.error('ITASA student portal: unable to save session credentials', e);
+      return false;
+    }
+  }
+
+  function getSessionCredentials() {
+    try {
+      var raw = sessionStorage.getItem(SESSION_KEY);
+      if (!raw) return null;
+      var data = JSON.parse(raw);
+      if (!data || !data.email || !data.accessCode || !data.savedAt) {
+        sessionStorage.removeItem(SESSION_KEY);
+        return null;
+      }
+      if (Date.now() - Number(data.savedAt) > SESSION_TTL_MS) {
+        sessionStorage.removeItem(SESSION_KEY);
+        return null;
+      }
+      return { email: data.email, accessCode: data.accessCode };
+    } catch (e) {
+      try { sessionStorage.removeItem(SESSION_KEY); } catch (_) {}
+      return null;
+    }
+  }
+
+  function clearSessionCredentials() {
+    try { sessionStorage.removeItem(SESSION_KEY); } catch (e) {}
+  }
+
   /**
    * Reshapes the RPC's flat snake_case student payload into the exact
    * nested camelCase object shape the existing dashboard code
@@ -351,6 +392,9 @@
     mapPortalStudent: mapPortalStudent,
     getZoomAccess: getZoomAccess,
     getLearningWorkspace: getLearningWorkspace,
-    getCertificates: getCertificates
+    getCertificates: getCertificates,
+    setSessionCredentials: setSessionCredentials,
+    getSessionCredentials: getSessionCredentials,
+    clearSessionCredentials: clearSessionCredentials
   };
 })();
