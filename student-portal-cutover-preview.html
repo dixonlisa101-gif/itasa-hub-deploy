@@ -13,7 +13,7 @@
     *{box-sizing:border-box}body{margin:0}a{color:var(--teal-dark)}
     .preview{background:#3b2d23;color:#fff;text-align:center;padding:9px 16px;font-weight:800}
     header{background:#fff;border-bottom:1px solid var(--line)}
-    nav{max-width:1000px;margin:auto;padding:12px 18px;display:flex;align-items:center;gap:16px}
+    nav{max-width:1000px;margin:auto;padding:12px 18px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
     .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--teal-dark);font-weight:900;margin-right:auto}
     .brand img{width:54px;height:54px;border-radius:50%;object-fit:contain}
     .brand small{display:block;color:var(--orange);font-size:.72rem;text-transform:uppercase;letter-spacing:.08em}
@@ -43,14 +43,15 @@
     <nav>
       <a class="brand" href="index.html"><img src="assets/itasa-circular-brand-logo.png" alt="ITASA logo"><span>ITASA<small>Learning Center</small></span></a>
       <a href="index.html">Learning Center Home</a>
+      <button id="student-signout" class="btn secondary" type="button" hidden>Sign Out</button>
     </nav>
   </header>
 
   <main>
     <section class="hero">
-      <div class="eyebrow">Student Sign In</div>
+      <div id="student-view-label" class="eyebrow">Student Sign In</div>
       <h1>Welcome back to your Learning Center.</h1>
-      <p class="lead">Sign in with the email address you used for registration and the Learning Center access code ITASA sent after your payment was confirmed.</p>
+      <p id="student-intro" class="lead">Sign in with the email address you used for registration and the Learning Center access code ITASA sent after your payment was confirmed.</p>
     </section>
 
     <section id="login-card" class="card">
@@ -103,6 +104,8 @@
     const status=document.getElementById('status');
     const home=document.getElementById('student-home');
     const spaceCard=document.getElementById('space-card');
+    const loginCard=document.getElementById('login-card');
+    const signout=document.getElementById('student-signout');
     let classes=[];
 
     function esc(v){return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
@@ -139,7 +142,7 @@ function classCountdown(row){
         }
       }catch(err){console.error('Unable to load class summary',err)}
     }
-    loadClasses();
+    const classesReady=loadClasses();
 
     function renderSpace(st){
       const id=st.programId||'';
@@ -167,17 +170,16 @@ function classCountdown(row){
       spaceCard.innerHTML=html;
     }
 
-    form.addEventListener('submit',async function(ev){
-      ev.preventDefault();
+    async function openStudentSpace(email,code,restoreHome){
       home.hidden=true;
-      const email=document.getElementById('email').value.trim().toLowerCase();
-      const code=document.getElementById('code').value.trim();
+      signout.hidden=true;
       btn.disabled=true;btn.textContent='Signing in…';
       showStatus('<strong>Checking your Learning Center access…</strong>','');
       try{
         if(!window.ItasaStudentPortal)throw new Error('Student access system unavailable.');
         const login=await window.ItasaStudentPortal.login(email,code,[]);
         if(login.status!=='ok'||!login.student){
+          window.ItasaStudentPortal.clearSessionCredentials();
           const messages={
             pending_review:'Your Learning Center access is still pending review.',
             invalid_code:'The access code was not accepted.',
@@ -190,16 +192,21 @@ function classCountdown(row){
         const st=login.student;
         window.ItasaStudentPortal.setSessionCredentials(email,code);
         document.getElementById('welcome-name').textContent='Welcome back, '+((st.first_name||'').trim()||'Student')+'.';
+        await classesReady;
         renderSpace(st);
+        loginCard.hidden=true;
+        signout.hidden=false;
+        document.getElementById('student-view-label').textContent='Student Home';
+        document.getElementById('student-intro').textContent='Your class access, materials, updates, and completion information are ready below.';
         home.hidden=false;
-        showStatus('<strong>You’re signed in.</strong> Opening your virtual learning space…','ok');
+        showStatus(restoreHome?'<strong>Welcome back to Student Home.</strong>':'<strong>You’re signed in.</strong> Opening your virtual learning space…','ok');
         document.getElementById('code').value='';
         const routes={
           review:'nclex-learning-space-preview.html',
           skills:'skills-learning-space-preview.html',
           iv:'iv-learning-space-preview.html'
         };
-        if(routes[st.programId]) {
+        if(!restoreHome&&routes[st.programId]) {
           window.location.href=routes[st.programId];
           return;
         }
@@ -208,9 +215,26 @@ function classCountdown(row){
         console.error(err);
         showStatus('<strong>Student Sign In is temporarily unavailable.</strong> Please try again or contact ITASA if the issue continues.','error');
       }finally{
+        if(home.hidden)loginCard.hidden=false;
         btn.disabled=false;btn.textContent='Sign In';
       }
+    }
+
+    form.addEventListener('submit',function(ev){
+      ev.preventDefault();
+      openStudentSpace(document.getElementById('email').value.trim().toLowerCase(),document.getElementById('code').value.trim(),false);
     });
+
+    signout.addEventListener('click',function(){
+      window.ItasaStudentPortal.clearSessionCredentials();
+      window.location.replace('student-portal-cutover-preview.html');
+    });
+
+    const cached=window.ItasaStudentPortal&&window.ItasaStudentPortal.getSessionCredentials();
+    if(cached){
+      loginCard.hidden=true;
+      openStudentSpace(cached.email,cached.accessCode,true);
+    }
   })();
   </script>
 </body>
