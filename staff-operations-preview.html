@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ITASA Operations Workspace vNext Preview</title>
+<style>
+:root{--teal:#177982;--dark:#0d5961;--ink:#18343b;--muted:#64777c;--line:#d9e7e8;--soft:#f6fbfb;--warn:#fff7e9;--danger:#fff0f0;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;color:var(--ink);background:#f8fbfb}
+*{box-sizing:border-box}body{margin:0}.preview{background:#382e28;color:#fff;text-align:center;padding:10px 16px;font-weight:800}
+main{max-width:1200px;margin:auto;padding:24px 18px 64px}.card{background:#fff;border:1px solid var(--line);border-radius:15px;padding:18px;margin:14px 0;box-shadow:0 7px 20px rgba(17,71,78,.05)}
+h1,h2,h3{margin:.2rem 0 .7rem}.muted{color:var(--muted)}.eyebrow{text-transform:uppercase;letter-spacing:.08em;font-size:.74rem;font-weight:900;color:var(--teal)}
+label{display:block;font-weight:800;margin:.7rem 0 .3rem}input,select,textarea{width:100%;padding:10px 11px;border:1px solid #b9cbcd;border-radius:9px;font:inherit}textarea{min-height:76px}
+button{border:0;border-radius:9px;padding:10px 13px;font:inherit;font-weight:800;cursor:pointer;background:var(--teal);color:#fff}button.secondary{background:#e9f4f4;color:var(--dark)}button.danger{background:#9d3c3c}button[disabled]{opacity:.5;cursor:not-allowed}
+.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.push{margin-left:auto}.metrics{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}.metric{background:#fff;border:1px solid var(--line);border-radius:12px;padding:13px}.metric strong{display:block;font-size:1.5rem;margin-top:4px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}.tabs button{background:#eaf4f4;color:var(--dark)}.tabs button.active{background:var(--teal);color:#fff}.panel{display:none}.panel.active{display:block}
+table{width:100%;border-collapse:collapse}th,td{padding:10px 8px;border-bottom:1px solid #e5eeee;text-align:left;vertical-align:top}th{font-size:.82rem;color:#5e7277}.tag{display:inline-block;border-radius:999px;padding:4px 8px;background:#edf5f5;font-size:.78rem;font-weight:800}.tag.good{background:#e8f6ed;color:#2d6b4b}.tag.warn{background:#fff1dc;color:#8e5619}.tag.bad{background:#fae9e9;color:#8a3131}
+.notice{padding:11px 13px;border-radius:10px;background:#eef7f7;margin:10px 0}.notice.warn{background:var(--warn)}.notice.error{background:var(--danger);color:#8a3131}.notice.good{background:#ecf7f0;color:#2b6447}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.class-card{border:1px solid var(--line);border-radius:13px;padding:16px;background:#fff}.formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.full{grid-column:1/-1}
+.request{border:1px solid var(--line);border-radius:13px;padding:15px;margin:12px 0;background:#fff}.history{font-size:.86rem;color:#5f7378}.read-only{border-left:4px solid #91aeb1}.risk{border-left:4px solid #d3923c}
+[hidden]{display:none!important}
+@media(max-width:900px){.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.grid2{grid-template-columns:1fr}}
+@media(max-width:680px){.formgrid,.metrics{grid-template-columns:1fr}table,thead,tbody,tr,td,th{display:block}thead{display:none}tr{border:1px solid var(--line);border-radius:11px;margin:10px 0;padding:9px}td{border:0;padding:5px 0}.full{grid-column:auto}}
+</style>
+</head>
+<body>
+<div class="preview">PREVIEW ONLY — GenSpark-independent ITASA Operations Workspace. Not live.</div>
+<main>
+  <div class="card">
+    <div class="eyebrow">ITASA Operations</div>
+    <h1>Operations Workspace vNext</h1>
+    <p class="muted">Authenticated directly through ITASA's Supabase staff system. No GenSpark workspace or GenSpark login is used.</p>
+
+    <div id="login-shell">
+      <form id="login-form" style="max-width:520px">
+        <label for="staff-email">ITASA Staff Email</label>
+        <input id="staff-email" type="email" autocomplete="username" required>
+        <label for="staff-password">Password</label>
+        <input id="staff-password" type="password" autocomplete="current-password" required>
+        <button id="login-btn" type="submit" style="margin-top:14px">Sign In</button>
+      </form>
+      <div id="login-status" class="notice" hidden></div>
+    </div>
+
+    <div id="workspace-header" hidden>
+      <div class="toolbar">
+        <div><strong id="staff-name"></strong><div id="staff-meta" class="muted"></div></div>
+        <button id="refresh-all" class="secondary push">Refresh Operations</button>
+        <button id="signout-btn" class="secondary">Sign Out</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="workspace" hidden>
+    <div class="metrics">
+      <div class="metric"><span>Students</span><strong id="m-students">—</strong></div>
+      <div class="metric"><span>Info Session</span><strong id="m-info">—</strong></div>
+      <div class="metric"><span>Pending 1:1</span><strong id="m-one">—</strong></div>
+      <div class="metric"><span>Class Access Set</span><strong id="m-access">—</strong></div>
+      <div class="metric"><span>Certificates</span><strong id="m-certs">—</strong></div>
+    </div>
+
+    <div class="tabs">
+      <button data-panel="students" class="active">Students</button>
+      <button data-panel="info">Information Session</button>
+      <button data-panel="access">Class Access / Zoom</button>
+      <button data-panel="one">1:1 Requests</button>
+      <button data-panel="certs">Certificates</button>
+      <button data-panel="audit">Audit Activity</button>
+    </div>
+
+    <section id="panel-students" class="panel active">
+      <div class="card read-only">
+        <div class="eyebrow">Read-only financial truth</div>
+        <h2>Student Operations</h2>
+        <p class="muted">Payment status, balances, portal access, and email-delivery state are displayed here but cannot be manually changed from this workspace. Stripe/Zapier and the authoritative payment RPC remain the source of truth.</p>
+        <div class="toolbar">
+          <input id="student-search" placeholder="Search name, email, class…" style="max-width:360px">
+        </div>
+        <div style="overflow:auto"><table><thead><tr><th>Student</th><th>Class</th><th>Registration</th><th>Payment</th><th>Access</th><th>Communications</th></tr></thead><tbody id="students-body"></tbody></table></div>
+      </div>
+    </section>
+
+    <section id="panel-info" class="panel">
+      <div class="card">
+        <div class="eyebrow">Screen before Zoom</div>
+        <h2>Information Session Roster</h2>
+        <p class="muted">Known Interest List prospects only. Blocking an email prevents future Information Session handoffs through the Hub; already-issued Zoom access still requires host enforcement when applicable.</p>
+        <div class="toolbar"><input id="info-search" placeholder="Search roster…" style="max-width:360px"><select id="info-filter" style="max-width:180px"><option value="">All statuses</option><option>registered</option><option>Attended</option><option>No-show</option><option>Blocked</option></select></div>
+        <div id="info-status" class="notice" hidden></div>
+        <div style="overflow:auto"><table><thead><tr><th>Prospect</th><th>Interest</th><th>Submitted</th><th>Status</th><th>Action</th></tr></thead><tbody id="info-body"></tbody></table></div>
+      </div>
+    </section>
+
+    <section id="panel-access" class="panel">
+      <div class="card risk">
+        <div class="eyebrow">Operational requirement</div>
+        <h2>Class Access / Zoom Details</h2>
+        <p class="muted">Supabase currently starts with no class-access rows. Each active class needs its reusable access details entered here before students can receive them through the new Hub.</p>
+        <div id="access-status" class="notice warn">Loading current class configuration…</div>
+        <div id="access-grid" class="grid2"></div>
+      </div>
+    </section>
+
+    <section id="panel-one" class="panel">
+      <div class="card">
+        <div class="eyebrow">Scheduling & follow-up</div>
+        <h2>1:1 Test-Taking Strategies Requests</h2>
+        <p class="muted">Existing requests retain the price in effect when submitted. New vNext requests are $100/hour. Payment Sent remains a manual operational status; this workspace does not invent or send a Stripe link.</p>
+        <div id="one-status" class="notice" hidden></div>
+        <div id="one-list"></div>
+      </div>
+    </section>
+
+    <section id="panel-certs" class="panel">
+      <div class="card read-only">
+        <div class="eyebrow">Read-only first increment</div>
+        <h2>Certificates</h2>
+        <p class="muted">Certificate records are visible here. Issuance/editing is intentionally not enabled in this first operations build until the completion/issuance workflow is separately validated.</p>
+        <div style="overflow:auto"><table><thead><tr><th>Certificate</th><th>Student ID</th><th>Class</th><th>Status</th><th>Issued</th></tr></thead><tbody id="certs-body"></tbody></table></div>
+      </div>
+    </section>
+
+    <section id="panel-audit" class="panel">
+      <div class="card read-only">
+        <div class="eyebrow">Accountability</div>
+        <h2>Recent Audit Activity</h2>
+        <div style="overflow:auto"><table><thead><tr><th>When</th><th>Actor</th><th>Action</th><th>Target</th><th>Details</th></tr></thead><tbody id="audit-body"></tbody></table></div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/shared-content-supabase.js"></script>
+<script src="js/staff-hub-supabase.js"></script>
+<script>
+(function(){
+'use strict';
+var state={students:[],info:[],access:[],classes:[],one:[],certs:[],audit:[]};
+function esc(v){return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
+function fmt(v){if(!v)return '';var d=new Date(v);return isNaN(d.getTime())?String(v):d.toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'})}
+function money(v){var n=Number(v||0);return n.toLocaleString('en-US',{style:'currency',currency:'USD'})}
+function statusTag(v){var s=String(v||'');var cls=/paid|issued|active|attended|completed/i.test(s)?'good':/blocked|declined|error/i.test(s)?'bad':'warn';return '<span class="tag '+cls+'">'+esc(s||'—')+'</span>'}
+function show(el,msg,tone){el.hidden=false;el.className='notice '+(tone||'');el.textContent=msg}
+function hide(el){el.hidden=true;el.textContent=''}
+function programName(id){return id==='review'?'NCLEX Review & Test-Taking Strategies':id==='skills'?'Skills Refresher Class':id==='iv'?'IV Insertion & Venipuncture':id||'—'}
+
+document.querySelectorAll('.tabs button').forEach(function(b){b.onclick=function(){document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.getElementById('panel-'+b.dataset.panel).classList.add('active')}});
+
+function renderStudents(){
+  var q=(document.getElementById('student-search').value||'').toLowerCase().trim();
+  var rows=state.students.filter(function(s){return !q||[s.first_name,s.last_name,s.email,s.program_id,s.cohort_id].join(' ').toLowerCase().includes(q)});
+  document.getElementById('students-body').innerHTML=rows.map(function(s){
+    var choice=s.intake&&s.intake.registration_payment_choice?s.intake.registration_payment_choice:null;
+    return '<tr><td><strong>'+esc((s.first_name||'')+' '+(s.last_name||''))+'</strong><br><span class="muted">'+esc(s.email)+'</span></td>'+
+      '<td>'+esc(programName(s.program_id))+'<br><span class="muted">'+esc(s.cohort_id||'')+'</span></td>'+
+      '<td>'+statusTag(s.enrollment_status)+'<br><span class="muted">'+esc(choice?choice.label:'')+'</span></td>'+
+      '<td>'+statusTag(s.payment_status)+'<br>'+money(s.amount_paid)+' paid · '+money(s.remaining_balance)+' remaining</td>'+
+      '<td>'+statusTag(s.portal_access?'Portal enabled':'Portal pending')+'</td>'+
+      '<td><span class="muted">Registration email: '+(s.registration_email_sent?'sent':'pending')+'<br>Payment email: '+(s.payment_email_sent?'sent':'pending')+'<br>Access email: '+(s.access_email_sent?'sent':'pending')+'</span></td></tr>';
+  }).join('')||'<tr><td colspan="6" class="muted">No student records match this view.</td></tr>';
+}
+document.getElementById('student-search').addEventListener('input',renderStudents);
+
+function normInfo(r){return r.info_session_attendance||'registered'}
+function renderInfo(){
+  var q=(document.getElementById('info-search').value||'').toLowerCase().trim(),f=document.getElementById('info-filter').value;
+  var rows=state.info.filter(function(r){var s=normInfo(r);if(f&&s!==f)return false;return !q||[r.first_name,r.last_name,r.email,r.program_interest,r.nursing_school].join(' ').toLowerCase().includes(q)});
+  document.getElementById('info-body').innerHTML=rows.map(function(r){
+    var s=normInfo(r);return '<tr data-id="'+esc(r.id)+'"><td><strong>'+esc((r.first_name||'')+' '+(r.last_name||''))+'</strong><br><span class="muted">'+esc(r.email)+'</span></td>'+
+      '<td>'+esc(r.program_interest||r.nclex_exam_type||'General')+'</td><td>'+esc(fmt(r.created_at))+'</td><td>'+statusTag(s)+'</td><td><select data-info-status><option '+(s==='registered'?'selected':'')+'>registered</option><option '+(s==='Attended'?'selected':'')+'>Attended</option><option '+(s==='No-show'?'selected':'')+'>No-show</option><option '+(s==='Blocked'?'selected':'')+'>Blocked</option></select><button data-save-info style="margin-top:6px">Save</button></td></tr>';
+  }).join('')||'<tr><td colspan="5" class="muted">No roster entries match this view.</td></tr>';
+  document.querySelectorAll('[data-save-info]').forEach(function(btn){btn.onclick=async function(){var tr=btn.closest('tr'),id=tr.dataset.id,status=tr.querySelector('[data-info-status]').value;if(status==='Blocked'&&!confirm('Block this email from future Information Session registration?'))return;btn.disabled=true;try{await window.ItasaStaffHub.updateAttendance(id,status);await loadInfo();show(document.getElementById('info-status'),'Roster status updated.','good')}catch(e){show(document.getElementById('info-status'),e.message||String(e),'error')}finally{btn.disabled=false}}});
+}
+document.getElementById('info-search').addEventListener('input',renderInfo);document.getElementById('info-filter').addEventListener('change',renderInfo);
+
+function renderAccess(){
+  var existing={};state.access.forEach(a=>existing[a.cohort_id]=a);
+  document.getElementById('access-grid').innerHTML=state.classes.map(function(c){
+    var a=existing[c.class_key]||{};
+    return '<form class="class-card" data-access-form data-cohort="'+esc(c.class_key)+'"><div class="eyebrow">'+esc(programName(c.program_id))+'</div><h3>'+esc(c.name||'Class')+'</h3><p class="muted">'+esc(c.notes||'')+'</p>'+
+      '<div class="formgrid"><div class="full"><label>Zoom / Class Link</label><input name="link" value="'+esc(a.link||'')+'" placeholder="Enter the reusable class link"></div><div><label>Meeting ID</label><input name="meeting_id" value="'+esc(a.meeting_id||'')+'"></div><div><label>Passcode</label><input name="passcode" value="'+esc(a.passcode||'')+'"></div><div class="full"><label>Class Time / Instructor Instructions</label><input name="class_time" value="'+esc(a.class_time||'')+'"></div><div class="full"><label>Student Note</label><textarea name="note">'+esc(a.note||'')+'</textarea></div></div>'+
+      '<button type="submit">'+(a.id?'Update Class Access':'Save Class Access')+'</button>'+(a.updated_at?'<span class="muted" style="margin-left:8px">Last updated '+esc(fmt(a.updated_at))+'</span>':'')+'</form>';
+  }).join('')||'<div class="notice warn">No active class records are available.</div>';
+  document.querySelectorAll('[data-access-form]').forEach(function(form){form.onsubmit=async function(ev){ev.preventDefault();var b=form.querySelector('button'),fd=new FormData(form);b.disabled=true;try{await window.ItasaStaffHub.upsertClassAccess({cohort_id:form.dataset.cohort,link:fd.get('link'),meeting_id:fd.get('meeting_id'),passcode:fd.get('passcode'),class_time:fd.get('class_time'),note:fd.get('note')});await loadAccess();show(document.getElementById('access-status'),'Class access saved securely in Supabase.','good')}catch(e){show(document.getElementById('access-status'),e.message||String(e),'error')}finally{b.disabled=false}}});
+}
+
+function renderOne(){
+  document.getElementById('one-list').innerHTML=state.one.map(function(r){
+    var legacy=r.pricing_version==='legacy_50_per_hour';
+    var hist=Array.isArray(r.status_history)?r.status_history.slice().reverse():[];
+    return '<div class="request" data-one="'+esc(r.id)+'"><div class="toolbar"><div><strong>'+esc((r.first_name||'')+' '+(r.last_name||''))+'</strong><br><span class="muted">'+esc(r.email)+' · '+esc(fmt(r.created_at))+'</span></div><div class="push">'+statusTag(r.status)+'</div></div>'+
+      '<p><strong>'+esc(r.session_length==='2_hour'?'2-hour session':'1-hour session')+' — '+money(r.session_amount)+'</strong> '+(legacy?'<span class="tag warn">Legacy rate preserved</span>':'<span class="tag good">$100/hour rate</span>')+'</p>'+
+      '<p><strong>Assistance:</strong> '+esc(r.assistance_needed||'Not specified')+'</p><p><strong>Preferred times:</strong><br>'+esc(r.preferred_datetime_1||'')+(r.preferred_datetime_2?'<br>'+esc(r.preferred_datetime_2):'')+(r.preferred_datetime_3?'<br>'+esc(r.preferred_datetime_3):'')+'</p>'+
+      (r.confirmed_datetime?'<p><strong>Confirmed:</strong> '+esc(r.confirmed_datetime)+'</p>':'')+
+      '<div class="formgrid"><div><label>Status</label><select data-one-status><option '+(r.status==='Pending'?'selected':'')+'>Pending</option><option '+(r.status==='Approved'?'selected':'')+'>Approved</option><option '+(r.status==='Request Different Times'?'selected':'')+'>Request Different Times</option><option '+(r.status==='Declined'?'selected':'')+'>Declined</option><option '+(r.status==='Payment Sent'?'selected':'')+'>Payment Sent</option><option '+(r.status==='Paid'?'selected':'')+'>Paid</option><option '+(r.status==='Completed'?'selected':'')+'>Completed</option></select></div><div><label>Confirmed appointment (required for Approved)</label><input data-one-confirmed value="'+esc(r.confirmed_datetime||'')+'" placeholder="e.g. Tuesday, Oct 14 at 4:00 PM"></div></div><button data-save-one style="margin-top:9px">Save Status</button>'+
+      (hist.length?'<details><summary>Status history</summary><div class="history">'+hist.map(h=>'<div>'+esc(h.status||'')+' · '+esc(fmt(h.at))+' · '+esc(h.by||'')+'</div>').join('')+'</div></details>':'')+'</div>';
+  }).join('')||'<p class="muted">No 1:1 requests are on file.</p>';
+  document.querySelectorAll('[data-save-one]').forEach(function(btn){btn.onclick=async function(){var box=btn.closest('[data-one]'),status=box.querySelector('[data-one-status]').value,confirmed=box.querySelector('[data-one-confirmed]').value;btn.disabled=true;try{await window.ItasaStaffHub.updateOneOnOneStatus(box.dataset.one,status,confirmed);await loadOne();show(document.getElementById('one-status'),'1:1 request status updated.','good')}catch(e){show(document.getElementById('one-status'),e.message||String(e),'error')}finally{btn.disabled=false}}});
+}
+
+function renderCerts(){
+ document.getElementById('certs-body').innerHTML=state.certs.map(c=>'<tr><td><strong>'+esc(c.certificate_title||c.number||'Certificate')+'</strong><br><span class="muted">'+esc(c.number||'')+'</span></td><td>'+esc(c.student_id||'')+'</td><td>'+esc(programName(c.program_id||c.cohort_id))+'</td><td>'+statusTag(c.status)+'</td><td>'+esc(fmt(c.issued_at||c.created_at))+'</td></tr>').join('')||'<tr><td colspan="5" class="muted">No certificate records yet.</td></tr>';
+}
+function renderAudit(){
+ document.getElementById('audit-body').innerHTML=state.audit.map(a=>'<tr><td>'+esc(fmt(a.at))+'</td><td>'+esc(a.actor_name||'')+'<br><span class="muted">'+esc(a.role||'')+'</span></td><td>'+esc(a.action||'')+'</td><td>'+esc(a.target_type||'')+'<br><span class="muted">'+esc(a.target_id||'')+'</span></td><td>'+esc(a.details||'')+'</td></tr>').join('')||'<tr><td colspan="5" class="muted">No audit entries available.</td></tr>';
+}
+function metrics(){document.getElementById('m-students').textContent=state.students.length;document.getElementById('m-info').textContent=state.info.length;document.getElementById('m-one').textContent=state.one.filter(r=>r.status==='Pending').length;document.getElementById('m-access').textContent=state.access.length;document.getElementById('m-certs').textContent=state.certs.length}
+
+async function loadStudents(){state.students=await window.ItasaStaffHub.fetchStudents();renderStudents();metrics()}
+async function loadInfo(){state.info=await window.ItasaStaffHub.fetchInfoSessionRoster();renderInfo();metrics()}
+async function loadAccess(){var all=await Promise.all([window.ItasaStaffHub.fetchClassAccess(),window.ItasaSharedContentSupabase.fetchCollection('classes')]);state.access=all[0];state.classes=all[1].data||[];renderAccess();metrics();var missing=Math.max(0,state.classes.length-state.access.length);show(document.getElementById('access-status'),missing?missing+' active class(es) still need Supabase class-access details.':'All active classes have a class-access record.',missing?'warn':'good')}
+async function loadOne(){state.one=await window.ItasaStaffHub.fetchOneOnOneRequests();renderOne();metrics()}
+async function loadCerts(){state.certs=await window.ItasaStaffHub.fetchCertificates();renderCerts();metrics()}
+async function loadAudit(){state.audit=await window.ItasaStaffHub.fetchAuditLog(100);renderAudit()}
+async function loadAll(){try{await Promise.all([loadStudents(),loadInfo(),loadAccess(),loadOne(),loadCerts(),loadAudit()])}catch(e){console.error(e);alert('Some operations data could not be loaded. '+(e.message||e))}}
+
+function syncSession(){var st=window.ItasaStaffHub.getCurrentStaff();if(st){document.getElementById('login-shell').hidden=true;document.getElementById('workspace-header').hidden=false;document.getElementById('workspace').hidden=false;document.getElementById('staff-name').textContent=st.full_name||st.email;document.getElementById('staff-meta').textContent=st.role+' · '+st.email;loadAll()}else{document.getElementById('login-shell').hidden=false;document.getElementById('workspace-header').hidden=true;document.getElementById('workspace').hidden=true}}
+document.getElementById('login-form').onsubmit=async function(ev){ev.preventDefault();var b=document.getElementById('login-btn'),s=document.getElementById('login-status');b.disabled=true;b.textContent='Signing in…';hide(s);var res=await window.ItasaStaffHub.signIn(document.getElementById('staff-email').value,document.getElementById('staff-password').value);document.getElementById('staff-password').value='';b.disabled=false;b.textContent='Sign In';if(!res.ok)show(s,res.error&&res.error.message||'Sign-in failed.','error');else syncSession()};
+document.getElementById('signout-btn').onclick=async function(){await window.ItasaStaffHub.signOut();syncSession()};
+document.getElementById('refresh-all').onclick=loadAll;
+window.ItasaStaffHub.onSessionChange(function(s){if(s.resolved)syncSession()});
+})();
+</script>
+</body>
+</html>
