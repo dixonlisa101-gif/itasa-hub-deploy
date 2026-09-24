@@ -64,7 +64,7 @@
         <a href="#information-session">Information Session</a>
         <a href="#register">Register Now</a>
         <a href="student-portal-cutover-preview.html">Student Sign In</a>
-        <a href="staff-operations-preview.html">Staff Sign In</a>
+        <a href="instructor-workspace-preview.html">Staff Sign In</a>
       </div>
     </nav>
   </header>
@@ -143,7 +143,7 @@
           </div>
           <div class="btnrow">
             <a class="btn" href="student-portal-cutover-preview.html">Student Sign In</a>
-            <a class="btn secondary" href="staff-operations-preview.html">Staff Sign In</a>
+            <a class="btn secondary" href="instructor-workspace-preview.html">Staff Sign In</a>
           </div>
         </div>
       </div>
@@ -339,7 +339,7 @@
         </div>
         <div class="btnrow">
           <a class="btn" href="student-portal-cutover-preview.html">Student Sign In</a>
-          <a class="btn secondary" href="staff-operations-preview.html">Staff Sign In</a>
+          <a class="btn secondary" href="instructor-workspace-preview.html">Staff Sign In</a>
         </div>
       </div>
     </section>
@@ -400,6 +400,33 @@
       return html;
     }
 
+    function easternDateKey(value){
+      var d=value?new Date(value):new Date();
+      if(isNaN(d.getTime()))return '';
+      var parts=new Intl.DateTimeFormat('en-CA',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(d),obj={};
+      parts.forEach(function(p){if(p.type!=='literal')obj[p.type]=p.value});
+      return [obj.year,obj.month,obj.day].join('-');
+    }
+    function classCountdown(row){
+      if(!row||!row.start_date)return 'Class start date will be announced by ITASA.';
+      var today=easternDateKey(new Date()),start=easternDateKey(row.start_date);
+      if(!today||!start)return '';
+      var a=new Date(today+'T12:00:00Z'),b=new Date(start+'T12:00:00Z');
+      var days=Math.round((b-a)/86400000);
+      var open=String(row.registration_status||'').toLowerCase()==='open';
+      if(days>1)return (open?'Registration open · ':'')+days+' days until class begins';
+      if(days===1)return (open?'Registration open · ':'')+'Class begins tomorrow';
+      if(days===0)return 'First day of class today'+(open?' · Registration open today, subject to availability':'');
+      return 'Class has started';
+    }
+    function classRegistrationOpen(row){
+      if(!row||String(row.registration_status||'').toLowerCase()!=='open')return false;
+      if(!row.start_date)return true;
+      var today=easternDateKey(new Date()),start=easternDateKey(row.start_date);
+      if(!today||!start)return true;
+      return new Date(today+'T12:00:00Z').getTime() <= new Date(start+'T12:00:00Z').getTime();
+    }
+
     function courseCard(row){
       var id=row.program_id;
       var title=id==='review'?'NCLEX Review & Test-Taking Strategies':id==='skills'?'Skills Refresher Class':'IV Insertion & Venipuncture';
@@ -408,6 +435,7 @@
       return '<div class="card course-card">'+
         '<span class="tag">'+esc(row.registration_status||'')+'</span>'+
         '<h3>'+esc(title)+'</h3>'+
+        '<p><span class="tag">'+esc(classCountdown(row))+'</span></p>'+
         '<p>'+esc(purpose[id]||'')+'</p>'+
         '<p class="muted">'+esc(row.notes||'')+'</p>'+
         '<p class="muted"><strong>Format:</strong> '+esc(
@@ -419,7 +447,7 @@
         )+'</p>'+
         certificate+
         '<details><summary>View Class Pricing &amp; Payment Options</summary><div style="margin-top:10px">'+pricingMarkup(id,row,false)+
-        '<div class="btnrow"><button class="btn" type="button" data-register-course="'+esc(id)+'">Register for This Course</button>'+
+        '<div class="btnrow">'+(classRegistrationOpen(row)?'<button class="btn" type="button" data-register-course="'+esc(id)+'">Register for This Course</button>':'<span class="tag">Registration Closed</span>')+
         '<button class="btn secondary" type="button" data-info-course="'+esc(id)+'">Attend an Information Session</button></div></div></details>'+
       '</div>';
     }
@@ -439,6 +467,7 @@
       var id=regCourse.value;
       var row=classFor(id);
       if(!id||!row){paymentBox.innerHTML='<p class="muted">Select a course first.</p>';return}
+      if(!classRegistrationOpen(row)){paymentBox.innerHTML='<div class="notice error"><strong>Registration is closed for this class.</strong></div>';return}
       paymentBox.innerHTML=pricingMarkup(id,row,true);
       pricingDetails.open=true;
     }
@@ -543,6 +572,8 @@
         invalid_course:'Please select an available course.',
         class_not_available:'This class is not available for registration right now.',
         registration_not_open:'Registration is not open for this class right now.',
+        registration_closed:'Registration for this class closed after the first day of class.',
+        class_full:'This class is full. Please contact ITASA about future class availability.',
         invalid_payment_option:'Please select an available payment option.',
         promotional_option_expired:'That promotional option is no longer available.',
         acknowledgments_required:'All required student acknowledgements must be accepted.',
