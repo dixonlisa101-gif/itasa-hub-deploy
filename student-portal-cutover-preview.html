@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ITASA Student Portal Cutover Preview</title>
+  <style>
+    :root { font-family: Inter, system-ui, -apple-system, Segoe UI, sans-serif; color:#17323b; background:#f7fbfb; }
+    * { box-sizing:border-box; }
+    body { margin:0; }
+    main { max-width:980px; margin:0 auto; padding:28px 18px 56px; }
+    .banner { background:#fff4e8; border:1px solid #efc28e; padding:14px 16px; border-radius:12px; margin-bottom:18px; }
+    .card { background:white; border:1px solid #dce8e8; border-radius:14px; padding:18px; margin:14px 0; box-shadow:0 6px 18px rgba(25,60,70,.05); }
+    h1,h2,h3 { margin:.2rem 0 .7rem; }
+    .muted { color:#63757a; }
+    label { display:block; font-weight:700; margin:.8rem 0 .3rem; }
+    input { width:100%; padding:11px 12px; border:1px solid #b9cacc; border-radius:9px; font:inherit; }
+    button { margin-top:14px; padding:11px 16px; border:0; border-radius:9px; font-weight:700; cursor:pointer; background:#1f7f85; color:white; }
+    button[disabled] { opacity:.55; cursor:not-allowed; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px; }
+    .kv { display:grid; grid-template-columns:minmax(150px,220px) 1fr; gap:8px 14px; }
+    .kv div:nth-child(odd){ font-weight:700; }
+    .ok { border-left:5px solid #3c8b65; }
+    .warn { border-left:5px solid #c77928; }
+    .error { border-left:5px solid #b74848; }
+    .section { border-top:1px solid #e2ecec; margin-top:14px; padding-top:14px; }
+    ul { padding-left:20px; }
+    a { color:#116b74; }
+    code { background:#eef5f5; padding:2px 5px; border-radius:5px; }
+    [hidden] { display:none!important; }
+  </style>
+</head>
+<body>
+<main>
+  <div class="banner">
+    <strong>PREVIEW ONLY — NOT PRODUCTION.</strong>
+    This page is an isolated cutover test for the ITASA Learning Center. It does not modify registration, payment, enrollment, progress, certificates, or staff records.
+  </div>
+
+  <div class="card">
+    <h1>ITASA Learning Center vNext Preview</h1>
+    <p class="muted">Public classes, announcements, and IV Q&A below are read directly from Supabase. No D1/local-cache content is used on this preview.</p>
+    <div id="class-catalog" class="grid"></div>
+  </div>
+
+  <div id="announcements" class="card" hidden></div>
+  <div id="iv-qa" class="card" hidden></div>
+
+  <div class="card">
+    <h1>Student Portal Cutover Preview</h1>
+    <p class="muted">Use an existing ITASA student email and Learning Center access code. Credentials are sent only to the existing Supabase RPCs and are not stored by this preview page.</p>
+    <form id="login-form">
+      <label for="email">Student email</label>
+      <input id="email" name="email" type="email" autocomplete="username" required />
+      <label for="code">Access code</label>
+      <input id="code" name="code" type="password" autocomplete="current-password" required />
+      <button id="submit-btn" type="submit">Run read-only preview</button>
+    </form>
+  </div>
+
+  <div id="status" class="card" hidden></div>
+  <div id="student" class="card" hidden></div>
+  <div id="workspace" class="card" hidden></div>
+  <div id="class-access" class="card" hidden></div>
+  <div id="certificates" class="card" hidden></div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/student-portal-supabase.js"></script>
+<script src="js/shared-content-supabase.js"></script>
+<script>
+(function(){
+  'use strict';
+
+  const form = document.getElementById('login-form');
+  const btn = document.getElementById('submit-btn');
+  const statusBox = document.getElementById('status');
+  const studentBox = document.getElementById('student');
+  const workspaceBox = document.getElementById('workspace');
+  const accessBox = document.getElementById('class-access');
+  const certBox = document.getElementById('certificates');
+
+  function esc(v){
+    return String(v == null ? '' : v)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+  function show(el, html, tone){
+    el.className='card ' + (tone || '');
+    el.innerHTML=html;
+    el.hidden=false;
+  }
+  function hide(el){ el.hidden=true; el.innerHTML=''; }
+
+  function studentHtml(st){
+    return '<h2>Legacy student record</h2>' +
+      '<div class="kv">' +
+      '<div>Name</div><div>' + esc((st.first_name||'')+' '+(st.last_name||'')) + '</div>' +
+      '<div>Email</div><div>' + esc(st.email) + '</div>' +
+      '<div>Program</div><div>' + esc(st.programId || 'Not assigned') + '</div>' +
+      '<div>Cohort</div><div>' + esc(st.cohortId || 'Not assigned') + '</div>' +
+      '<div>Enrollment status</div><div>' + esc(st.enrollmentStatus || '') + '</div>' +
+      '<div>Payment status</div><div>' + esc(st.paymentStatus || '') + '</div>' +
+      '<div>Amount paid</div><div>$' + Number(st.financial && st.financial.amountPaid || 0).toFixed(2) + '</div>' +
+      '<div>Remaining balance</div><div>$' + Number(st.financial && st.financial.remainingBalance || 0).toFixed(2) + '</div>' +
+      '<div>Certificate status</div><div>' + esc(st.certificateStatus || '') + '</div>' +
+      '</div>';
+  }
+
+  function workspaceHtml(ws){
+    const enrollments = Array.isArray(ws && ws.enrollments) ? ws.enrollments : [];
+    let html='<h2>Normalized learning workspace</h2>';
+    if (!enrollments.length) {
+      return html + '<p class="muted">No active/completed normalized enrollment is linked to this student yet. This is expected for legacy student records until enrollment cutover/backfill is completed.</p>';
+    }
+    html += '<p><strong>' + enrollments.length + '</strong> active/completed enrollment(s) returned by Supabase.</p>';
+    enrollments.forEach(function(e){
+      const offering=e.offering||{}, cohort=e.cohort||{};
+      const sections=Array.isArray(e.sections)?e.sections:[];
+      html += '<div class="section"><h3>'+esc(offering.public_name||offering.offering_key||'Enrollment')+'</h3>' +
+        '<div class="kv"><div>Status</div><div>'+esc(e.status||'')+'</div>' +
+        '<div>Cohort</div><div>'+esc(cohort.public_name||'Not assigned')+'</div>' +
+        '<div>Sections</div><div>'+sections.length+'</div></div></div>';
+    });
+    return html;
+  }
+
+  function accessHtml(a){
+    let html='<h2>Class / Zoom access</h2>';
+    if (!a) return html+'<p class="muted">No class-access details were returned for this student.</p>';
+    html += '<div class="kv">' +
+      '<div>Class time</div><div>'+esc(a.classTime||'')+'</div>' +
+      '<div>Meeting ID</div><div>'+esc(a.meetingId||'')+'</div>' +
+      '<div>Passcode</div><div>'+esc(a.passcode||'')+'</div>' +
+      '<div>Instructor note</div><div>'+esc(a.note||'')+'</div>' +
+      '<div>Join link</div><div>'+(a.link?'<a target="_blank" rel="noopener" href="'+esc(a.link)+'">Open class link</a>':'Not available')+'</div>' +
+      '</div>';
+    return html;
+  }
+
+  function certHtml(result){
+    const rows=Array.isArray(result && result.certificates)?result.certificates:[];
+    let html='<h2>Certificates</h2>';
+    if (!rows.length) return html+'<p class="muted">No issued/active/completed certificate linked to this student enrollment.</p>';
+    html+='<ul>';
+    rows.forEach(function(c){
+      html+='<li><strong>'+esc(c.certificate_title||c.certificate_number||'Certificate')+'</strong>' +
+        (c.completion_date?' — '+esc(c.completion_date):'') +
+        (c.certificate_url?' — <a target="_blank" rel="noopener" href="'+esc(c.certificate_url)+'">View</a>':'') +
+        '</li>';
+    });
+    return html+'</ul>';
+  }
+
+
+  async function loadSharedContent(){
+    if(!window.ItasaSharedContentSupabase)return;
+    try{
+      const data=await window.ItasaSharedContentSupabase.fetchAll();
+      const classes=Array.isArray(data.classes)?data.classes:[];
+      const anns=Array.isArray(data.announcements)?data.announcements:[];
+      const qa=Array.isArray(data.iv_qa)?data.iv_qa:[];
+
+      document.getElementById('class-catalog').innerHTML=classes.map(function(x){
+        return '<div class="card" style="margin:0"><h3>'+esc(x.name||'ITASA Class')+'</h3>'+
+          '<p class="muted">'+esc(x.notes||'')+'</p>'+
+          '<div class="kv"><div>Status</div><div>'+esc(x.registration_status||'')+'</div>'+
+          '<div>Start</div><div>'+esc(x.start_date?new Date(x.start_date).toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'}):'')+'</div>'+
+          '<div>Class time</div><div>'+esc(x.meeting_time_label||'')+'</div></div></div>';
+      }).join('') || '<p class="muted">No class records available.</p>';
+
+      if(anns.length){
+        show(document.getElementById('announcements'),
+          '<h2>Announcements</h2><ul>'+anns.slice(0,8).map(function(a){
+            return '<li><strong>'+esc(a.title||'Announcement')+'</strong><br>'+esc(a.body||'')+'</li>';
+          }).join('')+'</ul>','');
+      }
+
+      if(qa.length){
+        show(document.getElementById('iv-qa'),
+          '<h2>IV Learning Q&A</h2>'+qa.slice(0,8).map(function(q){
+            return '<div class="section"><h3>'+esc(q.question||q.title||'IV Q&A')+'</h3><p>'+esc(q.answer||'')+'</p></div>';
+          }).join(''),'');
+      }
+    }catch(err){
+      console.error('Shared content preview failed',err);
+    }
+  }
+
+  loadSharedContent();
+
+  form.addEventListener('submit', async function(ev){
+    ev.preventDefault();
+    hide(studentBox); hide(workspaceBox); hide(accessBox); hide(certBox);
+    const email=document.getElementById('email').value.trim().toLowerCase();
+    const code=document.getElementById('code').value.trim();
+    btn.disabled=true; btn.textContent='Checking…';
+    show(statusBox,'<strong>Testing existing Supabase student access…</strong>','');
+
+    try {
+      if (!window.ItasaStudentPortal) throw new Error('Student portal bridge did not load.');
+      const login=await window.ItasaStudentPortal.login(email,code,[]);
+      if (login.status!=='ok' || !login.student) {
+        const messages={
+          invalid_credentials:'The email/access-code pair was not accepted.',
+          pending_review:'The student exists but portal access is still pending review.',
+          invalid_code:'The access code was not accepted.',
+          not_found:'No matching student access was found.'
+        };
+        show(statusBox,'<strong>Preview stopped safely.</strong><br>'+esc(messages[login.status]||'Unable to validate this student right now.'),'warn');
+        return;
+      }
+
+      show(statusBox,'<strong>Read-only login test passed.</strong> The existing Supabase student-access RPC accepted the credential pair.','ok');
+      show(studentBox,studentHtml(login.student),'ok');
+
+      const [ws, access, certs] = await Promise.all([
+        window.ItasaStudentPortal.getLearningWorkspace(email,code),
+        window.ItasaStudentPortal.getZoomAccess(email,code),
+        window.ItasaStudentPortal.getCertificates(email,code)
+      ]);
+
+      show(workspaceBox,workspaceHtml(ws), ws && ws.status==='ok' ? 'ok' : 'warn');
+      show(accessBox,accessHtml(access), access ? 'ok' : 'warn');
+      show(certBox,certHtml(certs), certs && certs.status==='ok' ? 'ok' : 'warn');
+    } catch(err) {
+      console.error(err);
+      show(statusBox,'<strong>Preview error.</strong> No production data was changed. '+esc(err && err.message || err),'error');
+    } finally {
+      btn.disabled=false; btn.textContent='Run read-only preview';
+      document.getElementById('code').value='';
+    }
+  });
+})();
+</script>
+</body>
+</html>
