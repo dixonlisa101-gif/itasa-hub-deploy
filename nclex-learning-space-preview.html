@@ -207,9 +207,26 @@
         if(!window.ItasaSharedContentSupabase)return;
         const data=await window.ItasaSharedContentSupabase.fetchAll();
         const anns=Array.isArray(data.announcements)?data.announcements:[];
-        document.getElementById('announcements').innerHTML=anns.length
-          ? '<ul>'+anns.slice(0,6).map(function(a){return '<li><strong>'+esc(a.title||'Announcement')+'</strong><br>'+esc(a.body||'')+'</li>'}).join('')+'</ul>'
-          : '<p class="muted">No current announcements are posted.</p>';
+        const seen=new Set();
+        const relevant=anns.filter(function(a){
+          const title=String(a&&a.title||'').trim();
+          const body=String(a&&a.body||'').trim();
+          if(!title&&!body)return false;
+          if(title.toLowerCase()==='welcome to the itasa learning center')return false;
+          const key=(title+'|'+body).toLowerCase();
+          if(seen.has(key))return false;
+          seen.add(key);
+          const hay=(title+' '+body).toLowerCase();
+          return hay.includes('nclex') ||
+                 hay.includes('practice exam') ||
+                 hay.includes('licensure') ||
+                 hay.includes('nursys') ||
+                 hay.includes('next generation') ||
+                 hay.includes('ngn');
+        });
+        document.getElementById('announcements').innerHTML=relevant.length
+          ? '<ul>'+relevant.slice(0,8).map(function(a){return '<li><strong>'+esc(a.title||'Announcement')+'</strong><br>'+esc(a.body||'')+'</li>'}).join('')+'</ul>'
+          : '<p class="muted">No current NCLEX announcements are posted.</p>';
       }catch(err){
         document.getElementById('announcements').innerHTML='<p class="muted">Announcements are temporarily unavailable.</p>';
       }
