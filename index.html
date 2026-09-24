@@ -118,17 +118,19 @@
 
       <div class="support-section">
         <figure class="support-image" style="margin:0">
-          <img src="https://images.unsplash.com/photo-1758270703928-6a8597669abc?auto=format&fit=crop&w=1200&q=82" alt="An instructor guiding students during a classroom learning session" loading="lazy">
+          <img src="https://images.unsplash.com/photo-1783519890730-3436fd0bf965?auto=format&fit=crop&w=1400&q=82" alt="Healthcare learners practicing hands-on clinical skills during supervised training" loading="lazy">
         </figure>
         <div class="support-copy">
           <div class="eyebrow">Your next step starts here</div>
           <h2>A supportive place to learn, prepare, and move forward</h2>
-          <p class="lead">The ITASA Learning Resource Center is designed to make your next step simple. From class registration to guided support, this is where learners can connect with opportunities, receive updates, and prepare in a structured and encouraging environment.</p>
+          <p class="lead">The ITASA Learning Resource Center is designed to make your next step simple. ITASA classes are delivered through Zoom-based instruction, with required in-person skills check-offs at the ITASA business location when a class includes hands-on competency validation.</p>
           <ul class="welcome-list">
             <li>Review available classes and schedules</li>
             <li>Join an Information Session before deciding</li>
             <li>Complete registration when you are ready</li>
             <li>Access student learning tools after approval</li>
+            <li>Complete required in-person skills check-offs when your class includes them</li>
+            <li>Arrive on time for all required in-person skills sessions</li>
             <li>Request additional test-taking support when needed</li>
           </ul>
         </div>
@@ -162,7 +164,12 @@
     <section id="courses">
       <div class="eyebrow">Explore Courses</div>
       <h2>Explore ITASA Courses</h2>
-      <p class="lead">Review the course that fits your goals. Pricing remains closed until you choose to view it.</p>
+      <p class="lead">Review the class that fits your goals. Pricing remains closed until you choose to view it.</p>
+      <div class="card soft" style="margin:14px 0 20px">
+        <div class="eyebrow">How ITASA classes are delivered</div>
+        <p><strong>Online learning is delivered through Zoom.</strong> Some classes also include a required in-person skills check-off or hands-on competency phase at ITASA’s physical business location.</p>
+        <p class="muted" style="margin-bottom:0">When an in-person skills phase is required, location details are provided to the student and <strong>students are expected to arrive on time.</strong></p>
+      </div>
       <div id="course-grid" class="course-grid">
         <div class="card">Loading current ITASA class information…</div>
       </div>
@@ -388,7 +395,13 @@
         '<h3>'+esc(title)+'</h3>'+
         '<p>'+esc(purpose[id]||'')+'</p>'+
         '<p class="muted">'+esc(row.notes||'')+'</p>'+
-        '<p class="muted"><strong>Format:</strong> '+esc(row.delivery_method||'')+'</p>'+
+        '<p class="muted"><strong>Format:</strong> '+esc(
+          id==='review'
+            ? 'Live online instruction via Zoom'
+            : (id==='skills'||id==='iv')
+              ? 'Zoom-based instruction + required in-person skills check-off at the ITASA business location. Arrive on time for the in-person phase.'
+              : (row.delivery_method||'')
+        )+'</p>'+
         certificate+
         '<details><summary>View Class Pricing &amp; Payment Options</summary><div style="margin-top:10px">'+pricingMarkup(id,row,false)+
         '<div class="btnrow"><button class="btn" type="button" data-register-course="'+esc(id)+'">Register for This Course</button>'+
