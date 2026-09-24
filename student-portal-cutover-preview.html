@@ -188,11 +188,21 @@ function classCountdown(row){
           return;
         }
         const st=login.student;
+        window.ItasaStudentPortal.setSessionCredentials(email,code);
         document.getElementById('welcome-name').textContent='Welcome back, '+((st.first_name||'').trim()||'Student')+'.';
         renderSpace(st);
         home.hidden=false;
-        showStatus('<strong>You’re signed in.</strong> Choose your learning space below.','ok');
+        showStatus('<strong>You’re signed in.</strong> Opening your virtual learning space…','ok');
         document.getElementById('code').value='';
+        const routes={
+          review:'nclex-learning-space-preview.html',
+          skills:'skills-learning-space-preview.html',
+          iv:'iv-learning-space-preview.html'
+        };
+        if(routes[st.programId]) {
+          window.location.href=routes[st.programId];
+          return;
+        }
         home.scrollIntoView({behavior:'smooth',block:'start'});
       }catch(err){
         console.error(err);
