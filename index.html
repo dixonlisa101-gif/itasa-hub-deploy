@@ -21,11 +21,11 @@
     .hero-panel{background:linear-gradient(135deg,#e9f7f6,#fff7ec);border:1px solid var(--line);border-radius:22px;padding:34px;display:flex;flex-direction:column;justify-content:center}
     .hero-image{min-height:420px;border-radius:22px;overflow:hidden;border:1px solid var(--line);box-shadow:0 10px 28px rgba(17,71,78,.10);background:#dfeeee}
     .hero-image img,.support-image img{width:100%;height:100%;object-fit:cover;display:block}
-    .mission{font-weight:900;color:var(--teal-dark);margin-top:1rem}
+    .mission{font-weight:900;color:var(--teal-dark);margin-top:1rem;border-left:4px solid var(--orange);padding-left:10px}
     .path-intro{text-align:center;max-width:760px;margin:34px auto 18px}
     .support-section{display:grid;grid-template-columns:.9fr 1.1fr;gap:22px;align-items:center;margin-top:30px}
     .support-image{min-height:340px;border-radius:18px;overflow:hidden;border:1px solid var(--line);background:#e7f1f1}
-    .support-copy{padding:8px}
+    .support-copy{padding:8px}.marie-section{display:grid;grid-template-columns:1.05fr .95fr;gap:22px;align-items:center;margin-top:24px;border-top:5px solid var(--orange)}.marie-image{min-height:360px;border-radius:16px;overflow:hidden;background:#fff}.marie-image img{width:100%;height:100%;object-fit:cover;object-position:50% 42%;display:block}.orange-kicker{color:#b95e16}
     .welcome-list{padding-left:20px}.welcome-list li{margin:.55rem 0}
     .eyebrow{text-transform:uppercase;letter-spacing:.09em;font-size:.76rem;font-weight:900;color:var(--teal)}
     h1{font-size:clamp(2rem,5vw,3.5rem);line-height:1.03;margin:.4rem 0 1rem}h2{font-size:clamp(1.55rem,3vw,2.35rem);margin:.2rem 0 .8rem}h3{margin:.2rem 0 .55rem}
@@ -34,7 +34,7 @@
     .card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 7px 20px rgba(17,71,78,.05)}
     .soft{background:var(--soft)}.warm{background:var(--warm)}.choice{min-height:190px;display:flex;flex-direction:column}.choice .btn{margin-top:auto}
     .btn{display:inline-block;border:0;border-radius:10px;padding:11px 15px;font:inherit;font-weight:800;cursor:pointer;text-decoration:none;background:var(--teal);color:#fff}
-    .btn.secondary{background:#e8f4f4;color:var(--teal-dark)}.btn.orange{background:var(--orange)}.btn[disabled]{opacity:.55;cursor:not-allowed}
+    .btn.secondary{background:#e8f4f4;color:var(--teal-dark)}.btn.orange{background:var(--orange);color:#fff}.btn.orange:hover{filter:brightness(.96)}.btn[disabled]{opacity:.55;cursor:not-allowed}
     .btnrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}.course-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
     .course-card{display:flex;flex-direction:column}.course-card details{margin-top:auto}.tag{display:inline-block;border-radius:999px;padding:4px 9px;background:#e9f5f4;font-size:.78rem;font-weight:800}
     details{border-top:1px solid var(--line);padding-top:12px;margin-top:14px}summary{cursor:pointer;font-weight:850;color:var(--teal-dark)}
@@ -49,7 +49,7 @@
     
     footer{border-top:1px solid var(--line);padding:28px 18px;color:#60757a;text-align:center;background:#fff}
     [hidden]{display:none!important}
-    @media(max-width:900px){.hero,.support-section{grid-template-columns:1fr}.hero-image{min-height:330px}.grid,.course-grid{grid-template-columns:1fr 1fr}}
+    @media(max-width:900px){.hero,.support-section,.marie-section{grid-template-columns:1fr}.hero-image{min-height:330px}.grid,.course-grid{grid-template-columns:1fr 1fr}}
     @media(max-width:640px){.grid,.grid2,.course-grid,.steps,.form-grid{grid-template-columns:1fr}.full{grid-column:auto}.hero-panel{padding:24px}.navlinks{width:100%;overflow:auto;flex-wrap:nowrap}.navlinks a{white-space:nowrap}}
   </style>
 </head>
@@ -79,7 +79,7 @@
           <p class="lead">Explore classes and next steps before registration, then return here as a registered student for class access, learning materials, updates, scheduled sessions, and support.</p>
           <div class="mission">Empowering Nurses. Elevating Healthcare.</div>
           <div class="btnrow">
-            <a class="btn" href="#register">Register Now</a>
+            <a class="btn orange" href="#register">Register Now</a>
             <a class="btn secondary" href="#information-session">Attend an Information Session</a>
             <a class="btn secondary" href="#courses">Explore Classes</a>
           </div>
@@ -159,6 +159,19 @@
             <a class="btn secondary" target="_blank" rel="noopener" href="https://www.facebook.com/profile.php?id=61557528076740">Follow ITASA on Facebook</a>
           </div>
         </div>
+      </div>
+
+      <div class="card marie-section">
+        <div>
+          <div class="eyebrow orange-kicker">A Welcome from Marie</div>
+          <h2>Learning with guidance, structure, and encouragement.</h2>
+          <p class="lead">Welcome to ITASA. This Learning Center is a place for students to learn, prepare, return, and keep moving forward throughout their ITASA experience.</p>
+          <p class="muted">As an ITASA instructor and the voice students hear throughout the learning experience, Marie helps connect the classes, the Learning Center, and the wider ITASA community into one supportive student journey.</p>
+          <p><strong>Marie S. Florestal, MSN, APRN, FNP-C</strong><br><span class="muted">ITASA Instructor</span></p>
+        </div>
+        <figure class="marie-image" style="margin:0">
+          <img src="assets/itasa-instructor-welcome.jpg" alt="Marie Florestal, ITASA instructor" loading="lazy">
+        </figure>
       </div>
 
     </section>
