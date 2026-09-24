@@ -26,8 +26,7 @@ table{width:100%;border-collapse:collapse}th,td{padding:10px 8px;border-bottom:1
 <div class="preview">PREVIEW ONLY — GenSpark-independent ITASA Operations Workspace. Not live.</div>
 <main>
   <div class="card">
-    <div class="eyebrow">ITASA Operations</div>
-    <h1>Operations Workspace vNext</h1>
+    <div class="toolbar"><div><div class="eyebrow">ITASA Operations</div><h1>Operations Workspace vNext</h1></div><a class="push" href="instructor-workspace-preview.html">← Instructor Workspace</a></div>
     <p class="muted">Authenticated directly through ITASA's Supabase staff system. No GenSpark workspace or GenSpark login is used.</p>
 
     <div id="login-shell">
@@ -215,7 +214,7 @@ async function loadCerts(){state.certs=await window.ItasaStaffHub.fetchCertifica
 async function loadAudit(){state.audit=await window.ItasaStaffHub.fetchAuditLog(100);renderAudit()}
 async function loadAll(){try{await Promise.all([loadStudents(),loadInfo(),loadAccess(),loadOne(),loadCerts(),loadAudit()])}catch(e){console.error(e);alert('Some operations data could not be loaded. '+(e.message||e))}}
 
-function syncSession(){var st=window.ItasaStaffHub.getCurrentStaff();if(st){document.getElementById('login-shell').hidden=true;document.getElementById('workspace-header').hidden=false;document.getElementById('workspace').hidden=false;document.getElementById('staff-name').textContent=st.full_name||st.email;document.getElementById('staff-meta').textContent=st.role+' · '+st.email;loadAll()}else{document.getElementById('login-shell').hidden=false;document.getElementById('workspace-header').hidden=true;document.getElementById('workspace').hidden=true}}
+function syncSession(){var st=window.ItasaStaffHub.getCurrentStaff();if(st){document.getElementById('login-shell').hidden=true;document.getElementById('workspace-header').hidden=false;document.getElementById('staff-name').textContent=st.full_name||st.email;document.getElementById('staff-meta').textContent=st.role+' · '+st.email;if(String(st.role||'').toLowerCase()!=='administrator'){document.getElementById('workspace').hidden=true;var s=document.getElementById('login-status');show(s,'Operations & Oversight requires administrator authorization. Use the Instructor Workspace for ordinary instructor work.','error');return}document.getElementById('workspace').hidden=false;loadAll()}else{document.getElementById('login-shell').hidden=false;document.getElementById('workspace-header').hidden=true;document.getElementById('workspace').hidden=true}}
 document.getElementById('login-form').onsubmit=async function(ev){ev.preventDefault();var b=document.getElementById('login-btn'),s=document.getElementById('login-status');b.disabled=true;b.textContent='Signing in…';hide(s);var res=await window.ItasaStaffHub.signIn(document.getElementById('staff-email').value,document.getElementById('staff-password').value);document.getElementById('staff-password').value='';b.disabled=false;b.textContent='Sign In';if(!res.ok)show(s,res.error&&res.error.message||'Sign-in failed.','error');else syncSession()};
 document.getElementById('signout-btn').onclick=async function(){await window.ItasaStaffHub.signOut();syncSession()};
 document.getElementById('refresh-all').onclick=loadAll;
