@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>IV Insertion & Venipuncture | ITASA Learning Center</title>
+  <style>
+    :root{--teal:#177982;--teal-dark:#0d5961;--orange:#dd7b2d;--ink:#18343b;--muted:#63767b;--line:#d9e7e8;--soft:#f5fafa;--warm:#fff6ec;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;color:var(--ink);background:#f8fbfb}
+    *{box-sizing:border-box}body{margin:0}a{color:var(--teal-dark)}
+    .preview{background:#3b2d23;color:#fff;padding:9px 16px;text-align:center;font-weight:800}
+    header{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10}
+    nav{max-width:1100px;margin:auto;padding:12px 18px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+    .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--teal-dark);font-weight:900;margin-right:auto}.brand img{width:52px;height:52px;border-radius:50%;object-fit:contain}.brand small{display:block;color:var(--orange);font-size:.72rem;text-transform:uppercase;letter-spacing:.08em}
+    main{max-width:1100px;margin:auto;padding:30px 18px 64px}.hero{background:linear-gradient(135deg,#eaf7f6,#fff5e8);border:1px solid var(--line);border-left:6px solid var(--orange);border-radius:20px;padding:28px;margin-bottom:18px}
+    .eyebrow{font-size:.76rem;font-weight:900;text-transform:uppercase;letter-spacing:.09em;color:var(--teal)}h1{font-size:clamp(2rem,5vw,3.2rem);line-height:1.05;margin:.35rem 0 .8rem}h2,h3{margin:.2rem 0 .65rem}
+    .lead{font-size:1.08rem;color:#4e666c}.muted{color:var(--muted)}.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px;margin:16px 0;box-shadow:0 7px 20px rgba(17,71,78,.05)}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.quick{min-height:150px}.quick.orange{border-top:4px solid var(--orange)}
+    label{display:block;font-weight:800;margin:.8rem 0 .35rem}input{width:100%;padding:11px 12px;border:1px solid #b9cbcd;border-radius:9px;font:inherit}.btn{display:inline-block;border:0;border-radius:10px;padding:11px 15px;font:inherit;font-weight:800;cursor:pointer;text-decoration:none;background:var(--teal);color:#fff}.btn.orange{background:var(--orange)}.btn.secondary{background:#e8f4f4;color:var(--teal-dark)}.btnrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+    .status{border-left:5px solid var(--teal)}.ok{border-left-color:#3c8b65}.warn{border-left-color:var(--orange)}.error{border-left-color:#b74848}.workspace{display:none}.workspace.active{display:block}
+    .welcome-strip{display:flex;align-items:center;gap:18px;flex-wrap:wrap}.welcome-strip img{width:84px;height:84px;border-radius:50%;object-fit:contain}.schedule{display:grid;grid-template-columns:160px 1fr;gap:8px 14px}.schedule div:nth-child(odd){font-weight:800}
+    .module{border-top:1px solid var(--line);padding:14px 0}.module:first-child{border-top:0}.community{background:var(--warm);border-left:5px solid var(--orange)}.protected{background:#fffaf4;border-left:5px solid var(--orange)}.qa-item{border-top:1px solid var(--line);padding:14px 0}.qa-item:first-child{border-top:0}
+    footer{text-align:center;padding:24px 18px;border-top:1px solid var(--line);background:#fff;color:#60757a}[hidden]{display:none!important}
+    @media(max-width:760px){.grid,.grid3{grid-template-columns:1fr}.schedule{grid-template-columns:1fr}.brand span{display:none}}
+</style>
+</head>
+<body>
+<div class="preview">PREVIEW ONLY — Secure IV Learning Space prototype. No production records are modified.</div>
+<header><nav>
+  <a class="brand" href="index.html"><img src="assets/itasa-circular-brand-logo.png" alt="ITASA logo"><span>ITASA<small>Learning Center</small></span></a>
+  <a href="student-portal-cutover-preview.html">Student Home</a>
+  <a href="index.html">Learning Center Home</a>
+</nav></header>
+<main>
+  <section class="hero">
+    <div class="eyebrow">IV Insertion & Venipuncture</div>
+    <h1>Your IV Learning Space</h1>
+    <p class="lead">This is your secure student space for ITASA IV Insertion & Venipuncture. Use it for class access, IV-specific learning materials, safety Q&A, hands-on skills preparation, competency information, and completion.</p>
+  </section>
+
+  <section id="login-card" class="card">
+    <h2>Enter your learning space</h2>
+    <p class="muted">Use the same student email and Learning Center access code ITASA sent after payment confirmation.</p>
+    <form id="login-form">
+      <label for="email">Student email</label><input id="email" type="email" autocomplete="username" required>
+      <label for="code">Learning Center access code</label><input id="code" type="password" autocomplete="current-password" required>
+      <button id="login-btn" class="btn orange" type="submit" style="margin-top:14px">Enter IV Learning Space</button>
+    </form>
+  </section>
+
+  <div id="status" class="card status" hidden></div>
+
+  <section id="workspace" class="workspace">
+    <div class="card welcome-strip">
+      <img src="assets/itasa-circular-brand-logo.png" alt="ITASA logo">
+      <div><div class="eyebrow">Welcome back</div><h2 id="student-welcome">IV Student</h2><p class="muted">Your IV class includes two Friday sessions with theory and hands-on skills, followed by final competency validation in the second class.</p></div>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow">Class Schedule</div><h2>November 20 & November 27, 2026</h2>
+      <div id="schedule-box" class="schedule"><div>Loading</div><div>Current class information…</div></div>
+    </div>
+
+    <div class="grid3">
+      <div class="card quick orange"><div class="eyebrow">Class Access</div><h3>Join your scheduled class</h3><div id="class-access"><p class="muted">Checking your secure class-access details…</p></div></div>
+      <div class="card quick"><div class="eyebrow">Learning Materials</div><h3>Your assigned materials</h3><div id="materials"><p class="muted">ITASA-assigned IV learning materials will appear here as they are added to your class.</p></div></div>
+      <div class="card quick"><div class="eyebrow">Progress</div><h3>Keep moving forward</h3><div id="progress"><p class="muted">Your current learning status will appear here.</p></div></div>
+    </div>
+
+    <div class="grid">
+      <div class="card protected"><div class="eyebrow">Hands-On Skills</div><h2>Competency phase</h2>
+        <p class="muted">Each IV class includes 4 hours of theory and 4 hours of hands-on skills. Final competency validation is included in the second class.</p>
+        <p class="muted">The protected physical skills location is provided only to registered students after payment confirmation. Please arrive on time for required in-person sessions.</p>
+        <div id="iv-competency"><p class="muted">Your competency checklist and instructor instructions will appear here when ITASA posts them.</p></div>
+      </div>
+      <div class="card"><div class="eyebrow">IV Learning Q&amp;A</div><h2>Questions &amp; safety guidance</h2><div id="iv-qa"><p class="muted">Loading IV-specific Q&amp;A…</p></div></div>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow">Completion</div><h2>Progress &amp; certificate</h2>
+      <div id="completion"><p class="muted">Checking your completion information…</p></div>
+    </div>
+
+    <div class="card community">
+      <div class="eyebrow">ITASA Community</div><h2>Stay connected between class sessions.</h2>
+      <p class="muted">Your Learning Center is your student learning home. Follow ITASA on Facebook for encouragement, educational content, announcements, and community updates.</p>
+      <a class="btn secondary" target="_blank" rel="noopener" href="https://www.facebook.com/profile.php?id=61557528076740">Follow ITASA on Facebook</a>
+    </div>
+  </section>
+</main>
+<footer>Innovation Training &amp; Staffing Agency · Empowering Nurses. Elevating Healthcare.</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/student-portal-supabase.js"></script>
+<script src="js/shared-content-supabase.js"></script>
+<script>
+(function(){
+'use strict';
+const PROGRAM='iv';
+const form=document.getElementById('login-form'),btn=document.getElementById('login-btn'),status=document.getElementById('status'),workspace=document.getElementById('workspace');
+let classRow=null;
+function esc(v){return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
+function showStatus(html,tone){status.hidden=false;status.className='card status '+(tone||'');status.innerHTML=html}
+function fmtDate(v){if(!v)return '';const d=new Date(v);if(isNaN(d.getTime()))return '';return d.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}
+async function loadClass(){
+  try{
+    if(!window.ItasaSharedContentSupabase)return;
+    const r=await window.ItasaSharedContentSupabase.fetchCollection('classes');
+    classRow=((r&&r.data)||[]).find(function(x){return x.program_id===PROGRAM})||null;
+  }catch(e){console.error(e)}
+}
+loadClass();
+
+function renderSchedule(){
+  const box=document.getElementById('schedule-box');
+  if(!classRow){box.innerHTML='<div>Schedule</div><div>ITASA will confirm your class schedule.</div>';return}
+  box.innerHTML='<div>Start</div><div>'+esc(classRow.start_date?fmtDate(classRow.start_date):'ITASA will confirm your class start date')+'</div>'+
+    '<div>Schedule</div><div>'+esc(classRow.meeting_time_label||'ITASA will confirm exact class times')+'</div>'+
+    '<div>Format</div><div>'+esc(classRow.delivery_method||'')+'</div>'+
+    '<div>Class details</div><div>'+esc(classRow.notes||'')+'</div>';
+}
+
+function renderAccess(a){
+  const box=document.getElementById('class-access');
+  if(!a){box.innerHTML='<p class="muted">ITASA has not posted secure class-access details for this student yet.</p>';return}
+  let html='';
+  if(a.classTime)html+='<p><strong>Class time:</strong><br>'+esc(a.classTime)+'</p>';
+  if(a.note)html+='<p class="muted">'+esc(a.note)+'</p>';
+  if(a.link)html+='<a class="btn orange" target="_blank" rel="noopener" href="'+esc(a.link)+'">Join Class on Zoom</a>';
+  else html+='<p class="muted">The class join link is not available yet.</p>';
+  box.innerHTML=html;
+}
+function renderLearning(ws,st){
+  const materials=document.getElementById('materials'),progress=document.getElementById('progress');
+  const enrollments=Array.isArray(ws&&ws.enrollments)?ws.enrollments:[];
+  if(enrollments.length){
+    const e=enrollments[0]||{},sections=Array.isArray(e.sections)?e.sections:[];
+    progress.innerHTML='<p><strong>Enrollment:</strong> '+esc(e.status||st.enrollmentStatus||'Active')+'</p><p class="muted">'+sections.length+' learning section(s) currently available.</p>';
+    if(sections.length){
+      materials.innerHTML=sections.map(function(s,i){
+        const title=s.public_name||s.title||s.section_title||('Learning Section '+(i+1));
+        const items=Array.isArray(s.items)?s.items:[];
+        return '<div class="module"><strong>'+esc(title)+'</strong>'+(items.length?'<p class="muted">'+items.length+' assigned item(s)</p>':'<p class="muted">Materials will appear as ITASA assigns them.</p>')+'</div>';
+      }).join('');
+    }
+  }else{
+    progress.innerHTML='<p><strong>Enrollment status:</strong> '+esc(st.enrollmentStatus||'')+'</p><p class="muted">Your secure class access can still be used while ITASA adds learning materials to this space.</p>';
+  }
+}
+function renderCertificates(certs){
+  const box=document.getElementById('completion');
+  const rows=Array.isArray(certs&&certs.certificates)?certs.certificates:[];
+  if(!rows.length){box.innerHTML='<p class="muted">No certificate has been issued yet. Completion information will remain here as your class progresses.</p>';return}
+  box.innerHTML='<ul>'+rows.map(function(c){return '<li><strong>'+esc(c.certificate_title||c.certificate_number||'Certificate')+'</strong>'+(c.completion_date?' — '+esc(c.completion_date):'')+(c.certificate_url?' — <a target="_blank" rel="noopener" href="'+esc(c.certificate_url)+'">View certificate</a>':'')+'</li>'}).join('')+'</ul>';
+}
+async function loadIvQa(){
+    try{
+      if(!window.ItasaSharedContentSupabase)return;
+      const data=await window.ItasaSharedContentSupabase.fetchAll();
+      const qa=Array.isArray(data.iv_qa)?data.iv_qa:[];
+      const byQuestion=new Map();
+      qa.forEach(function(q){
+        const question=String(q&&q.question||'').trim(); if(!question)return;
+        const key=question.toLowerCase(),answer=String(q&&q.answer||'').trim(),prev=byQuestion.get(key);
+        if(!prev||answer.length>String(prev.answer||'').length)byQuestion.set(key,q);
+      });
+      const rows=Array.from(byQuestion.values());
+      document.getElementById('iv-qa').innerHTML=rows.length?rows.map(function(q){return '<div class="qa-item"><strong>'+esc(q.question||q.title||'IV Q&A')+'</strong><p class="muted">'+esc(q.answer||'')+'</p></div>'}).join(''):'<p class="muted">No IV Q&A is posted yet.</p>';
+    }catch(e){document.getElementById('iv-qa').innerHTML='<p class="muted">IV Q&A is temporarily unavailable.</p>'}
+  }
+
+form.addEventListener('submit',async function(ev){
+  ev.preventDefault();workspace.classList.remove('active');
+  const email=document.getElementById('email').value.trim().toLowerCase(),code=document.getElementById('code').value.trim();
+  btn.disabled=true;btn.textContent='Checking access…';showStatus('<strong>Checking your secure ITASA student access…</strong>','');
+  try{
+    const login=await window.ItasaStudentPortal.login(email,code,[]);
+    if(login.status!=='ok'||!login.student){
+      const m={pending_review:'Your Learning Center access is still pending review.',invalid_code:'The access code was not accepted.',not_found:'No matching student access was found.',invalid_credentials:'The email/access-code pair was not accepted.'};
+      showStatus('<strong>Access not opened.</strong><br>'+esc(m[login.status]||'ITASA could not validate this access right now.'),'warn');return;
+    }
+    const st=login.student;
+    if(st.programId!==PROGRAM){showStatus('<strong>This student account is valid, but it is not assigned to this class.</strong><br><a href="student-portal-cutover-preview.html">Return to Student Home</a>','warn');return}
+    document.getElementById('student-welcome').textContent='Welcome, '+((st.first_name||'').trim()||'Student');
+    renderSchedule();
+    const results=await Promise.all([window.ItasaStudentPortal.getZoomAccess(email,code),window.ItasaStudentPortal.getLearningWorkspace(email,code),window.ItasaStudentPortal.getCertificates(email,code)]);
+    renderAccess(results[0]);renderLearning(results[1],st);renderCertificates(results[2]);
+    await loadIvQa();
+    workspace.classList.add('active');showStatus('<strong>Welcome to your IV Learning Space.</strong> Your access was validated securely.','ok');document.getElementById('code').value='';workspace.scrollIntoView({behavior:'smooth',block:'start'});
+  }catch(err){console.error(err);showStatus('<strong>Unable to open this learning space right now.</strong> No student records were changed.','error')}
+  finally{btn.disabled=false;btn.textContent='Enter IV Learning Space'}
+});
+})();
+</script>
+</body></html>
