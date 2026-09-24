@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Instructor Workspace | ITASA Learning Center</title>
+<style>
+:root{--teal:#177982;--dark:#0d5961;--orange:#dd7b2d;--ink:#18343b;--muted:#64777c;--line:#d9e7e8;--soft:#f6fbfb;--warm:#fff7ec;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;color:var(--ink);background:#f8fbfb}
+*{box-sizing:border-box}body{margin:0}a{color:var(--dark)}.preview{background:#382e28;color:#fff;text-align:center;padding:10px 16px;font-weight:800}
+header{background:#fff;border-bottom:1px solid var(--line)}nav{max-width:1200px;margin:auto;padding:12px 18px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:900;color:var(--dark);margin-right:auto}.brand img{width:52px;height:52px;border-radius:50%;object-fit:contain}.brand small{display:block;color:var(--orange);font-size:.72rem;text-transform:uppercase;letter-spacing:.08em}
+main{max-width:1200px;margin:auto;padding:28px 18px 64px}.card{background:#fff;border:1px solid var(--line);border-radius:15px;padding:18px;margin:14px 0;box-shadow:0 7px 20px rgba(17,71,78,.05)}h1,h2,h3{margin:.2rem 0 .7rem}.muted{color:var(--muted)}.eyebrow{text-transform:uppercase;letter-spacing:.08em;font-size:.74rem;font-weight:900;color:var(--teal)}
+label{display:block;font-weight:800;margin:.7rem 0 .3rem}input{width:100%;padding:10px 11px;border:1px solid #b9cbcd;border-radius:9px;font:inherit}.btn,button{display:inline-block;border:0;border-radius:9px;padding:10px 13px;font:inherit;font-weight:800;cursor:pointer;background:var(--teal);color:#fff;text-decoration:none}.btn.secondary,button.secondary{background:#e9f4f4;color:var(--dark)}.btn.orange{background:var(--orange)}button[disabled]{opacity:.5}
+.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.push{margin-left:auto}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}.tabs button{background:#eaf4f4;color:var(--dark)}.tabs button.active{background:var(--teal);color:#fff}.panel{display:none}.panel.active{display:block}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.course{border-top:5px solid var(--orange)}.metric{font-size:1.7rem;font-weight:900}.tag{display:inline-block;border-radius:999px;padding:4px 8px;background:#edf5f5;font-size:.78rem;font-weight:800}.tag.good{background:#e8f6ed;color:#2d6b4b}.tag.warn{background:#fff1dc;color:#8e5619}.tag.bad{background:#fae9e9;color:#8a3131}
+.resource{border-left:4px solid #91aeb1}.readiness{border-left:4px solid var(--orange)}.notice{padding:11px 13px;border-radius:10px;background:#eef7f7;margin:10px 0}.notice.error{background:#fff0f0;color:#8a3131}.notice.good{background:#ecf7f0;color:#2b6447}
+[hidden]{display:none!important}@media(max-width:900px){.grid{grid-template-columns:1fr 1fr}}@media(max-width:650px){.grid,.grid2{grid-template-columns:1fr}.brand span{display:none}.push{margin-left:0}}
+</style>
+</head>
+<body>
+<div class="preview">PREVIEW ONLY — ITASA Instructor Workspace vNext.</div>
+<header><nav><a class="brand" href="index.html"><img src="assets/itasa-circular-brand-logo.png" alt="ITASA logo"><span>ITASA<small>Instructor Workspace</small></span></a><a href="index.html">Learning Center Home</a></nav></header>
+<main>
+  <div class="card">
+    <div class="eyebrow">Instructor Workspace</div><h1>Welcome to your ITASA work space.</h1>
+    <p class="muted">Manage your classes, teaching resources, readiness, and student-facing work from one protected staff entry point.</p>
+    <div id="login-shell"><form id="login-form" style="max-width:520px"><label for="staff-email">ITASA Staff Email</label><input id="staff-email" type="email" autocomplete="username" required><label for="staff-password">Password</label><input id="staff-password" type="password" autocomplete="current-password" required><button id="login-btn" type="submit" style="margin-top:14px">Sign In</button></form><div id="login-status" class="notice" hidden></div></div>
+    <div id="workspace-header" hidden><div class="toolbar"><div><strong id="staff-name"></strong><div id="staff-meta" class="muted"></div></div><button id="refresh" class="secondary push">Refresh</button><button id="signout" class="secondary">Sign Out</button></div></div>
+  </div>
+
+  <div id="workspace" hidden>
+    <div class="tabs">
+      <button data-panel="work" class="active">My Work</button>
+      <button data-panel="courses">My Courses</button>
+      <button data-panel="resources">Resources</button>
+      <button data-panel="updates">Clinical &amp; Professional Updates</button>
+      <button data-panel="readiness">My Readiness</button>
+      <button id="ops-tab" data-panel="ops" hidden>Operations &amp; Oversight</button>
+    </div>
+
+    <section id="panel-work" class="panel active">
+      <div class="grid">
+        <div class="card"><div class="eyebrow">Students</div><div id="work-students" class="metric">—</div><p class="muted">Student records visible to your authorized staff account.</p></div>
+        <div class="card"><div class="eyebrow">Active Classes</div><div id="work-classes" class="metric">—</div><p class="muted">Current class offerings in the Learning Center.</p></div>
+        <div class="card"><div class="eyebrow">Class Access</div><div id="work-access" class="metric">—</div><p class="muted">Class-access records currently posted.</p></div>
+      </div>
+      <div class="card"><div class="eyebrow">Teaching Work</div><h2>What needs your attention</h2><div id="attention"></div></div>
+    </section>
+
+    <section id="panel-courses" class="panel">
+      <div class="card"><div class="eyebrow">My Courses</div><h2>Class status, registration &amp; seat availability</h2><p class="muted">Countdowns change automatically as calendar days pass. Seat counts recalculate from the current student roster each time the workspace refreshes.</p><div id="course-grid" class="grid"></div></div>
+    </section>
+
+    <section id="panel-resources" class="panel">
+      <div class="card resource"><div class="eyebrow">Instructor Resource Library</div><h2>Protected teaching resources</h2><p class="muted">The first-generation resource structure is being carried forward. Resource files will be delivered through authenticated storage before production; they will not be exposed in the public deployment repository.</p>
+        <div class="grid2">
+          <div><h3>Workbooks &amp; Instructor Guides</h3><p class="muted">Course workbooks, instructor guides, guided notes, teaching materials, case studies, and approved class resources.</p></div>
+          <div><h3>Assignments &amp; Practice</h3><p class="muted">Assignments, practice questions, quizzes, exam-prep items, instructor-managed Q&amp;A, and course-specific activities.</p></div>
+          <div><h3>Course Libraries</h3><p class="muted">NCLEX resources, IV Resources/Library, Skills Check-Off materials, references, and future approved course-specific resources.</p></div>
+          <div><h3>Student Support Resources</h3><p class="muted">Class reminders, announcements, workbook instructions, preparation guidance, and student progress support.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="panel-updates" class="panel">
+      <div class="card"><div class="eyebrow">Clinical &amp; Professional Updates</div><h2>What You Need to Know</h2><p class="muted">This carries forward the first-generation professional-update/resource-center concept. Approved clinical, licensure, testing, and professional updates will be managed here rather than mixed into unrelated student spaces.</p></div>
+    </section>
+
+    <section id="panel-readiness" class="panel">
+      <div class="card readiness"><div class="eyebrow">My Readiness</div><h2>Instructor qualification &amp; readiness</h2><p class="muted">The preserved faculty-readiness, credential-verification, Nursys/e-Notify foundation, course authority, and Med Tech provider-review work remain part of the migration. This preview preserves the instructor destination while the protected readiness functions are reconnected.</p></div>
+    </section>
+
+    <section id="panel-ops" class="panel">
+      <div class="card"><div class="eyebrow">Operations &amp; Oversight</div><h2>Administrative operations</h2><p class="muted">This is separate from ordinary instructor work. Authorized administrators can open the operational workspace for registration/payment visibility, Information Session roster, class access, 1:1 requests, certificates, and audit activity.</p><a class="btn orange" href="staff-operations-preview.html">Open Operations &amp; Oversight</a></div>
+    </section>
+  </div>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/shared-content-supabase.js"></script>
+<script src="js/staff-hub-supabase.js"></script>
+<script>
+(function(){
+'use strict';
+var state={students:[],classes:[],access:[]};
+function esc(v){return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
+function show(el,msg,tone){el.hidden=false;el.className='notice '+(tone||'');el.textContent=msg}
+function hide(el){el.hidden=true;el.textContent=''}
+function programName(id){return id==='review'?'NCLEX Review & Test-Taking Strategies':id==='skills'?'Skills Refresher Class':id==='iv'?'IV Insertion & Venipuncture':id||'ITASA Class'}
+function studentView(id){return id==='review'?'nclex-learning-space-preview.html':id==='skills'?'skills-learning-space-preview.html':id==='iv'?'iv-learning-space-preview.html':'student-portal-cutover-preview.html'}
+function easternKey(value){
+  var d=value?new Date(value):new Date(); if(isNaN(d.getTime()))return '';
+  var ps=new Intl.DateTimeFormat('en-CA',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(d),o={};ps.forEach(p=>{if(p.type!=='literal')o[p.type]=p.value});return o.year+'-'+o.month+'-'+o.day;
+}
+function dayDiff(start){if(!start)return null;var a=easternKey(new Date()),b=easternKey(start);if(!a||!b)return null;var aa=new Date(a+'T12:00:00Z'),bb=new Date(b+'T12:00:00Z');return Math.round((bb-aa)/86400000)}
+function classClock(c){
+  var d=dayDiff(c.start_date),open=String(c.registration_status||'').toLowerCase()==='open';
+  if(d==null)return open?'Registration open · start date pending':'Start date pending';
+  if(d>1)return (open?'Registration open · ':'')+d+' days until first day';
+  if(d===1)return (open?'Registration open · ':'')+'class begins tomorrow';
+  if(d===0)return 'First day today'+(open?' · registration open subject to availability':'');
+  return 'Class started '+Math.abs(d)+' day'+(Math.abs(d)===1?'':'s')+' ago';
+}
+function activeStudent(s){return !/cancelled|canceled|declined|refunded|withdrawn/i.test(String(s.enrollment_status||''))}
+function seatsTaken(c){return state.students.filter(s=>activeStudent(s)&&(s.cohort_id===c.class_key||(!s.cohort_id&&s.program_id===c.program_id))).length}
+function renderCourses(){
+  document.getElementById('course-grid').innerHTML=state.classes.map(function(c){
+    var cap=Number(c.max_seats||0),taken=seatsTaken(c),remain=cap?Math.max(0,cap-taken):null;
+    return '<div class="card course"><div class="eyebrow">'+esc(programName(c.program_id))+'</div><h3>'+esc(c.name||programName(c.program_id))+'</h3>'+
+      '<p><span class="tag '+(dayDiff(c.start_date)>=0?'good':'warn')+'">'+esc(classClock(c))+'</span></p>'+
+      '<p><strong>Schedule:</strong> '+esc(c.meeting_time_label||'Pending confirmation')+'</p>'+
+      '<p><strong>Registered:</strong> '+taken+(cap?' of '+cap:'')+'<br><strong>Seats remaining:</strong> '+(remain==null?'Capacity not set':remain)+'</p>'+
+      '<div class="toolbar"><a class="btn secondary" href="'+studentView(c.program_id)+'">Review Student View</a></div></div>';
+  }).join('')||'<p class="muted">No class records available.</p>';
+}
+function renderAttention(){
+  var items=[];
+  state.classes.forEach(function(c){var cap=Number(c.max_seats||0),taken=seatsTaken(c),remain=cap?Math.max(0,cap-taken):null,d=dayDiff(c.start_date);if(remain===0)items.push(programName(c.program_id)+': class is full.');else if(remain!=null&&remain<=2)items.push(programName(c.program_id)+': only '+remain+' seat'+(remain===1?'':'s')+' remaining.');if(d!=null&&d>=0&&d<=7)items.push(programName(c.program_id)+': first day is '+(d===0?'today':d===1?'tomorrow':'in '+d+' days')+'.')});
+  document.getElementById('attention').innerHTML=items.length?'<ul>'+items.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>':'<p class="muted">No urgent class-capacity or first-day alerts right now.</p>';
+}
+function render(){
+  document.getElementById('work-students').textContent=state.students.length;
+  document.getElementById('work-classes').textContent=state.classes.length;
+  document.getElementById('work-access').textContent=state.access.length;
+  renderCourses();renderAttention();
+}
+async function load(){
+  try{
+    var all=await Promise.all([window.ItasaStaffHub.fetchStudents(),window.ItasaSharedContentSupabase.fetchCollection('classes'),window.ItasaStaffHub.fetchClassAccess()]);
+    state.students=all[0]||[];state.classes=(all[1]&&all[1].data)||[];state.access=all[2]||[];render();
+  }catch(e){console.error(e)}
+}
+document.querySelectorAll('.tabs button').forEach(function(b){b.onclick=function(){document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.getElementById('panel-'+b.dataset.panel).classList.add('active')}})
+function sync(){
+  var st=window.ItasaStaffHub.getCurrentStaff();
+  if(st){
+    document.getElementById('login-shell').hidden=true;document.getElementById('workspace-header').hidden=false;document.getElementById('workspace').hidden=false;
+    document.getElementById('staff-name').textContent=st.full_name||st.email;document.getElementById('staff-meta').textContent=st.role+' · '+st.email;
+    document.getElementById('ops-tab').hidden=String(st.role||'').toLowerCase()!=='administrator';load();
+  }else{document.getElementById('login-shell').hidden=false;document.getElementById('workspace-header').hidden=true;document.getElementById('workspace').hidden=true}
+}
+document.getElementById('login-form').onsubmit=async function(ev){ev.preventDefault();var b=document.getElementById('login-btn'),s=document.getElementById('login-status');b.disabled=true;b.textContent='Signing in…';hide(s);var r=await window.ItasaStaffHub.signIn(document.getElementById('staff-email').value,document.getElementById('staff-password').value);document.getElementById('staff-password').value='';b.disabled=false;b.textContent='Sign In';if(!r.ok)show(s,r.error&&r.error.message||'Sign-in failed.','error');else sync()}
+document.getElementById('signout').onclick=async function(){await window.ItasaStaffHub.signOut();sync()}
+document.getElementById('refresh').onclick=load;window.ItasaStaffHub.onSessionChange(function(s){if(s.resolved)sync()});
+setInterval(function(){if(window.ItasaStaffHub.getCurrentStaff())load()},60000);
+})();
+</script>
+</body></html>
