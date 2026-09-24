@@ -17,8 +17,16 @@
     .brand{font-weight:900;color:var(--teal-dark);margin-right:auto;text-decoration:none}.navlinks{display:flex;gap:14px;flex-wrap:wrap}
     .navlinks a{text-decoration:none;font-size:.92rem;font-weight:700;color:#36555b}
     main{max-width:1180px;margin:auto;padding:0 18px 64px}section{scroll-margin-top:92px;padding:50px 0}
-    .hero{display:grid;grid-template-columns:1.3fr .7fr;gap:24px;align-items:center;padding-top:52px}
-    .hero-panel{background:linear-gradient(135deg,#e9f7f6,#fff7ec);border:1px solid var(--line);border-radius:22px;padding:34px}
+    .hero{display:grid;grid-template-columns:1.05fr .95fr;gap:24px;align-items:stretch;padding-top:52px}
+    .hero-panel{background:linear-gradient(135deg,#e9f7f6,#fff7ec);border:1px solid var(--line);border-radius:22px;padding:34px;display:flex;flex-direction:column;justify-content:center}
+    .hero-image{min-height:420px;border-radius:22px;overflow:hidden;border:1px solid var(--line);box-shadow:0 10px 28px rgba(17,71,78,.10);background:#dfeeee}
+    .hero-image img,.support-image img{width:100%;height:100%;object-fit:cover;display:block}
+    .mission{font-weight:900;color:var(--teal-dark);margin-top:1rem}
+    .path-intro{text-align:center;max-width:760px;margin:34px auto 18px}
+    .support-section{display:grid;grid-template-columns:.9fr 1.1fr;gap:22px;align-items:center;margin-top:30px}
+    .support-image{min-height:340px;border-radius:18px;overflow:hidden;border:1px solid var(--line);background:#e7f1f1}
+    .support-copy{padding:8px}
+    .welcome-list{padding-left:20px}.welcome-list li{margin:.55rem 0}
     .eyebrow{text-transform:uppercase;letter-spacing:.09em;font-size:.76rem;font-weight:900;color:var(--teal)}
     h1{font-size:clamp(2rem,5vw,3.5rem);line-height:1.03;margin:.4rem 0 1rem}h2{font-size:clamp(1.55rem,3vw,2.35rem);margin:.2rem 0 .8rem}h3{margin:.2rem 0 .55rem}
     .lead{font-size:1.08rem;color:#4e666c;max-width:760px}.muted{color:var(--muted)}
@@ -41,7 +49,7 @@
     .step{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px}.step:before{counter-increment:steps;content:counter(steps);display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--teal);color:#fff;font-weight:900;margin-bottom:10px}
     footer{border-top:1px solid var(--line);padding:28px 18px;color:#60757a;text-align:center;background:#fff}
     [hidden]{display:none!important}
-    @media(max-width:900px){.hero{grid-template-columns:1fr}.grid,.course-grid{grid-template-columns:1fr 1fr}.steps{grid-template-columns:1fr 1fr}}
+    @media(max-width:900px){.hero,.support-section{grid-template-columns:1fr}.hero-image{min-height:330px}.grid,.course-grid{grid-template-columns:1fr 1fr}.steps{grid-template-columns:1fr 1fr}}
     @media(max-width:640px){.grid,.grid2,.course-grid,.steps,.form-grid{grid-template-columns:1fr}.full{grid-column:auto}.hero-panel{padding:24px}.navlinks{width:100%;overflow:auto;flex-wrap:nowrap}.navlinks a{white-space:nowrap}}
   </style>
 </head>
@@ -65,19 +73,26 @@
     <section id="home">
       <div class="hero">
         <div class="hero-panel">
-          <div class="eyebrow">ITASA Learning Center</div>
-          <h1>What brings you to ITASA today?</h1>
-          <p class="lead">Choose the path that fits where you are right now. You can register, learn more through an Information Session, or explore the courses ITASA offers.</p>
-        </div>
-        <div class="card warm">
-          <div class="eyebrow">Already registered?</div>
-          <h2 style="font-size:1.4rem">Enter your Learning Center</h2>
-          <p class="muted">Use the sign-in information ITASA sent to the email address used during registration.</p>
+          <div class="eyebrow">ITASA Learning Resource Center</div>
+          <h1>Welcome to the ITASA Learning Resource Center</h1>
+          <p class="lead">We’re glad you’re here. This space was created to support your learning journey with clear next steps, organized class access, and helpful resources designed to move you forward with confidence.</p>
+          <p class="lead">Whether you are preparing for the NCLEX, exploring a class, or getting ready for your next session, ITASA is here to support your progress.</p>
+          <div class="mission">Empowering Nurses. Elevating Healthcare.</div>
           <div class="btnrow">
-            <a class="btn" href="student-portal-cutover-preview.html">Student Sign In</a>
-            <a class="btn secondary" href="staff-operations-preview.html">Staff Sign In</a>
+            <a class="btn" href="#register">Register Now</a>
+            <a class="btn secondary" href="#information-session">Attend an Information Session</a>
+            <a class="btn secondary" href="#courses">Explore Classes</a>
           </div>
         </div>
+        <figure class="hero-image" style="margin:0">
+          <img src="https://images.unsplash.com/photo-1758270705317-3ef6142d306f?auto=format&fit=crop&w=1400&q=82" alt="A diverse group of students working together around a laptop" fetchpriority="high">
+        </figure>
+      </div>
+
+      <div class="path-intro">
+        <div class="eyebrow">Choose your next step</div>
+        <h2>What brings you to ITASA today?</h2>
+        <p class="muted">You can register when you are ready, learn more through an Information Session, or explore the classes at your own pace.</p>
       </div>
 
       <div class="grid" style="margin-top:20px">
@@ -98,6 +113,38 @@
           <h3>Explore Courses</h3>
           <p class="muted">Review available courses, schedules, formats, completion information, and pricing at your own pace.</p>
           <a class="btn secondary" href="#courses">Explore Courses</a>
+        </div>
+      </div>
+
+      <div class="support-section">
+        <figure class="support-image" style="margin:0">
+          <img src="https://images.unsplash.com/photo-1758270703928-6a8597669abc?auto=format&fit=crop&w=1200&q=82" alt="An instructor guiding students during a classroom learning session" loading="lazy">
+        </figure>
+        <div class="support-copy">
+          <div class="eyebrow">Your next step starts here</div>
+          <h2>A supportive place to learn, prepare, and move forward</h2>
+          <p class="lead">The ITASA Learning Resource Center is designed to make your next step simple. From class registration to guided support, this is where learners can connect with opportunities, receive updates, and prepare in a structured and encouraging environment.</p>
+          <ul class="welcome-list">
+            <li>Review available classes and schedules</li>
+            <li>Join an Information Session before deciding</li>
+            <li>Complete registration when you are ready</li>
+            <li>Access student learning tools after approval</li>
+            <li>Request additional test-taking support when needed</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card warm" style="margin-top:26px">
+        <div class="access-strip">
+          <div>
+            <div class="eyebrow">Already registered?</div>
+            <h2 style="font-size:1.5rem">Welcome back.</h2>
+            <p class="muted">Use the sign-in information ITASA sent to the email address used during registration to access your Learning Center.</p>
+          </div>
+          <div class="btnrow">
+            <a class="btn" href="student-portal-cutover-preview.html">Student Sign In</a>
+            <a class="btn secondary" href="staff-operations-preview.html">Staff Sign In</a>
+          </div>
         </div>
       </div>
 
