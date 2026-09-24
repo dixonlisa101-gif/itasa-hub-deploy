@@ -123,16 +123,14 @@
         <div class="support-copy">
           <div class="eyebrow">Your next step starts here</div>
           <h2>A supportive place to learn, prepare, and move forward</h2>
-          <p class="lead">The ITASA Learning Resource Center is designed to make your next step simple. ITASA classes are delivered through Zoom-based instruction, with required in-person skills check-offs at the ITASA business location when a class includes hands-on competency validation.</p>
+          <p class="lead">ITASA classes are delivered through Zoom-based instruction. Some classes also include a required in-person skills check-off or hands-on competency phase.</p>
           <ul class="welcome-list">
-            <li>Review available classes and schedules</li>
-            <li>Join an Information Session before deciding</li>
-            <li>Complete registration when you are ready</li>
-            <li>Access student learning tools after approval</li>
+            <li>Join your scheduled Zoom-based instruction</li>
             <li>Complete required in-person skills check-offs when your class includes them</li>
             <li>Arrive on time for all required in-person skills sessions</li>
-            <li>Request additional test-taking support when needed</li>
+            <li>Use the Learning Resource Center for class access, materials, updates, and support</li>
           </ul>
+          <p class="muted"><strong>Location privacy:</strong> Physical skills-location details are not displayed publicly. They are provided to registered students after payment confirmation when their class requires an in-person component.</p>
         </div>
       </div>
 
@@ -150,15 +148,6 @@
         </div>
       </div>
 
-      <div style="margin-top:30px">
-        <h2>How ITASA works</h2>
-        <div class="steps">
-          <div class="step"><strong>Choose your path.</strong><br><span class="muted">Register, attend an Information Session, or explore the courses.</span></div>
-          <div class="step"><strong>Complete the next step.</strong><br><span class="muted">Submit the appropriate Interest List or registration form.</span></div>
-          <div class="step"><strong>Receive confirmation.</strong><br><span class="muted">ITASA sends the applicable session, payment, or access information.</span></div>
-          <div class="step"><strong>Enter the Learning Center.</strong><br><span class="muted">Registered students use their secure sign-in for class materials and access.</span></div>
-        </div>
-      </div>
     </section>
 
     <section id="courses">
@@ -167,8 +156,8 @@
       <p class="lead">Review the class that fits your goals. Pricing remains closed until you choose to view it.</p>
       <div class="card soft" style="margin:14px 0 20px">
         <div class="eyebrow">How ITASA classes are delivered</div>
-        <p><strong>Online learning is delivered through Zoom.</strong> Some classes also include a required in-person skills check-off or hands-on competency phase at ITASA’s physical business location.</p>
-        <p class="muted" style="margin-bottom:0">When an in-person skills phase is required, location details are provided to the student and <strong>students are expected to arrive on time.</strong></p>
+        <p><strong>Online learning is delivered through Zoom.</strong> Some classes also include a required in-person skills check-off or hands-on competency phase.</p>
+        <p class="muted" style="margin-bottom:0">When an in-person skills phase is required, the location is provided only after registration and payment confirmation. <strong>Students are expected to arrive on time.</strong></p>
       </div>
       <div id="course-grid" class="course-grid">
         <div class="card">Loading current ITASA class information…</div>
@@ -399,7 +388,7 @@
           id==='review'
             ? 'Live online instruction via Zoom'
             : (id==='skills'||id==='iv')
-              ? 'Zoom-based instruction + required in-person skills check-off at the ITASA business location. Arrive on time for the in-person phase.'
+              ? 'Zoom-based instruction + required in-person skills check-off. Location details are provided after registration and payment confirmation. Arrive on time for the in-person phase.'
               : (row.delivery_method||'')
         )+'</p>'+
         certificate+
