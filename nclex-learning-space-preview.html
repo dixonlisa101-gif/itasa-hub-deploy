@@ -48,8 +48,9 @@
   <header>
     <nav>
       <a class="brand" href="index.html"><img src="assets/itasa-circular-brand-logo.png" alt="ITASA logo"><span>ITASA<small>Learning Center</small></span></a>
-      <a href="student-portal-cutover-preview.html">Student Sign In</a>
+      <a href="student-portal-cutover-preview.html">Student Home</a>
       <a href="index.html">Learning Center Home</a>
+      <button id="student-signout" class="btn secondary" type="button" hidden>Sign Out</button>
     </nav>
   </header>
 
@@ -62,7 +63,7 @@
 
     <section id="login-card" class="card">
       <h2>Enter your learning space</h2>
-      <p class="muted">Your credentials are validated by ITASA’s existing Supabase student-access system. This preview does not store your access code.</p>
+      <p class="muted">Sign in here only if you opened this learning space directly. If you entered through Student Sign In, your validated session will carry you here automatically.</p>
       <form id="login-form">
         <label for="email">Student email</label>
         <input id="email" type="email" autocomplete="username" required>
@@ -97,14 +98,18 @@
           <div id="class-access"><p class="muted">Checking your secure class-access details…</p></div>
         </div>
         <div class="card quick">
-          <div class="eyebrow">Learning Materials</div>
-          <h3>Your assigned materials</h3>
-          <div id="materials"><p class="muted">ITASA-assigned materials will appear here as they are made available to your enrollment.</p></div>
+          <div class="eyebrow">Student Workbook</div>
+          <h3>NCLEX Student Workbook</h3>
+          <div id="workbook-resource">
+            <p class="muted">Open the ITASA NCLEX Student Workbook from the protected student-resource file store.</p>
+            <a class="btn orange" target="_blank" rel="noopener" href="https://drive.google.com/file/d/1rNZ0wEnKDI0mPXpqs5cyTVS_0MvCHwm-/view">Open Student Workbook</a>
+            <p class="muted" style="margin-top:10px">Review build: the file is restricted in Google Drive. Production access will be tied to the registered/paid student rather than made public.</p>
+          </div>
         </div>
         <div class="card quick">
-          <div class="eyebrow">Progress</div>
-          <h3>Keep moving forward</h3>
-          <div id="progress"><p class="muted">Your current learning status will appear here.</p></div>
+          <div class="eyebrow">Learning Materials</div>
+          <h3>Assigned class materials</h3>
+          <div id="materials"><p class="muted">Instructor-assigned materials will appear here as they are made available to your class.</p></div>
         </div>
       </div>
 
@@ -132,7 +137,7 @@
 
       <div class="card">
         <div class="eyebrow">Completion</div>
-        <h2>Progress &amp; certificates</h2>
+        <h2>Completion &amp; Certificate</h2>
         <div id="completion"><p class="muted">Checking your completion information…</p></div>
       </div>
 
@@ -207,13 +212,10 @@ function classCountdown(row){
 
     function renderWorkspace(ws,st){
       const materials=document.getElementById('materials');
-      const progress=document.getElementById('progress');
       const enrollments=Array.isArray(ws&&ws.enrollments)?ws.enrollments:[];
       if(enrollments.length){
         const enrollment=enrollments[0]||{};
         const sections=Array.isArray(enrollment.sections)?enrollment.sections:[];
-        progress.innerHTML='<p><strong>Enrollment:</strong> '+esc(enrollment.status||st.enrollmentStatus||'Active')+'</p>'+
-          '<p class="muted">'+sections.length+' learning section(s) currently available through the normalized workspace.</p>';
         if(sections.length){
           materials.innerHTML=sections.map(function(s,i){
             const title=s.public_name||s.title||s.section_title||('Learning Section '+(i+1));
@@ -223,9 +225,6 @@ function classCountdown(row){
               '</div>';
           }).join('');
         }
-      }else{
-        progress.innerHTML='<p><strong>Enrollment status:</strong> '+esc(st.enrollmentStatus||'')+'</p>'+
-          '<p class="muted">The current student record is still using ITASA’s existing enrollment model. This does not block secure class access.</p>';
       }
     }
 
@@ -264,7 +263,7 @@ function classCountdown(row){
                  hay.includes('ngn');
         });
         document.getElementById('announcements').innerHTML=relevant.length
-          ? '<ul>'+relevant.slice(0,8).map(function(a){return '<li><strong>'+esc(a.title||'Announcement')+'</strong><br>'+esc(a.body||'')+'</li>'}).join('')+'</ul>'
+          ? '<ul>'+relevant.slice(0,8).map(function(a){return '<li><strong>'+esc(a.title||'Announcement')+'</strong><br>'+esc(a.body||'')+(a.resource_url?'<br><a target="_blank" rel="noopener" href="'+esc(a.resource_url)+'">'+esc(a.resource_label||'Open official resource')+'</a>':'')+'</li>'}).join('')+'</ul>'
           : '<p class="muted">No current NCLEX announcements are posted.</p>';
       }catch(err){
         document.getElementById('announcements').innerHTML='<p class="muted">Announcements are temporarily unavailable.</p>';
@@ -286,6 +285,7 @@ function classCountdown(row){
           return;
         }
         const st=login.student;
+        window.ItasaStudentPortal.setSessionCredentials(email,code);
         if(st.programId!=='review'){
           showStatus('<strong>This secure account is valid, but it is not assigned to the NCLEX Review learning space.</strong><br><a href="student-portal-cutover-preview.html">Return to Student Sign In</a>','warn');
           return;
@@ -303,8 +303,10 @@ function classCountdown(row){
         renderWorkspace(results[1],st);
         renderCertificates(results[2]);
         await loadAnnouncements();
+        document.getElementById('login-card').hidden=true;
+        document.getElementById('student-signout').hidden=false;
         workspace.classList.add('active');
-        showStatus('<strong>Welcome to your NCLEX Learning Space.</strong> Your access was validated securely.','ok');
+        showStatus('<strong>Welcome to your NCLEX Learning Space.</strong>','ok');
         document.getElementById('code').value='';
         workspace.scrollIntoView({behavior:'smooth',block:'start'});
       }catch(err){
@@ -314,6 +316,18 @@ function classCountdown(row){
         btn.disabled=false;btn.textContent='Enter NCLEX Learning Space';
       }
     });
+
+    document.getElementById('student-signout').addEventListener('click',function(){
+      window.ItasaStudentPortal.clearSessionCredentials();
+      window.location.href='student-portal-cutover-preview.html';
+    });
+
+    const cached=window.ItasaStudentPortal.getSessionCredentials();
+    if(cached){
+      document.getElementById('email').value=cached.email;
+      document.getElementById('code').value=cached.accessCode;
+      setTimeout(function(){ form.requestSubmit(); },0);
+    }
   })();
   </script>
 </body>
