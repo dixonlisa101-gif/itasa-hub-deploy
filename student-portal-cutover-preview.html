@@ -66,6 +66,7 @@
   </div>
 
   <div id="status" class="card" hidden></div>
+  <div id="learning-space" class="card" hidden></div>
   <div id="student" class="card" hidden></div>
   <div id="workspace" class="card" hidden></div>
   <div id="class-access" class="card" hidden></div>
@@ -82,6 +83,7 @@
   const form = document.getElementById('login-form');
   const btn = document.getElementById('submit-btn');
   const statusBox = document.getElementById('status');
+  const learningSpaceBox = document.getElementById('learning-space');
   const studentBox = document.getElementById('student');
   const workspaceBox = document.getElementById('workspace');
   const accessBox = document.getElementById('class-access');
@@ -198,7 +200,7 @@
 
   form.addEventListener('submit', async function(ev){
     ev.preventDefault();
-    hide(studentBox); hide(workspaceBox); hide(accessBox); hide(certBox);
+    hide(learningSpaceBox); hide(studentBox); hide(workspaceBox); hide(accessBox); hide(certBox);
     const email=document.getElementById('email').value.trim().toLowerCase();
     const code=document.getElementById('code').value.trim();
     btn.disabled=true; btn.textContent='Checking…';
@@ -219,6 +221,12 @@
       }
 
       show(statusBox,'<strong>Read-only login test passed.</strong> The existing Supabase student-access RPC accepted the credential pair.','ok');
+      if(login.student.programId==='review'){
+        show(learningSpaceBox,'<div class="eyebrow" style="font-size:.76rem;font-weight:900;text-transform:uppercase;letter-spacing:.09em;color:#1f7f85">Your Learning Space</div>'+
+          '<h2>NCLEX Review &amp; Test-Taking Strategies</h2>'+
+          '<p class="muted">Enter your dedicated NCLEX learning space for class access, announcements, learning materials, progress, and support.</p>'+
+          '<a class="community-link" href="nclex-learning-space-preview.html">Open NCLEX Learning Space</a>','ok');
+      }
       show(studentBox,studentHtml(login.student),'ok');
 
       const [ws, access, certs] = await Promise.all([
