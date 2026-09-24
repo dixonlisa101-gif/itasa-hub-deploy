@@ -18,12 +18,14 @@
     .status{border-left:5px solid var(--teal)}.ok{border-left-color:#3c8b65}.warn{border-left-color:var(--orange)}.error{border-left-color:#b74848}.workspace{display:none}.workspace.active{display:block}
     .welcome-strip{display:flex;align-items:center;gap:18px;flex-wrap:wrap}.welcome-strip img{width:84px;height:84px;border-radius:50%;object-fit:contain}.schedule{display:grid;grid-template-columns:160px 1fr;gap:8px 14px}.schedule div:nth-child(odd){font-weight:800}
     .module{border-top:1px solid var(--line);padding:14px 0}.module:first-child{border-top:0}.community{background:var(--warm);border-left:5px solid var(--orange)}.protected{background:#fffaf4;border-left:5px solid var(--orange)}.qa-item{border-top:1px solid var(--line);padding:14px 0}.qa-item:first-child{border-top:0}
+    .learning-path{counter-reset:lesson;list-style:none;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}.learning-path li{background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:16px}.learning-path li::before{counter-increment:lesson;content:counter(lesson);display:block;color:var(--teal);font-weight:900;margin-bottom:8px}.learning-path h3{font-size:1rem}.learning-path p{font-size:.92rem;line-height:1.5;margin-bottom:0}.draft-label{display:inline-block;background:var(--warm);color:#814313;border:1px solid #e9c49f;border-radius:6px;padding:4px 8px;font-size:.8rem;font-weight:800}.lesson-section{border:1px solid var(--line);border-radius:10px;padding:14px;margin:12px 0}.lesson-section summary,.review-questions summary{cursor:pointer;font-weight:800;color:var(--teal-dark);padding:6px 0}.lesson-item{border-top:1px solid var(--line);padding:14px 0}.lesson-item p{white-space:pre-line;overflow-wrap:anywhere;line-height:1.6}.lesson-type{font-size:.78rem;text-transform:uppercase;letter-spacing:.05em;color:var(--teal);font-weight:800}.review-questions{margin:16px 0}.learning-links a{margin-right:18px;display:inline-block;padding:8px 0}a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid var(--orange);outline-offset:4px}
+    @media(max-width:900px){.learning-path{grid-template-columns:1fr}.learning-path li{padding:14px}}
     footer{text-align:center;padding:24px 18px;border-top:1px solid var(--line);background:#fff;color:#60757a}[hidden]{display:none!important}
     @media(max-width:760px){.grid,.grid3{grid-template-columns:1fr}.schedule{grid-template-columns:1fr}.brand span{display:none}}
 </style>
 </head>
 <body>
-<div class="preview">PREVIEW ONLY — Secure IV Learning Space prototype. No production records are modified.</div>
+<div class="preview">IV LEARNING SPACE — Design preview. Lessons are in development; enrollment remains on hold.</div>
 <header><nav>
   <a class="brand" href="index.html"><img src="assets/itasa-circular-brand-logo.png" alt="ITASA logo"><span>ITASA<small>Learning Center</small></span></a>
   <a href="student-portal-cutover-preview.html">Student Home</a>
@@ -34,7 +36,7 @@
   <section class="hero">
     <div class="eyebrow">IV Insertion & Venipuncture</div>
     <h1>Your IV Learning Space</h1>
-    <p class="lead">This is your secure student space for ITASA IV Insertion & Venipuncture. Use it for class access, IV-specific learning materials, safety Q&A, hands-on skills preparation, competency information, and completion.</p>
+    <p class="lead">Learn the concepts, observe instructor demonstrations, practice with guidance, and prepare to demonstrate your skills. Your class access, approved materials, and completion information belong here.</p>
   </section>
 
   <section id="login-card" class="card">
@@ -60,19 +62,35 @@
       <div id="schedule-box" class="schedule"><div>Loading</div><div>Current class information…</div></div>
     </div>
 
-    <div class="grid">
-      <div class="card quick orange"><div class="eyebrow">Class Access</div><h3>Join your scheduled class</h3><div id="class-access"><p class="muted">Checking your secure class-access details…</p></div></div>
-      <div class="card quick"><div class="eyebrow">Learning Materials</div><h3>Your assigned materials</h3><div id="materials"><p class="muted">ITASA-assigned IV learning materials will appear here as they are added to your class.</p></div></div>
+    <section class="card" aria-labelledby="learning-path-title">
+      <div class="eyebrow">Start here</div><h2 id="learning-path-title">How each lesson will teach you</h2>
+      <span class="draft-label">Lesson design preview</span>
+      <p class="muted">This is the teaching sequence being developed for instructor review. The explanations, demonstrations, practice activities, and feedback still need to be authored and approved.</p>
+      <ol class="learning-path">
+        <li><h3>Learn</h3><p>Begin with a clear learning goal and a short explanation of the topic, with examples and the reasons behind each decision.</p></li>
+        <li><h3>Watch</h3><p>Follow an instructor demonstration, live or recorded, with narration explaining what to notice and why.</p></li>
+        <li><h3>Practice</h3><p>Work through a guided scenario or an instructor-supervised activity using the lesson's approved materials.</p></li>
+        <li><h3>Explain</h3><p>Describe your reasoning, receive feedback, and revisit anything that needs more practice.</p></li>
+        <li><h3>Demonstrate</h3><p>Use the instructor's checklist during supervised skills practice and competency validation.</p></li>
+      </ol>
+      <p class="muted">Review questions will support the lessons. Opening materials or reading answers does not record attendance, demonstrate a skill, or complete the course.</p>
+      <div class="learning-links"><a href="#lesson-materials">Approved learning materials</a><a href="#hands-on-learning">Hands-on preparation</a><a href="#review-questions">Review questions</a></div>
+    </section>
 
-    </div>
+    <div class="card quick orange"><div class="eyebrow">Class Access</div><h3>Join your scheduled class</h3><div id="class-access"><p class="muted">Checking your secure class-access details…</p></div></div>
+
+    <section id="lesson-materials" class="card" aria-labelledby="materials-title">
+      <div class="eyebrow">Learn with your instructor</div><h2 id="materials-title">Lessons &amp; learning materials</h2>
+      <div id="materials" aria-live="polite"><p class="muted">Checking for approved materials assigned to your IV course…</p></div>
+    </section>
 
     <div class="grid">
-      <div class="card protected"><div class="eyebrow">Hands-On Skills</div><h2>Competency phase</h2>
+      <div id="hands-on-learning" class="card protected"><div class="eyebrow">Hands-On Skills</div><h2>Practice with your instructor</h2>
         <p class="muted">Each IV class includes 4 hours of theory and 4 hours of hands-on skills. Final competency validation is included in the second class.</p>
         <p class="muted">The protected physical skills location is provided only to registered students after payment confirmation. Please arrive on time for required in-person sessions.</p>
         <div id="iv-competency"><p class="muted">Your competency checklist and instructor instructions will appear here when ITASA posts them.</p></div>
       </div>
-      <div class="card"><div class="eyebrow">IV Learning Q&amp;A</div><h2>Questions &amp; safety guidance</h2><div id="iv-qa"><p class="muted">Loading IV-specific Q&amp;A…</p></div></div>
+      <div id="review-questions" class="card"><div class="eyebrow">After the lesson</div><h2>Review &amp; discussion</h2><p class="muted">Use these existing questions to discuss what you learned with your instructor. They are supplementary references and are not a scored assessment or a competency check.</p><details class="review-questions"><summary>Open the existing IV questions</summary><div id="iv-qa"><p class="muted">Loading IV-specific Q&amp;A…</p></div></details></div>
     </div>
 
     <div class="card">
@@ -146,18 +164,23 @@ function renderAccess(a){
 }
 function renderLearning(ws,st){
   const materials=document.getElementById('materials');
-  const enrollments=Array.isArray(ws&&ws.enrollments)?ws.enrollments:[];
-  if(enrollments.length){
-    const e=enrollments[0]||{},sections=Array.isArray(e.sections)?e.sections:[];
-    if(sections.length){
-      materials.innerHTML=sections.map(function(s,i){
-        const title=s.public_name||s.title||s.section_title||('Learning Section '+(i+1));
-        const items=Array.isArray(s.items)?s.items:[];
-        return '<div class="module"><strong>'+esc(title)+'</strong>'+(items.length?'<p class="muted">'+items.length+' assigned item(s)</p>':'<p class="muted">Materials will appear as ITASA assigns them.</p>')+'</div>';
-      }).join('');
-    }
-  }else{
+  // Use only the protected RPC response; never retrieve draft curriculum directly.
+  if(!ws||ws.status!=='ok'){
+    materials.innerHTML='<p class="muted">We could not load your learning materials. Please return to Student Home and try again.</p>';return;
   }
+  const enrollments=Array.isArray(ws.enrollments)?ws.enrollments:[];
+  const course=enrollments.find(function(e){return e&&e.offering&&e.offering.offering_key==='iv_insertion_venipuncture'});
+  const sections=Array.isArray(course&&course.sections)?course.sections:[];
+  if(!sections.length){
+    materials.innerHTML='<p><strong>No approved IV lessons are available to this account yet.</strong></p><p class="muted">The course outline is in draft. Teaching explanations, demonstrations, guided activities, and feedback must be developed and approved before they can appear here.</p>';return;
+  }
+  const labels={learning:'Lesson',overview:'Course overview',orientation:'Preparation',access:'Class access',notice:'Course information',schedule:'Schedule',skills:'Supervised practice',competency:'Instructor validation',requirement:'Completion requirement',progress:'Completion information',certificate:'Certificate information'};
+  materials.innerHTML=sections.map(function(s){
+    const items=Array.isArray(s.items)?s.items:[];
+    return '<details class="lesson-section"><summary>'+esc(s.title||'Learning section')+'</summary>'+(s.description?'<p class="muted">'+esc(s.description)+'</p>':'')+(items.length?items.map(function(item){
+      return '<article class="lesson-item"><div class="lesson-type">'+esc(labels[item.item_type]||'Learning material')+'</div><h3>'+esc(item.title||'Assigned material')+'</h3>'+(item.description?'<p>'+esc(item.description)+'</p>':'<p class="muted">Your instructor will provide the teaching material for this item.</p>')+'</article>';
+    }).join(''):'<p class="muted">No approved items have been posted in this section yet.</p>')+'</details>';
+  }).join('');
 }
 function renderCertificates(certs){
   const box=document.getElementById('completion');
