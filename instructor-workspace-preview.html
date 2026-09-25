@@ -300,16 +300,17 @@ function renderAttention(){
     if(d!=null&&d>=0&&d<=7)items.push(programName(c.program_id)+': first day is '+(d===0?'today':d===1?'tomorrow':'in '+d+' days')+'.');
   });
   var onePending=(state.one||[]).filter(function(r){return r.status==='Pending'}).length;
-  if(onePending)items.push(onePending+' pending 1:1 Test-Taking Strategies request'+(onePending===1?' needs':'s need')+' instructor review.');
+  if(onePending)items.push(onePending+' pending 1:1 Personalized Learning request'+(onePending===1?' needs':'s need')+' instructor review.');
   (state.skills||[]).forEach(function(r){
-    var name=r.student_name||'Student';
+    var name=r.student_name||'Student',session=r.skills_session;
     if(r.remediation_required)items.push(r.class_name+': '+name+' requires targeted skills remediation/reassessment.');
-    else if(r.skills_session&&r.skills_session.status==='scheduled')items.push(r.class_name+': '+name+' has a skills check-off scheduled '+(r.skills_session.scheduled_at?'for '+fmtDate(r.skills_session.scheduled_at):'')+'.');
-    else if(r.skills_ready&&!r.skills_session)items.push(r.class_name+': '+name+' is ready for skills check-off scheduling.');
-    else if(r.offering_key==='iv_insertion_venipuncture')items.push('IV: '+name+' is still completing the required 80% knowledge assessment before skills readiness.');
-    else items.push('Medical Technician Class: '+name+' has passed '+(r.assessments_passed||0)+' of '+(r.assessments_total||0)+' required module assessments.');
+    else if(session&&session.status==='scheduled')items.push(r.class_name+': '+name+' has a scheduled skills check-off.');
+    else if(session&&session.status==='in_progress')items.push(r.class_name+': '+name+' has an in-progress skills check-off that needs completion.');
+    else if(r.skills_ready&&!session)items.push(r.class_name+': '+name+' is ready for skills check-off scheduling.');
   });
-  document.getElementById('attention').innerHTML=items.length?'<ul>'+items.map(function(x){return '<li>'+esc(x)+'</li>'}).join('')+'</ul>':'<p class="muted">Nothing currently requires instructor action.</p>';
+  document.getElementById('attention').innerHTML=items.length
+    ?'<ul>'+items.map(function(x){return '<li>'+esc(x)+'</li>'}).join('')+'</ul>'
+    :'<p class="muted">Nothing currently requires instructor action.</p>';
 }
 function render(){
   document.getElementById('work-students').textContent=state.students.length;
