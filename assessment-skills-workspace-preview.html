@@ -62,7 +62,7 @@ function renderRoster(){
    var scores=Array.isArray(r.best_scores)?r.best_scores:[];
    var scoreBlock=mt
      ? '<div class="notice"><strong>Module assessments:</strong> '+esc(r.assessments_passed)+' of '+esc(r.assessments_total)+' passed at 80% or higher'+(scores.length?'<div class="scoreline muted">'+scores.map(function(s,i){return 'Module '+(i+1)+': '+(s.passed?'Passed '+esc(s.best_score)+'%':s.best_score!=null?'Best '+esc(s.best_score)+'%':'Not taken')}).join(' · ')+'</div>':'')+'</div>'
-     : '<div class="notice"><strong>Written assessment:</strong> Required · 80% or higher to pass.</div>';
+     : '<div class="notice"><strong>IV Final Knowledge Assessment:</strong> '+(scores.length?(scores[0].passed?'Passed · '+esc(scores[0].best_score)+'%':scores[0].best_score!=null?'Not yet passed · best score '+esc(scores[0].best_score)+'% · 80% required':'Not taken · 80% required'):'Not taken · 80% required')+'</div>';
 
    var session=r.skills_session;
    var checklistLink=mt?'medical-technician-skills-checklist-print.html':'iv-skills-checklist-print.html';
