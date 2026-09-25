@@ -91,10 +91,17 @@
       </div>
 
       <div class="card">
+        <div class="eyebrow">Your Class Hub</div>
+        <h2>Announcements, assignments &amp; learning materials</h2>
+        <p class="muted">Your instructor uses this space for class announcements, assignments, workbook instructions, course materials/resources, and instructor communications.</p>
+        <div id="course-hub-content"><p class="muted">Loading your class Hub…</p></div>
+      </div>
+
+      <div class="card">
         <div class="eyebrow">Additional Learning Support</div>
-        <h2>1:1 Test-Taking Strategies Support</h2>
-        <p class="muted">Need individual test-taking strategy support? Submit a request from the ITASA Learning Center. After ITASA approves a date/time, you will receive your 1:1 access code and can return to your dedicated 1:1 Student Space for the appointment, payment step, and session access.</p>
-        <div class="btnrow"><a class="btn secondary" href="index.html#one-on-one">Request a 1:1 Session</a><a class="btn secondary" href="one-on-one-learning-space-preview.html">Open Approved 1:1 Student Space</a></div>
+        <h2>ITASA Personalized Learning Session - 1:1</h2>
+        <p class="muted">Need individual learning or test-taking support? Submit a request from the ITASA Learning Center. After ITASA confirms a date/time, you will receive your Personalized Learning access code and can return to your dedicated space for the appointment, payment step, and session access.</p>
+        <div class="btnrow"><a class="btn secondary" href="index.html#one-on-one">Request a Personalized Learning Session</a><a class="btn secondary" href="one-on-one-learning-space-preview.html">Open Approved Personalized Learning Space</a></div>
       </div>
 
       <div class="card community">
@@ -115,7 +122,7 @@
   <footer>Innovation Training &amp; Staffing Agency · Empowering Nurses. Elevating Healthcare.</footer>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/student-portal-supabase.js?v=20260925-4"></script>
+  <script src="js/student-portal-supabase.js?v=20260925-7"></script>
   <script src="js/shared-content-supabase.js?v=20260925-4"></script>
   <script>
   (function(){
@@ -207,6 +214,31 @@ function classCountdown(row){
         '<p class="feed-meta">Current Events refresh automatically from ITASA medical and professional knowledge sources.</p>';
     }
 
+    function hubTypeLabel(v){
+      return v==='announcement'?'Announcements':
+        v==='assignment'?'Assignments':
+        v==='workbook_instruction'?'Workbook Instructions':
+        v==='material'?'Course Materials':
+        v==='resource'?'Course Resources':
+        v==='instructor_message'?'Instructor Communications':'Class Information';
+    }
+    function renderCourseHubItems(payload){
+      var box=document.getElementById('course-hub-content'),items=payload&&payload.status==='ok'&&Array.isArray(payload.items)?payload.items:[];
+      if(!items.length){box.innerHTML='<p class="muted">No instructor-posted Hub items are available for your class yet.</p>';return}
+      var order=['announcement','instructor_message','assignment','workbook_instruction','material','resource'];
+      box.innerHTML=order.map(function(type){
+        var rows=items.filter(function(x){return x.item_type===type});
+        if(!rows.length)return '';
+        return '<section style="margin-top:16px"><h3>'+esc(hubTypeLabel(type))+'</h3>'+rows.map(function(x){
+          return '<article class="feed-item"><h3>'+esc(x.title||'Class item')+'</h3>'+
+            (x.due_at?'<div class="feed-meta"><strong>Due:</strong> '+esc(fmtDate(x.due_at))+'</div>':'')+
+            (x.body?'<p>'+esc(x.body)+'</p>':'')+
+            (x.resource_url?'<p><a target="_blank" rel="noopener" href="'+esc(x.resource_url)+'">Open linked item</a></p>':'')+
+            '</article>';
+        }).join('')+'</section>';
+      }).join('');
+    }
+
     function renderSpace(st){
       const id=st.programId||'';
       const row=classFor(id);
@@ -262,6 +294,8 @@ function classCountdown(row){
         renderSpace(st);
         const feed=await loadStudentFeedsDirect(email,code);
         renderStudentFeeds(feed);
+        const hubItems=await window.ItasaStudentPortal.getCourseHubItems(email,code);
+        renderCourseHubItems(hubItems);
         loginCard.hidden=true;
         signout.hidden=false;
         document.getElementById('student-view-label').textContent='Student Home';
