@@ -2,7 +2,7 @@
 window.ItasaIvCourse = { mount(container, data, options) {
   'use strict';
   options = options || {};
-  container.innerHTML = "<div id=\"itasa-iv-course\">\n\n<p class=\"iv-preview\">First teaching draft \u00b7 Enrollment on hold \u00b7 Preview responses stay in this page only</p>\n<section class=\"iv-app\" aria-label=\"ITASA IV course draft\">\n<header class=\"iv-top\"><div class=\"iv-brand\">ITASA<small>Learning Center</small></div><div><button type=\"button\" class=\"iv-link cursor-interaction\" data-action=\"home\">All modules</button><button type=\"button\" class=\"iv-link cursor-interaction\" data-action=\"instructor\">Teaching notes</button></div></header>\n<main class=\"iv-body\">\n<section id=\"iv-home\"><div class=\"iv-label\">IV INSERTION &amp; VENIPUNCTURE</div><h2>Learn with purpose.</h2><p class=\"iv-sub\">Six modules. Eighteen lessons. One connected learning journey.</p><p id=\"iv-intro\"></p><div id=\"iv-modules\" class=\"iv-grid\"></div><div class=\"iv-actions\"><button type=\"button\" class=\"iv-button primary cursor-interaction\" data-action=\"capstone\">Open the final practice exercise</button><span class=\"iv-meta\">Knowledge practice + supervised skills preparation</span></div></section>\n<section id=\"iv-reader\" hidden><button type=\"button\" class=\"iv-link cursor-interaction\" data-action=\"home\">\u2190 All modules</button><div id=\"iv-module-number\" class=\"iv-label\"></div><h2 id=\"iv-module-heading\"></h2><p id=\"iv-module-goal\" class=\"iv-sub\"></p><nav id=\"iv-section-nav\" class=\"iv-controls\" aria-label=\"Module activities\"></nav><div id=\"iv-content\"></div><details><summary class=\"cursor-interaction\">References for this module</summary><ul id=\"iv-references\"></ul></details></section>\n<section id=\"iv-capstone\" hidden></section>\n<section id=\"iv-instructor\" hidden></section>\n<div id=\"iv-live\" class=\"iv-sr\" aria-live=\"polite\"></div>\n</main></section>\n\n\n</div>\n";
+  container.innerHTML = "<div id=\"itasa-iv-course\">\n\n<p class=\"iv-preview\">First teaching draft \u00b7 Enrollment on hold \u00b7 Preview responses stay in this page only</p>\n<section class=\"iv-app\" aria-label=\"ITASA IV course draft\">\n<header class=\"iv-top\"><div class=\"iv-brand\">ITASA<small>Learning Center</small></div><div><button type=\"button\" class=\"iv-link cursor-interaction\" data-action=\"student-home\">← Student Home</button><button type=\"button\" class=\"iv-link cursor-interaction\" data-action=\"home\">All Modules</button><button type=\"button\" class=\"iv-link cursor-interaction\" data-action=\"instructor\">Teaching notes</button></div></header>\n<main class=\"iv-body\">\n<section id=\"iv-home\"><div class=\"iv-label\">IV INSERTION &amp; VENIPUNCTURE</div><h2>Learn with purpose.</h2><p class=\"iv-sub\">Six modules. Eighteen lessons. One connected learning journey.</p><p id=\"iv-intro\"></p><div id=\"iv-modules\" class=\"iv-grid\"></div><div class=\"iv-actions\"><button type=\"button\" class=\"iv-button primary cursor-interaction\" data-action=\"capstone\">Open the final practice exercise</button><span class=\"iv-meta\">Knowledge practice + supervised skills preparation</span></div></section>\n<section id=\"iv-reader\" hidden><div class=\"iv-controls\"><button type=\"button\" class=\"iv-link cursor-interaction\" data-action=\"home\">← All Modules</button><button type=\"button\" class=\"iv-link cursor-interaction\" data-action=\"student-home\">← Student Home</button></div><div id=\"iv-module-number\" class=\"iv-label\"></div><h2 id=\"iv-module-heading\"></h2><p id=\"iv-module-goal\" class=\"iv-sub\"></p><nav id=\"iv-section-nav\" class=\"iv-controls\" aria-label=\"Module activities\"></nav><div id=\"iv-content\"></div><details><summary class=\"cursor-interaction\">References for this module</summary><ul id=\"iv-references\"></ul></details></section>\n<section id=\"iv-capstone\" hidden></section>\n<section id=\"iv-instructor\" hidden></section>\n<div id=\"iv-live\" class=\"iv-sr\" aria-live=\"polite\"></div>\n</main></section>\n\n\n</div>\n";
   const root=container.querySelector("#itasa-iv-course");
   const $=id=>root.querySelector('#'+id);
   const teaching = options.teachingNotes === true && Array.isArray(data.instructorNotes);
@@ -10,15 +10,47 @@ window.ItasaIvCourse = { mount(container, data, options) {
   root.querySelector('.iv-preview').textContent = options.review ? 'IV course draft · Revision 7 · Enrollment on hold · Practice responses are not saved' : 'IV course · Practice responses are not saved';
   const names=['Learn','Walkthrough','Patient case','Knowledge check','Skills practice'];
   const keys=['learn','walk','case','check','skills'];
-  const state={module:0,section:'learn',lesson:0,scene:0,answers:{},reflections:{},skills:{},sequences:{},phaseQuestions:{}};
+  const studentKey=String(options.studentKey||'review').replace(/[^a-zA-Z0-9_-]/g,'_');
+  const POSITION_KEY='itasa_iv_position_v1_'+studentKey;
+  const state={module:0,section:'learn',lesson:0,scene:0,answers:{},reflections:{},skills:{},sequences:{},phaseQuestions:{},modulePositions:{}};
+  let currentView='home';
   const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const button=(text,action,value='',primary=false)=>'<button type="button" class="iv-button '+(primary?'primary ':'')+'cursor-interaction" data-action="'+action+'" data-value="'+esc(value)+'">'+esc(text)+'</button>';
   const paragraphs=arr=>arr.map(p=>'<p>'+esc(p)+'</p>').join('');
   const list=arr=>'<ul>'+arr.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>';
   const announce=text=>$('iv-live').textContent=text;
-  function view(name){['home','reader','capstone','instructor'].forEach(x=>$('iv-'+x).hidden=x!==name);}
+  function savePosition(){
+    try{
+      state.modulePositions[state.module]={section:state.section,lesson:state.lesson,scene:state.scene};
+      sessionStorage.setItem(POSITION_KEY,JSON.stringify({module:state.module,section:state.section,lesson:state.lesson,scene:state.scene,currentView:currentView,modulePositions:state.modulePositions}));
+    }catch(e){}
+  }
+  function restorePosition(){
+    try{
+      const raw=sessionStorage.getItem(POSITION_KEY);if(!raw)return false;
+      const s=JSON.parse(raw)||{};
+      state.modulePositions=s.modulePositions&&typeof s.modulePositions==='object'?s.modulePositions:{};
+      const m=Number(s.module);
+      if(Number.isInteger(m)&&m>=0&&m<data.modules.length)state.module=m;
+      const p=state.modulePositions[state.module]||s;
+      state.lesson=Math.max(0,Math.min(Number(p.lesson)||0,data.modules[state.module].lessons.length-1));
+      state.scene=Math.max(0,Math.min(Number(p.scene)||0,data.modules[state.module].story.length-1));
+      if(keys.includes(p.section))state.section=p.section;
+      currentView=s.currentView||'home';
+      return true;
+    }catch(e){return false}
+  }
+  function view(name){currentView=name;['home','reader','capstone','instructor'].forEach(x=>$('iv-'+x).hidden=x!==name);savePosition();}
   function home(){view('home');announce('Six IV course modules.');}
-  function openModule(i){state.module=i;state.lesson=0;state.scene=0;state.section='learn';view('reader');render();}
+  function openModule(i){
+    state.modulePositions[state.module]={section:state.section,lesson:state.lesson,scene:state.scene};
+    state.module=i;
+    const p=state.modulePositions[i]||{};
+    state.lesson=Math.max(0,Math.min(Number(p.lesson)||0,data.modules[i].lessons.length-1));
+    state.scene=Math.max(0,Math.min(Number(p.scene)||0,data.modules[i].story.length-1));
+    state.section=keys.includes(p.section)?p.section:'learn';
+    view('reader');render();
+  }
   function refs(ids){return ids.map(id=>data.sources.find(s=>s.id===id)).filter(Boolean).map(s=>'<li><a href="'+esc(s.url)+'" target="_blank" rel="noopener noreferrer">'+esc(s.title)+'</a><div class="iv-meta">'+esc(s.note)+'</div></li>').join('');}
   function sequenceState(){const key=data.modules[state.module].id+'-'+state.lesson;return state.sequences[key]||(state.sequences[key]={order:[],checked:false});}
   function tryIt(lesson){
@@ -54,6 +86,7 @@ window.ItasaIvCourse = { mount(container, data, options) {
       html='<article class="iv-panel"><h3>Bring this to supervised practice</h3><p>Use these prompts to prepare questions for your instructor. Checking a box here does not validate a skill.</p><div class="iv-checklist">'+m.skills.map((s,i)=>'<label><input type="checkbox" data-skill="'+i+'" '+(state.skills[m.id+'-'+i]?'checked':'')+'><span>'+esc(s)+'</span></label>').join('')+'</div></article><div class="iv-actions">'+button('Back to modules','home')+button(state.module<data.modules.length-1?'Next module →':'Final practice exercise →',state.module<data.modules.length-1?'module':'capstone',state.module+1,true)+'</div>';
     }
     $('iv-content').innerHTML=html;$('iv-references').innerHTML=refs(m.sources);announce(m.title+' — '+names[keys.indexOf(selected)]);
+    savePosition();
     if (options.rememberLocation) history.replaceState(null, '', '#module='+(state.module+1)+'&lesson='+(state.lesson+1)+'&section='+state.section);
   }
   function instructor(){
@@ -69,6 +102,7 @@ window.ItasaIvCourse = { mount(container, data, options) {
   root.addEventListener('click',event=>{
     const b=event.target.closest('button[data-action]');if(!b||!root.contains(b))return;
     const a=b.dataset.action,v=b.dataset.value;
+    if(a==='student-home'){savePosition();window.location.href='student-portal-cutover-preview.html?stay=1';return;}
     if(a==='home')return home();if(a==='module')return openModule(Number(v));if(a==='instructor')return instructor();if(a==='capstone')return capstone();
     if(a==='section'){state.section=v;render();return;}
     if(a==='lesson'){state.lesson=Number(v);render();return;}
@@ -94,8 +128,11 @@ window.ItasaIvCourse = { mount(container, data, options) {
   });
   root.addEventListener('input',event=>{const el=event.target;if(el.dataset.reflection)state.reflections[el.dataset.reflection]=el.value;if(el.dataset.phaseQuestion)state.phaseQuestions[el.dataset.phaseQuestion]=el.value;});
   root.addEventListener('change',event=>{const el=event.target;if(el.dataset.skill!==undefined)state.skills[data.modules[state.module].id+'-'+el.dataset.skill]=el.checked;});
-  home();
-  if (options.rememberLocation) {
+  const restored=restorePosition();
+  if(restored&&currentView==='reader'){view('reader');render();}
+  else if(restored&&currentView==='capstone'){capstone();}
+  else home();
+  if (!restored && options.rememberLocation) {
     const route = new URLSearchParams(location.hash.slice(1));
     const moduleIndex = Number(route.get('module')) - 1;
     if (Number.isInteger(moduleIndex) && moduleIndex >= 0 && moduleIndex < data.modules.length) {
@@ -106,5 +143,5 @@ window.ItasaIvCourse = { mount(container, data, options) {
       render();
     }
   }
-  return { destroy() { container.replaceChildren(); } };
+  return { destroy() { savePosition(); container.replaceChildren(); } };
 }};
