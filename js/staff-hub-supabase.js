@@ -331,6 +331,23 @@
     return result.data || { status: 'error' };
   }
 
+
+  async function submitInstructorExperienceAttestation(payload) {
+    requireStaff();
+    payload = payload || {};
+    var result = await client.rpc('submit_my_instructor_experience_attestation', {
+      p_evidence_key: payload.evidence_key || '',
+      p_organization_name: payload.organization_name || '',
+      p_role_or_context: payload.role_or_context || '',
+      p_experience_start: payload.experience_start || null,
+      p_experience_end: payload.experience_end || null,
+      p_is_current_experience: !!payload.is_current_experience,
+      p_evidence_summary: payload.evidence_summary || ''
+    });
+    if (result.error) throw result.error;
+    return result.data || { status: 'error' };
+  }
+
   async function fetchAssessmentSkillsRoster() {
     requireOperator();
     var result = await client.rpc('get_assessment_skills_roster');
@@ -400,6 +417,7 @@
     fetchAuditLog: fetchAuditLog,
     fetchInstructorReadiness: fetchInstructorReadiness,
     acknowledgeInstructorRequirement: acknowledgeInstructorRequirement,
+    submitInstructorExperienceAttestation: submitInstructorExperienceAttestation,
     fetchAssessmentSkillsRoster: fetchAssessmentSkillsRoster,
     fetchKnowledgeFeed: fetchKnowledgeFeed,
     fetchNclexCompletionRoster: fetchNclexCompletionRoster,
