@@ -164,9 +164,12 @@ function renderAccess(a){
   else html+='<p class="muted">The class join link is not available yet.</p>';
   box.innerHTML=html;
 }
-function renderLearning(ws,st){
+function renderLearning(ws,st,preview){
   const materials=document.getElementById('materials');
-  // Use only the protected RPC response; never retrieve draft curriculum directly.
+  if(preview&&preview.status==='ok'&&preview.curriculum&&window.ItasaIvCourse){
+    window.ItasaIvCourse.mount(materials,preview.curriculum,{review:false,teachingNotes:false,rememberLocation:true});return;
+  }
+  // Use only protected RPC responses; draft preview is limited server-side to the IV REVIEW TEST account.
   if(!ws||ws.status!=='ok'){
     materials.innerHTML='<p class="muted">We could not load your learning materials. Please return to Student Home and try again.</p>';return;
   }
@@ -225,8 +228,14 @@ form.addEventListener('submit',async function(ev){
     if(st.programId!==PROGRAM){showStatus('<strong>This student account is valid, but it is not assigned to this class.</strong><br><a href="student-portal-cutover-preview.html">Return to Student Home</a>','warn');return}
     document.getElementById('student-welcome').textContent='Welcome, '+((st.first_name||'').trim()||'Student');
     renderSchedule();
-    const results=await Promise.all([window.ItasaStudentPortal.getZoomAccess(email,code),window.ItasaStudentPortal.getLearningWorkspace(email,code),window.ItasaStudentPortal.getCertificates(email,code)]);
-    renderAccess(results[0]);renderLearning(results[1],st);renderCertificates(results[2]);
+    const isIvReviewTest=st.programId===PROGRAM&&String(st.enrollmentStatus||'').trim().toLowerCase()==='review test';
+    const results=await Promise.all([
+      window.ItasaStudentPortal.getZoomAccess(email,code),
+      window.ItasaStudentPortal.getLearningWorkspace(email,code),
+      window.ItasaStudentPortal.getCertificates(email,code),
+      isIvReviewTest?window.ItasaStudentPortal.getIvReviewPreview(email,code):Promise.resolve(null)
+    ]);
+    renderAccess(results[0]);renderLearning(results[1],st,results[3]);renderCertificates(results[2]);
     await loadIvQa();
     document.getElementById('login-card').hidden=true;document.getElementById('student-signout').hidden=false;workspace.classList.add('active');showStatus('<strong>Welcome to your IV Learning Space.</strong>','ok');document.getElementById('code').value='';workspace.scrollIntoView({behavior:'smooth',block:'start'});
   }catch(err){console.error(err);showStatus('<strong>Unable to open this learning space right now.</strong> No student records were changed.','error')}
