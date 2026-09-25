@@ -113,7 +113,7 @@
     if (isFirstDay(classRow)) return cfg.options.filter(function (o) { return o.key === 'full'; });
     var all = cfg.options.slice();
     if (promoIsActive(cfg.promo)) all = all.concat(cfg.promo.options);
-    return all;
+    return all.filter(function (o) { return !!checkoutFor(courseId, o.key); });
   }
 
   var currentCheckoutLinks = {};
@@ -129,8 +129,7 @@
         .eq('is_current', true);
       if (response.error) return;
       (response.data || []).forEach(function (row) {
-        if (['review', 'skills'].indexOf(row.program_id) === -1 ||
-            ['full', '2pay'].indexOf(row.payment_option) === -1 ||
+        if (['review', 'skills', 'iv'].indexOf(row.program_id) === -1 ||
             Number(row.payment_number) !== 1 ||
             row.checkout_stage !== 'registration' || row.is_current !== true ||
             !/^https:\/\/buy[.]stripe[.]com\/[A-Za-z0-9]+$/.test(row.checkout_url || '')) return;
@@ -143,12 +142,7 @@
   }
 
   function checkoutFor(courseId, paymentOptionKey) {
-    if (courseId === 'review' || courseId === 'skills') {
-      return currentCheckoutLinks[courseId + ':' + paymentOptionKey] || null;
-    }
-    var cfg = PAYMENT_CONFIG[courseId];
-    if (!cfg || paymentOptionKey !== 'full') return null;
-    return cfg.checkoutUrl || null;
+    return currentCheckoutLinks[courseId + ':' + paymentOptionKey] || null;
   }
 
   async function getClasses() {
