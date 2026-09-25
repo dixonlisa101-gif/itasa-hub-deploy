@@ -131,7 +131,9 @@
 <footer>Innovation Training &amp; Staffing Agency · Empowering Nurses. Elevating Healthcare.</footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="stylesheet" href="css/skills-course-reader.css?v=1">
 <script src="js/student-portal-supabase.js"></script>
+<script src="js/skills-course-reader.js?v=1"></script>
 <script src="js/shared-content-supabase.js"></script>
 <script>
 (function(){
@@ -185,8 +187,11 @@ function renderAccess(a){
   else html+='<p class="muted">The class join link is not available yet.</p>';
   box.innerHTML=html;
 }
-function renderLearning(ws,st){
+function renderLearning(ws,st,preview){
   const materials=document.getElementById('materials');
+  if(preview&&preview.status==='ok'&&preview.curriculum&&window.ItasaSkillsCourse){
+    window.ItasaSkillsCourse.mount(materials,preview.curriculum);return;
+  }
   const enrollments=Array.isArray(ws&&ws.enrollments)?ws.enrollments:[];
   if(enrollments.length){
     const e=enrollments[0]||{},sections=Array.isArray(e.sections)?e.sections:[];
@@ -236,8 +241,14 @@ form.addEventListener('submit',async function(ev){
     if(st.programId!==PROGRAM){showStatus('<strong>This student account is valid, but it is not assigned to this class.</strong><br><a href="student-portal-cutover-preview.html">Return to Student Home</a>','warn');return}
     document.getElementById('student-welcome').textContent='Welcome, '+((st.first_name||'').trim()||'Student');
     renderSchedule();
-    const results=await Promise.all([window.ItasaStudentPortal.getZoomAccess(email,code),window.ItasaStudentPortal.getLearningWorkspace(email,code),window.ItasaStudentPortal.getCertificates(email,code)]);
-    renderAccess(results[0]);renderLearning(results[1],st);renderCertificates(results[2]);
+    const isSkillsReviewTest=st.programId===PROGRAM&&String(st.enrollmentStatus||'').trim().toLowerCase()==='review test';
+    const results=await Promise.all([
+      window.ItasaStudentPortal.getZoomAccess(email,code),
+      window.ItasaStudentPortal.getLearningWorkspace(email,code),
+      window.ItasaStudentPortal.getCertificates(email,code),
+      isSkillsReviewTest?window.ItasaStudentPortal.getSkillsReviewPreview(email,code):Promise.resolve(null)
+    ]);
+    renderAccess(results[0]);renderLearning(results[1],st,results[3]);renderCertificates(results[2]);
     await loadClassAnnouncements();
     document.getElementById('login-card').hidden=true;document.getElementById('student-signout').hidden=false;workspace.classList.add('active');showStatus('<strong>Welcome to your Skills Refresher Learning Space.</strong>','ok');document.getElementById('code').value='';workspace.scrollIntoView({behavior:'smooth',block:'start'});
   }catch(err){console.error(err);showStatus('<strong>Unable to open this learning space right now.</strong> No student records were changed.','error')}
