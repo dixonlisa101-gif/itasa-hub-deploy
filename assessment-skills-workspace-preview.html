@@ -43,6 +43,8 @@ label{display:block;font-weight:800;margin:.7rem 0 .3rem}input,select,textarea{w
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/staff-hub-supabase.js"></script>
 <script src="js/assessment-skills-staff.js"></script>
+<script src="js/skills-scheduling-v2.js"></script>
+<script src="js/skills-evidence.js"></script>
 <script>
 (function(){
 'use strict';
@@ -63,14 +65,15 @@ function renderRoster(){
      : '<div class="notice"><strong>Written assessment:</strong> Not required by the current IV completion policy.</div>';
 
    var session=r.skills_session;
+   var checklistLink=mt?'medical-technician-skills-checklist-print.html':'iv-skills-checklist-print.html';
    var skills=session
      ? '<p><strong>Skills Check-Off:</strong> '+tag(String(session.status||'scheduled').replace(/_/g,' '),session.status==='completed'?'good':'warn')+'</p>'+
-       (session.scheduled_at?'<p class="muted"><strong>Scheduled:</strong> '+esc(fmt(session.scheduled_at))+'</p>':'')+
+       (session.scheduled_at?'<p class="muted"><strong>Scheduled:</strong> '+esc(fmt(session.scheduled_at))+(session.scheduled_end_at?' - '+esc(fmt(session.scheduled_end_at)):'')+'</p>':'')+
        (session.location?'<p class="muted"><strong>Location:</strong> '+esc(session.location)+'</p>':'')+
-       '<button data-open-session="'+esc(session.session_id)+'">Open Skills Check-Off</button>'
+       '<div class="toolbar"><button data-open-session="'+esc(session.session_id)+'">Open Skills Check-Off</button><a class="btn secondary" target="_blank" href="'+checklistLink+'">Print Skills Checklist</a></div>'
      : '<p><strong>Skills readiness:</strong> '+(r.skills_ready?tag('Ready','good'):tag('Not ready','warn'))+'</p>'+
-       (r.planned_competency_date?'<p class="muted">Planned IV competency date: '+esc(r.planned_competency_date)+'</p>':'')+
-       '<div class="grid2"><div><label>Date & time</label><input type="datetime-local" data-dt></div><div><label>Location</label><input data-location placeholder="Enter skills location"></div></div>'+
+       (r.planned_competency_date?'<p class="muted"><strong>Planned skills date:</strong> '+esc(r.planned_competency_date)+'</p>':'')+
+       '<div class="grid2"><div><label>Start date & time</label><input type="datetime-local" data-start></div><div><label>End date & time</label><input type="datetime-local" data-end></div><div><label>Location</label><input data-location placeholder="Enter skills location"></div><div><label>Instructor print copy</label><a class="btn secondary" target="_blank" href="'+checklistLink+'">Print Skills Checklist</a></div></div>'+
        '<button data-schedule="'+esc(r.student_enrollment_id)+'" '+(!r.skills_ready?'disabled':'')+' style="margin-top:8px">Schedule Skills Check-Off</button>'+
        (!r.skills_ready?'<p class="muted">The Medical Technician Class online requirements must be complete before scheduling.</p>':'');
 
@@ -79,12 +82,16 @@ function renderRoster(){
 
  box.querySelectorAll('[data-schedule]').forEach(function(btn){
    btn.onclick=async function(){
-     var row=btn.closest('[data-row]'),dt=row.querySelector('[data-dt]').value,loc=row.querySelector('[data-location]').value,s=document.getElementById('page-status');hide(s);
-     if(!dt){show(s,'Choose the skills check-off date and time first.','error');return}
+     var row=btn.closest('[data-row]'),start=row.querySelector('[data-start]').value,end=row.querySelector('[data-end]').value,loc=row.querySelector('[data-location]').value,s=document.getElementById('page-status');hide(s);
+     if(!start||!end){show(s,'Choose the skills check-off start and end time first.','error');return}
      btn.disabled=true;
      try{
-       var r=await window.ItasaAssessmentSkillsStaff.scheduleSkills(btn.dataset.schedule,new Date(dt).toISOString(),loc);
-       if(!r||r.status!=='scheduled')throw new Error((r&&r.status)||'The skills check-off could not be scheduled.');
+       var r=await window.ItasaSkillsScheduleV2.schedule(btn.dataset.schedule,new Date(start).toISOString(),new Date(end).toISOString(),loc);
+       if(!r||r.status!=='scheduled'){
+         if(r&&r.status==='time_conflict')throw new Error('That time overlaps another skills check-off for this instructor. Choose a non-overlapping time.');
+         if(r&&r.status==='wrong_checkoff_date')throw new Error('Use the planned skills date: '+r.planned_date+'.');
+         throw new Error((r&&r.status)||'The skills check-off could not be scheduled.');
+       }
        show(s,'Skills check-off scheduled. The student will see the appointment in the learning space.','good');
        await load();
      }catch(e){show(s,e.message||String(e),'error')}
@@ -100,9 +107,35 @@ async function openSession(id){
    var d=await window.ItasaAssessmentSkillsStaff.getSessionDetail(id);
    if(!d||d.status!=='ok')throw new Error((d&&d.status)||'Unable to load skills check-off.');
    var items=Array.isArray(d.items)?d.items:[];
-   card.innerHTML='<div class="eyebrow">'+esc(d.class_name)+'</div><h2>'+esc(d.student_name)+' — Skills Check-Off</h2><p><strong>Status:</strong> '+tag(String(d.session_status||'').replace(/_/g,' '),d.session_status==='completed'?'good':'warn')+(d.scheduled_at?'<br><strong>Scheduled:</strong> '+esc(fmt(d.scheduled_at)):'')+'</p>'+
+   var printLink=d.class_name==='Medical Technician Class'?'medical-technician-skills-checklist-print.html':'iv-skills-checklist-print.html';
+   card.innerHTML='<div class="eyebrow">'+esc(d.class_name)+'</div><h2>'+esc(d.student_name)+' — Skills Check-Off</h2><p><strong>Status:</strong> '+tag(String(d.session_status||'').replace(/_/g,' '),d.session_status==='completed'?'good':'warn')+(d.scheduled_at?'<br><strong>Scheduled:</strong> '+esc(fmt(d.scheduled_at))+(d.scheduled_end_at?' - '+esc(fmt(d.scheduled_end_at)):''):'')+'</p><p><a class="btn secondary" target="_blank" href="'+printLink+'">Print Skills Checklist</a></p>'+
      '<div>'+items.map(function(i){return '<div class="card competency" data-item="'+esc(i.item_id)+'"><div class="eyebrow">Item '+esc(i.sort_order)+'</div><h3>'+esc(i.item_name)+'</h3><p class="muted">'+esc(i.description||'')+'</p><label>Result</label><select data-result><option value="not_assessed" '+(i.result==='not_assessed'?'selected':'')+'>Not assessed</option><option value="competent" '+(i.result==='competent'?'selected':'')+'>Competent</option><option value="not_yet_competent" '+(i.result==='not_yet_competent'?'selected':'')+'>Not yet competent</option></select><label>Note / deficiency reason</label><input data-reason value="'+esc(i.deficiency_reason||'')+'"><button data-save style="margin-top:8px">Save Result</button></div>'}).join('')+'</div>'+
-     '<div class="card"><div class="eyebrow">Final Validation</div><h3>Finalize Skills Check-Off</h3><p class="muted">All required items must be marked Competent before finalization.</p><div class="grid2"><div><label>Validation location</label><input id="final-location" value="'+esc(d.location||'')+'"></div><div><label>Instructor signature name</label><input id="final-signature" placeholder="Type your name"></div></div><button id="finalize" class="orange" style="margin-top:8px">Finalize Skills Check-Off</button></div>';
+     '<div class="card"><div class="eyebrow">Scanned Paper Checklist</div><h3>Attach the signed checklist</h3><p class="muted">The digital checklist above is the official pass/not-pass record. Upload the signed paper copy as supporting evidence.</p><input id="evidence-file" type="file" accept=".pdf,image/*"><label>Evidence note (optional)</label><input id="evidence-note" placeholder="Example: signed original scanned after class"><button id="upload-evidence" class="secondary" style="margin-top:8px">Upload Scan</button><div id="evidence-list" class="muted" style="margin-top:8px"></div></div>'+
+     '<div class="card"><div class="eyebrow">Final Validation</div><h3>Finalize Skills Check-Off</h3><p class="muted">All required items must be marked Competent before finalization. If any item is Not Yet Competent, record remediation instead of finalizing.</p><div class="grid2"><div><label>Validation location</label><input id="final-location" value="'+esc(d.location||'')+'"></div><div><label>Instructor signature name</label><input id="final-signature" placeholder="Type your name"></div></div><button id="mark-remediation" class="secondary" style="margin-top:8px">Mark Remediation Required</button> <button id="finalize" class="orange" style="margin-top:8px">Finalize Skills Check-Off</button></div>';
+
+   async function refreshEvidence(){
+     try{
+       var r=await window.ItasaSkillsEvidence.list(id),files=r&&r.status==='ok'?(r.files||[]):[];
+       document.getElementById('evidence-list').innerHTML=files.length?files.map(function(x){return '<div>'+esc(x.original_filename)+' · '+esc(fmt(x.uploaded_at))+'</div>'}).join(''):'No scanned checklist uploaded yet.';
+     }catch(e){document.getElementById('evidence-list').textContent='Evidence list unavailable.'}
+   }
+   await refreshEvidence();
+   document.getElementById('upload-evidence').onclick=async function(){
+     var b=this,file=document.getElementById('evidence-file').files[0],note=document.getElementById('evidence-note').value;b.disabled=true;
+     try{await window.ItasaSkillsEvidence.upload(id,file,note);show(status,'Scanned skills checklist uploaded and linked to this session.','good');await refreshEvidence()}
+     catch(e){show(status,e.message||String(e),'error')}
+     finally{b.disabled=false}
+   };
+   document.getElementById('mark-remediation').onclick=async function(){
+     var b=this;b.disabled=true;
+     try{
+       var note='Targeted remediation required for item(s) marked Not Yet Competent. Student must review/practice the failed skill area(s) before reassessment.';
+       var r=await window.ItasaSkillsScheduleV2.markRemediation(id,note);
+       if(!r||r.status!=='remediation_required')throw new Error((r&&r.status)||'Remediation could not be recorded.');
+       show(status,'Remediation recorded. Reassess only the failed skill area(s) after retraining/practice.','good');await load();await openSession(id);
+     }catch(e){show(status,e.message||String(e),'error')}
+     finally{b.disabled=false}
+   };
 
    card.querySelectorAll('[data-save]').forEach(function(btn){
      btn.onclick=async function(){
