@@ -189,19 +189,11 @@
         <div class="card">Loading current ITASA class information…</div>
       </div>
 
-      <div class="grid2" style="margin-top:18px">
-        <div class="card soft">
-          <div class="eyebrow">Additional Learning Support</div>
-          <h3>1:1 Test-Taking Strategies Session</h3>
-          <p class="muted">Individual test-taking strategy support is handled separately from the class registration flow. Sessions are offered every other Thursday beginning October 1, 2026, at $100 per hour.</p>
-          <a class="btn secondary" href="#one-on-one">Request a 1:1 Session</a>
-        </div>
-        <div class="card soft">
-          <div class="eyebrow">Coming Soon</div>
-          <h3>Medication Technician Course</h3>
-          <p class="muted">This course is not open for registration yet.</p>
-          <a class="btn secondary" href="#information-session" data-interest="medication_technician">Receive Course Updates</a>
-        </div>
+      <div class="card soft" style="margin-top:18px">
+        <div class="eyebrow">Coming Soon</div>
+        <h3>Medical Technician Class</h3>
+        <p class="muted">This class is not open for registration yet.</p>
+        <a class="btn secondary" href="#information-session" data-interest="medication_technician">Receive Class Updates</a>
       </div>
     </section>
 
@@ -257,8 +249,7 @@
                 <option value="review">NCLEX Review & Test-Taking Strategies</option>
                 <option value="skills">Skills Refresher Class</option>
                 <option value="iv">IV Insertion & Venipuncture</option>
-                <option value="medication_technician">Medication Technician Course</option>
-                <option value="one_on_one">1:1 Test-Taking Strategies Session</option>
+                <option value="medication_technician">Medical Technician Class</option>
               </select>
             </div>
             <div class="full"><label for="info-notes">What would you like to learn more about?</label><textarea id="info-notes" name="support_notes"></textarea></div>
@@ -447,8 +438,7 @@
         )+'</p>'+
         certificate+
         '<details><summary>View Class Pricing &amp; Payment Options</summary><div style="margin-top:10px">'+pricingMarkup(id,row,false)+
-        '<div class="btnrow">'+(classRegistrationOpen(row)?'<button class="btn" type="button" data-register-course="'+esc(id)+'">Register for This Course</button>':'<span class="tag">Registration Closed</span>')+
-        '<button class="btn secondary" type="button" data-info-course="'+esc(id)+'">Attend an Information Session</button></div></div></details>'+
+        '<div class="btnrow">'+(classRegistrationOpen(row)?'<button class="btn" type="button" data-register-course="'+esc(id)+'">Register for This Course</button>':'<span class="tag">Registration Closed</span>')+'</div></div></details>'+
       '</div>';
     }
 
