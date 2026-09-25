@@ -61,6 +61,12 @@ label{display:block;font-weight:800;margin:.7rem 0 .3rem}input{width:100%;paddin
         <div class="card"><div class="eyebrow">Class Access</div><div id="work-access" class="metric">—</div><p class="muted">Class-access records currently posted.</p></div>
       </div>
       <div class="card"><div class="eyebrow">Teaching Work</div><h2>What needs your attention</h2><div id="attention"></div></div>
+      <div class="card">
+        <div class="eyebrow">1:1 Test-Taking Strategies</div>
+        <h2>Pending session requests</h2>
+        <p class="muted">New student requests appear here. Confirm a date/time and choose <strong>Approve &amp; Notify Student</strong>; the system creates the student's 1:1 access code and queues the confirmation email automatically.</p>
+        <div id="one-on-one-attention"></div>
+      </div>
     </section>
 
     <section id="panel-courses" class="panel">
@@ -95,7 +101,13 @@ label{display:block;font-weight:800;margin:.7rem 0 .3rem}input{width:100%;paddin
     </section>
 
     <section id="panel-readiness" class="panel">
-      <div class="card readiness"><div class="eyebrow">My Readiness</div><h2>Instructor qualification &amp; readiness</h2><p class="muted">The preserved faculty-readiness, credential-verification, Nursys/e-Notify foundation, course authority, and Medical Technician Class provider-review work remain part of the migration. This preview preserves the instructor destination while the protected readiness functions are reconnected.</p></div>
+      <div class="card readiness">
+        <div class="eyebrow">My Readiness</div>
+        <h2>Instructor qualification, course authority &amp; Florida-regulation acknowledgment</h2>
+        <div id="readiness-disclaimer" class="notice"></div>
+        <div id="readiness-credentials"></div>
+        <div id="readiness-assignments"></div>
+      </div>
     </section>
 
     <section id="panel-ops" class="panel">
@@ -105,11 +117,11 @@ label{display:block;font-weight:800;margin:.7rem 0 .3rem}input{width:100%;paddin
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/shared-content-supabase.js"></script>
-<script src="js/staff-hub-supabase.js?v=5"></script>
+<script src="js/staff-hub-supabase.js?v=7"></script>
 <script>
 (function(){
 'use strict';
-var state={students:[],classes:[],access:[],knowledge:[],nclex:[]};
+var state={students:[],classes:[],access:[],knowledge:[],nclex:[],one:[],skills:[],readiness:null};
 function esc(v){return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
 function show(el,msg,tone){el.hidden=false;el.className='notice '+(tone||'');el.textContent=msg}
 function hide(el){el.hidden=true;el.textContent=''}
@@ -177,16 +189,77 @@ function renderCourses(){
       '<div class="toolbar"><a class="btn secondary" href="'+studentView(c.program_id)+'">Review Student View</a></div></div>';
   }).join('')||'<p class="muted">No class records available.</p>';
 }
+function renderOneOnOneAttention(){
+  var box=document.getElementById('one-on-one-attention');
+  var pending=(state.one||[]).filter(function(r){return r.status==='Pending'||r.status==='Approved'||r.status==='Payment Sent'});
+  box.innerHTML=pending.map(function(r){
+    var prefs=[r.preferred_datetime_1,r.preferred_datetime_2,r.preferred_datetime_3].filter(Boolean);
+    var approved=r.status==='Approved'||r.status==='Payment Sent';
+    return '<article class="card" data-one-attention="'+esc(r.id)+'"><div class="toolbar"><div><h3>'+esc((r.first_name||'')+' '+(r.last_name||''))+'</h3><div class="muted">'+esc(r.email)+' · '+esc(r.session_length==='2_hour'?'2 hours — $200':'1 hour — $100')+'</div></div><div class="push">'+(approved?'<span class="tag good">'+esc(r.status)+'</span>':'<span class="tag warn">Pending</span>')+'</div></div>'+
+      (r.assistance_needed?'<p><strong>Support requested:</strong> '+esc(r.assistance_needed)+'</p>':'')+
+      '<p><strong>Preferred times:</strong><br>'+prefs.map(esc).join('<br>')+'</p>'+
+      (approved?'<p><strong>Confirmed:</strong> '+esc(r.confirmed_datetime||'Pending')+'</p>':
+      '<label>Confirmed appointment</label><input data-one-confirmed placeholder="e.g. Thursday, Oct 15 at 4:00 PM">'+
+      '<div class="toolbar" style="margin-top:10px"><button data-one-approve>Approve &amp; Notify Student</button><button class="secondary" data-one-times>Request Different Times</button><button class="secondary" data-one-decline>Decline</button></div>')+
+      '</article>';
+  }).join('')||'<p class="muted">No pending 1:1 session requests right now.</p>';
+
+  box.querySelectorAll('[data-one-approve]').forEach(function(btn){
+    btn.onclick=async function(){
+      var card=btn.closest('[data-one-attention]'),confirmed=card.querySelector('[data-one-confirmed]').value;
+      if(!confirmed){alert('Enter the confirmed appointment date/time first.');return}
+      btn.disabled=true;
+      try{
+        await window.ItasaStaffHub.updateOneOnOneStatus(card.dataset.oneAttention,'Approved',confirmed);
+        await load();
+      }catch(e){alert(e.message||String(e))}
+      finally{btn.disabled=false}
+    };
+  });
+  box.querySelectorAll('[data-one-times]').forEach(function(btn){
+    btn.onclick=async function(){var card=btn.closest('[data-one-attention]');btn.disabled=true;try{await window.ItasaStaffHub.updateOneOnOneStatus(card.dataset.oneAttention,'Request Different Times','');await load()}catch(e){alert(e.message||String(e))}finally{btn.disabled=false}};
+  });
+  box.querySelectorAll('[data-one-decline]').forEach(function(btn){
+    btn.onclick=async function(){var card=btn.closest('[data-one-attention]');if(!confirm('Decline this 1:1 request and notify the student?'))return;btn.disabled=true;try{await window.ItasaStaffHub.updateOneOnOneStatus(card.dataset.oneAttention,'Declined','');await load()}catch(e){alert(e.message||String(e))}finally{btn.disabled=false}};
+  });
+}
+function renderReadiness(){
+  var r=state.readiness||{},assign=Array.isArray(r.assignments)?r.assignments:[],creds=Array.isArray(r.credentials)?r.credentials:[];
+  document.getElementById('readiness-disclaimer').textContent=r.disclaimer||'Course assignment does not by itself establish instructor clearance.';
+  document.getElementById('readiness-credentials').innerHTML='<h3>Verified credentials</h3>'+(creds.length?'<ul>'+creds.map(function(c){return '<li><strong>'+esc(c.credential_name)+'</strong> · '+esc(c.jurisdiction||'')+' · verification: '+esc(c.verification_status||'')+' · good standing: '+esc(c.good_standing_status||'')+(c.expiration_date?' · expires '+esc(fmtDate(c.expiration_date)):'')+'</li>'}).join('')+'</ul>':'<p class="muted">No verified credential record is attached to this staff account.</p>');
+  document.getElementById('readiness-assignments').innerHTML='<h3>Course assignments</h3>'+(assign.length?assign.map(function(a){
+    var cleared=a.clearance_status==='cleared';
+    return '<article class="card course"><div class="toolbar"><div><h3>'+esc(a.class_name)+'</h3><div class="muted">'+esc(a.assignment_role||'Instructor')+'</div></div><div class="push"><span class="tag '+(cleared?'good':'warn')+'">'+esc(cleared?'Cleared':'Not yet cleared')+'</span></div></div>'+
+      '<p>Qualification requirements: <strong>'+esc(a.qualification_verified)+' of '+esc(a.qualification_required)+' verified</strong><br>Organization acknowledgments: <strong>'+esc(a.organization_acknowledgments_completed)+' of '+esc(a.organization_acknowledgments_required)+'</strong><br>Course acknowledgments: <strong>'+esc(a.course_acknowledgments_completed)+' of '+esc(a.course_acknowledgments_required)+'</strong></p>'+
+      (!cleared?'<p class="muted">Final competency validation remains restricted until this assignment is cleared.</p>':'<p class="muted">This assignment is cleared for the course-specific instructor role recorded by ITASA.</p>')+
+      '</article>';
+  }).join(''):'<p class="muted">No active course assignment is attached to this staff account.</p>');
+}
 function renderAttention(){
   var items=[];
-  state.classes.forEach(function(c){var cap=Number(c.max_seats||0),taken=seatsTaken(c),remain=cap?Math.max(0,cap-taken):null,d=dayDiff(c.start_date);if(remain===0)items.push(programName(c.program_id)+': class is full.');else if(remain!=null&&remain<=2)items.push(programName(c.program_id)+': only '+remain+' seat'+(remain===1?'':'s')+' remaining.');if(d!=null&&d>=0&&d<=7)items.push(programName(c.program_id)+': first day is '+(d===0?'today':d===1?'tomorrow':'in '+d+' days')+'.')});
-  document.getElementById('attention').innerHTML=items.length?'<ul>'+items.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>':'<p class="muted">No urgent class-capacity or first-day alerts right now.</p>';
+  state.classes.forEach(function(c){
+    var cap=Number(c.max_seats||0),taken=seatsTaken(c),remain=cap?Math.max(0,cap-taken):null,d=dayDiff(c.start_date);
+    if(remain===0)items.push(programName(c.program_id)+': class is full.');
+    else if(remain!=null&&remain<=2)items.push(programName(c.program_id)+': only '+remain+' seat'+(remain===1?'':'s')+' remaining.');
+    if(d!=null&&d>=0&&d<=7)items.push(programName(c.program_id)+': first day is '+(d===0?'today':d===1?'tomorrow':'in '+d+' days')+'.');
+  });
+  var onePending=(state.one||[]).filter(function(r){return r.status==='Pending'}).length;
+  if(onePending)items.push(onePending+' pending 1:1 Test-Taking Strategies request'+(onePending===1?' needs':'s need')+' instructor review.');
+  (state.skills||[]).forEach(function(r){
+    var name=r.student_name||'Student';
+    if(r.remediation_required)items.push(r.class_name+': '+name+' requires targeted skills remediation/reassessment.');
+    else if(r.skills_session&&r.skills_session.status==='scheduled')items.push(r.class_name+': '+name+' has a skills check-off scheduled '+(r.skills_session.scheduled_at?'for '+fmtDate(r.skills_session.scheduled_at):'')+'.');
+    else if(r.skills_ready&&!r.skills_session)items.push(r.class_name+': '+name+' is ready for skills check-off scheduling.');
+    else if(r.offering_key==='iv_insertion_venipuncture')items.push('IV: '+name+' is still completing the required 80% knowledge assessment before skills readiness.');
+    else items.push('Medical Technician Class: '+name+' has passed '+(r.assessments_passed||0)+' of '+(r.assessments_total||0)+' required module assessments.');
+  });
+  document.getElementById('attention').innerHTML=items.length?'<ul>'+items.map(function(x){return '<li>'+esc(x)+'</li>'}).join('')+'</ul>':'<p class="muted">Nothing currently requires instructor action.</p>';
 }
 function render(){
   document.getElementById('work-students').textContent=state.students.length;
   document.getElementById('work-classes').textContent=state.classes.length;
   document.getElementById('work-access').textContent=state.access.length;
-  renderCourses();renderAttention();renderKnowledgeFeed();renderNclexCompletion();
+  renderCourses();renderAttention();renderOneOnOneAttention();renderKnowledgeFeed();renderNclexCompletion();renderReadiness();
 }
 async function load(){
   try{
@@ -195,13 +268,19 @@ async function load(){
       window.ItasaSharedContentSupabase.fetchCollection('classes'),
       window.ItasaStaffHub.fetchClassAccess(),
       window.ItasaStaffHub.fetchKnowledgeFeed('updates',null,30),
-      window.ItasaStaffHub.fetchNclexCompletionRoster()
+      window.ItasaStaffHub.fetchNclexCompletionRoster(),
+      window.ItasaStaffHub.fetchOneOnOneRequests(),
+      window.ItasaStaffHub.fetchAssessmentSkillsRoster(),
+      window.ItasaStaffHub.fetchInstructorReadiness()
     ]);
     state.students=all[0]||[];
     state.classes=(all[1]&&all[1].data)||[];
     state.access=all[2]||[];
     state.knowledge=(all[3]&&all[3].status==='ok')?(all[3].items||[]):[];
     state.nclex=(all[4]&&all[4].status==='ok')?(all[4].rows||[]):[];
+    state.one=all[5]||[];
+    state.skills=(all[6]&&all[6].status==='ok')?(all[6].rows||[]):[];
+    state.readiness=(all[7]&&all[7].status==='ok')?all[7]:null;
     render();
   }catch(e){console.error(e)}
 }
