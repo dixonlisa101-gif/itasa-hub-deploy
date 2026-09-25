@@ -60,9 +60,9 @@ label{display:block;font-weight:800;margin:.7rem 0 .3rem}input{width:100%;paddin
         <div class="card"><div class="eyebrow">Active Classes</div><div id="work-classes" class="metric">—</div><p class="muted">Current class offerings in the Learning Center.</p></div>
         <div class="card"><div class="eyebrow">Class Access</div><div id="work-access" class="metric">—</div><p class="muted">Class-access records currently posted.</p></div>
       </div>
-      <div class="card"><div class="eyebrow">Teaching Work</div><h2>What needs your attention</h2><div id="attention"></div><div class="toolbar" style="margin-top:12px"><a class="btn secondary" href="assessment-skills-workspace-preview.html?v=2">Open IV / Medical Technician Skills Work</a><a class="btn secondary" href="#one-on-one-attention">Review 1:1 Requests</a></div></div>
+      <div class="card"><div class="eyebrow">Teaching Work</div><h2>What needs your attention</h2><div id="attention"></div><div class="toolbar" style="margin-top:12px"><a class="btn secondary" href="assessment-skills-workspace-preview.html?v=2">Open IV / Medical Technician Skills Work</a><a class="btn secondary" href="#one-on-one-attention">Review Personalized Learning Requests</a></div></div>
       <div class="card">
-        <div class="eyebrow">1:1 Test-Taking Strategies</div>
+        <div class="eyebrow">ITASA Personalized Learning Session - 1:1</div>
         <h2>Pending session requests</h2>
         <p class="muted">New student requests appear here. Confirm a date/time and choose <strong>Approve &amp; Notify Student</strong>; the system creates the student's 1:1 access code and queues the confirmation email automatically.</p>
         <div id="one-on-one-attention"></div>
@@ -234,7 +234,7 @@ function renderOneOnOneAttention(){
       ? '<div><label style="margin-top:0">Confirmed appointment</label><p><strong>'+esc(r.confirmed_datetime||'Pending')+'</strong></p><p class="muted">The student confirmation email/access package has been queued.</p></div>'
       : '<div><label for="confirm-'+esc(r.id)+'" style="margin-top:0">Confirmed appointment</label><input id="confirm-'+esc(r.id)+'" data-one-confirmed placeholder="e.g. Thursday, Oct 15 at 4:00 PM"><div class="toolbar" style="margin-top:10px"><button data-one-approve>Approve &amp; Notify Student</button><button class="secondary" data-one-times>Request Different Times</button><button class="secondary" data-one-decline>Decline</button></div></div>';
     return '<article class="card" data-one-attention="'+esc(r.id)+'"><div class="one-grid">'+student+preferred+confirmBox+'</div></article>';
-  }).join('')||'<p class="muted">No pending 1:1 session requests right now.</p>';
+  }).join('')||'<p class="muted">No pending Personalized Learning requests right now.</p>';
 
   box.querySelectorAll('[data-one-approve]').forEach(function(btn){
     btn.onclick=async function(){
