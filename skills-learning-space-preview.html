@@ -183,7 +183,7 @@ function renderAccess(a){
   let html='';
   if(a.classTime)html+='<p><strong>Class time:</strong><br>'+esc(a.classTime)+'</p>';
   if(a.note)html+='<p class="muted">'+esc(a.note)+'</p>';
-  if(a.link)html+='<a class="btn orange" target="_blank" rel="noopener" href="'+esc(a.link)+'">Join Class on Zoom</a>';
+  if(a.link)html+='<a class="btn orange" target="_blank" rel="noopener" href="'+esc(a.link)+'">Join Zoom</a>';
   else html+='<p class="muted">The class join link is not available yet.</p>';
   box.innerHTML=html;
 }
