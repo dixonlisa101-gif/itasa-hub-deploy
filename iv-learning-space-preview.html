@@ -110,6 +110,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/student-portal-supabase.js"></script>
+<script src="js/assessment-skills-supabase.js"></script>
 <script src="js/iv-course-reader.js?v=7"></script>
 <script src="js/shared-content-supabase.js"></script>
 <script>
@@ -191,6 +192,25 @@ function renderLearning(ws,st,preview){
     }).join(''):'<p class="muted">No approved items have been posted in this section yet.</p>')+'</details>';
   }).join('');
 }
+function renderIvSkillsStatus(s){
+  const box=document.getElementById('iv-competency');
+  if(!box)return;
+  if(!s||s.status!=='ok'){
+    box.innerHTML='<p class="muted">Your competency schedule will appear here when ITASA posts it.</p>';return;
+  }
+  const session=s.skills_session;
+  if(session){
+    box.innerHTML='<p><strong>Final competency check-off:</strong> '+esc(String(session.status||'scheduled').replace(/_/g,' '))+'</p>'+
+      (session.scheduled_at?'<p><strong>Scheduled:</strong> '+esc(new Date(session.scheduled_at).toLocaleString('en-US',{month:'long',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'}))+'</p>':'')+
+      (session.location?'<p><strong>Location:</strong> '+esc(session.location)+'</p>':'')+
+      (session.validator_name?'<p><strong>Instructor:</strong> '+esc(session.validator_name)+'</p>':'');
+    return;
+  }
+  box.innerHTML='<p><strong>Final competency validation is required.</strong></p>'+
+    (s.planned_competency_date?'<p class="muted">Planned class date: '+esc(fmtDate(s.planned_competency_date))+'</p>':'')+
+    '<p class="muted">Your exact check-off time and location will appear here after ITASA schedules it.</p>';
+}
+
 function renderCertificates(certs){
   const box=document.getElementById('completion');
   const rows=Array.isArray(certs&&certs.certificates)?certs.certificates:[];
@@ -233,9 +253,10 @@ form.addEventListener('submit',async function(ev){
       window.ItasaStudentPortal.getZoomAccess(email,code),
       window.ItasaStudentPortal.getLearningWorkspace(email,code),
       window.ItasaStudentPortal.getCertificates(email,code),
-      isIvReviewTest?window.ItasaStudentPortal.getIvReviewPreview(email,code):Promise.resolve(null)
+      isIvReviewTest?window.ItasaStudentPortal.getIvReviewPreview(email,code):Promise.resolve(null),
+      window.ItasaAssessmentSkills.getStatus(email,code)
     ]);
-    renderAccess(results[0]);renderLearning(results[1],st,results[3]);renderCertificates(results[2]);
+    renderAccess(results[0]);renderLearning(results[1],st,results[3]);renderCertificates(results[2]);renderIvSkillsStatus(results[4]);
     await loadIvQa();
     document.getElementById('login-card').hidden=true;document.getElementById('student-signout').hidden=false;workspace.classList.add('active');showStatus('<strong>Welcome to your IV Learning Space.</strong>','ok');document.getElementById('code').value='';workspace.scrollIntoView({behavior:'smooth',block:'start'});
   }catch(err){console.error(err);showStatus('<strong>Unable to open this learning space right now.</strong> No student records were changed.','error')}
