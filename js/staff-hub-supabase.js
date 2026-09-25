@@ -355,6 +355,14 @@
     return result.data || { status: 'error' };
   }
 
+
+  async function fetchItSystemOversight() {
+    requireStaff();
+    var result = await client.rpc('get_it_system_oversight');
+    if (result.error) throw result.error;
+    return result.data || { status: 'error' };
+  }
+
   function onSessionChange(fn) {
     if (typeof fn === 'function') listeners.push(fn);
     return function () {
@@ -385,6 +393,7 @@
     fetchKnowledgeFeed: fetchKnowledgeFeed,
     fetchNclexCompletionRoster: fetchNclexCompletionRoster,
     completeNclexStudent: completeNclexStudent,
+    fetchItSystemOversight: fetchItSystemOversight,
     onSessionChange: onSessionChange
   };
 
