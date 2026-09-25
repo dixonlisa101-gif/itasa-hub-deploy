@@ -244,6 +244,33 @@
     return result.data;
   }
 
+
+  async function fetchCourseHubItems(programId) {
+    requireStaff();
+    var result = await client.rpc('get_my_instructor_course_hub_items', {
+      p_program_id: programId || ''
+    });
+    if (result.error) throw result.error;
+    return result.data || { status: 'error', items: [] };
+  }
+
+  async function saveCourseHubItem(item) {
+    requireStaff();
+    item = item || {};
+    var result = await client.rpc('upsert_my_instructor_course_hub_item', {
+      p_id: item.id || null,
+      p_program_id: item.program_id || '',
+      p_item_type: item.item_type || '',
+      p_title: item.title || '',
+      p_body: item.body || null,
+      p_resource_url: item.resource_url || null,
+      p_due_at: item.due_at || null,
+      p_is_visible: item.is_visible !== false
+    });
+    if (result.error) throw result.error;
+    return result.data || { status: 'error' };
+  }
+
   async function fetchCertificates() {
     requireStaff();
     var result = await client
@@ -411,6 +438,8 @@
     upsertClassAccess: upsertClassAccess,
     fetchServiceAccess: fetchServiceAccess,
     upsertServiceAccess: upsertServiceAccess,
+    fetchCourseHubItems: fetchCourseHubItems,
+    saveCourseHubItem: saveCourseHubItem,
     fetchCertificates: fetchCertificates,
     fetchOneOnOneRequests: fetchOneOnOneRequests,
     updateOneOnOneStatus: updateOneOnOneStatus,
