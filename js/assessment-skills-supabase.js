@@ -15,6 +15,8 @@ window.ItasaAssessmentSkills={
   submitCourseAssessment:function(email,code,key,answers){return rpc('submit_my_course_assessment',{p_email:(email||'').trim().toLowerCase(),p_access_code:(code||'').trim(),p_assessment_key:key||'',p_answers:answers||{}});},
   getMedtechReviewAssessment:function(email,code,key){return rpc('get_medtech_review_course_assessment',{p_email:(email||'').trim().toLowerCase(),p_access_code:(code||'').trim(),p_assessment_key:key||''});},
   submitMedtechReviewAssessment:function(email,code,key,answers){return rpc('submit_medtech_review_course_assessment',{p_email:(email||'').trim().toLowerCase(),p_access_code:(code||'').trim(),p_assessment_key:key||'',p_answers:answers||{}});},
+  getIvAssessment:function(email,code,key){return rpc('get_my_iv_course_assessment',{p_email:(email||'').trim().toLowerCase(),p_access_code:(code||'').trim(),p_assessment_key:key||'iv_final_knowledge_assessment'});},
+  submitIvAssessment:function(email,code,key,answers){return rpc('submit_my_iv_course_assessment',{p_email:(email||'').trim().toLowerCase(),p_access_code:(code||'').trim(),p_assessment_key:key||'iv_final_knowledge_assessment',p_answers:answers||{}});},
   getStatus:function(email,code){return rpc('get_my_assessment_skills_status',{p_email:(email||'').trim().toLowerCase(),p_access_code:(code||'').trim()});}
 };
 })();
