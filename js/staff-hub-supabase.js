@@ -267,6 +267,14 @@
   }
 
 
+
+  async function fetchAssessmentSkillsRoster() {
+    requireOperator();
+    var result = await client.rpc('get_assessment_skills_roster');
+    if (result.error) throw result.error;
+    return result.data || { status: 'error', rows: [] };
+  }
+
   async function fetchKnowledgeFeed(channel, offeringKey, limit) {
     requireStaff();
     var result = await client.rpc('get_my_staff_knowledge_feed', {
@@ -317,6 +325,7 @@
     fetchOneOnOneRequests: fetchOneOnOneRequests,
     updateOneOnOneStatus: updateOneOnOneStatus,
     fetchAuditLog: fetchAuditLog,
+    fetchAssessmentSkillsRoster: fetchAssessmentSkillsRoster,
     fetchKnowledgeFeed: fetchKnowledgeFeed,
     fetchNclexCompletionRoster: fetchNclexCompletionRoster,
     completeNclexStudent: completeNclexStudent,
