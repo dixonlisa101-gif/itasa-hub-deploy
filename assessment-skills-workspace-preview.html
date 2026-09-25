@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Assessments & Skills | ITASA Instructor Workspace</title>
+<style>
+:root{--teal:#177982;--dark:#0d5961;--orange:#dd7b2d;--ink:#18343b;--muted:#64777c;--line:#d9e7e8;--soft:#f6fbfb;--warm:#fff7ec;--good:#2d6b4b;--bad:#8a3131;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;color:var(--ink);background:#f8fbfb}
+*{box-sizing:border-box}body{margin:0}a{color:var(--dark)}header{background:#fff;border-bottom:1px solid var(--line)}nav{max-width:1180px;margin:auto;padding:12px 18px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:900;color:var(--dark);margin-right:auto}.brand img{width:52px;height:52px;border-radius:50%;object-fit:contain}.brand small{display:block;color:var(--orange);font-size:.72rem;text-transform:uppercase;letter-spacing:.08em}
+main{max-width:1180px;margin:auto;padding:28px 18px 64px}.card{background:#fff;border:1px solid var(--line);border-radius:15px;padding:18px;margin:14px 0;box-shadow:0 7px 20px rgba(17,71,78,.05)}.course{border-top:5px solid var(--orange)}h1,h2,h3{margin:.2rem 0 .7rem}.muted{color:var(--muted)}.eyebrow{text-transform:uppercase;letter-spacing:.08em;font-size:.74rem;font-weight:900;color:var(--teal)}
+label{display:block;font-weight:800;margin:.7rem 0 .3rem}input,select,textarea{width:100%;padding:10px 11px;border:1px solid #b9cbcd;border-radius:9px;font:inherit;background:#fff}.btn,button{display:inline-block;border:0;border-radius:9px;padding:10px 13px;font:inherit;font-weight:800;cursor:pointer;background:var(--teal);color:#fff;text-decoration:none}.btn.secondary,button.secondary{background:#e9f4f4;color:var(--dark)}.btn.orange,button.orange{background:var(--orange)}button[disabled]{opacity:.5;cursor:not-allowed}.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.push{margin-left:auto}.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.notice{padding:11px 13px;border-radius:10px;background:#eef7f7;margin:10px 0}.notice.error{background:#fff0f0;color:var(--bad)}.notice.good{background:#ecf7f0;color:var(--good)}.tag{display:inline-block;border-radius:999px;padding:4px 8px;background:#edf5f5;font-size:.78rem;font-weight:800}.tag.good{background:#e8f6ed;color:var(--good)}.tag.warn{background:#fff1dc;color:#8e5619}.tag.bad{background:#fae9e9;color:var(--bad)}.scoreline{font-size:.9rem;line-height:1.7}.competency{border-left:4px solid var(--teal)}[hidden]{display:none!important}
+@media(max-width:700px){.grid2{grid-template-columns:1fr}.brand span{display:none}.push{margin-left:0}}
+</style>
+</head>
+<body>
+<header><nav>
+<a class="brand" href="instructor-workspace-preview.html"><img src="assets/itasa-circular-brand-logo.png" alt="ITASA logo"><span>ITASA<small>Instructor Workspace</small></span></a>
+<a href="instructor-workspace-preview.html">Instructor Home</a>
+<a href="index.html">Learning Center Home</a>
+</nav></header>
+<main>
+<section class="card">
+<div class="eyebrow">Assessments & Skills</div>
+<h1>Student Readiness & Skills Check-Offs</h1>
+<p class="muted">Medical Technician Class assessments, IV competency scheduling, and instructor validation are managed here.</p>
+<div id="login-shell">
+<form id="login-form" style="max-width:520px"><label for="staff-email">ITASA Staff Email</label><input id="staff-email" type="email" autocomplete="username" required><label for="staff-password">Password</label><input id="staff-password" type="password" autocomplete="current-password" required><button id="login-btn" type="submit" style="margin-top:12px">Sign In</button></form>
+<div id="login-status" class="notice" hidden></div>
+</div>
+<div id="workspace-header" hidden><div class="toolbar"><div><strong id="staff-name"></strong><div id="staff-meta" class="muted"></div></div><button id="refresh" class="secondary push">Refresh</button><button id="signout" class="secondary">Sign Out</button></div></div>
+</section>
+
+<section id="workspace" hidden>
+<div class="card">
+<div class="eyebrow">Student Progress</div><h2>Assessment & Skills Roster</h2>
+<p class="muted">Medical Technician Class requires all six module assessments at 80% or higher before the in-person skills check-off can be scheduled. IV uses the current 16-hour course and final competency-validation requirements; no separate 80% written assessment has been added.</p>
+<div id="page-status" class="notice" hidden></div>
+<div id="roster"></div>
+</div>
+<div id="session-detail" class="card" hidden></div>
+</section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/staff-hub-supabase.js"></script>
+<script src="js/assessment-skills-staff.js"></script>
+<script>
+(function(){
+'use strict';
+var state={rows:[]};
+function esc(v){return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
+function show(el,msg,tone){el.hidden=false;el.className='notice '+(tone||'');el.textContent=msg}
+function hide(el){el.hidden=true;el.textContent=''}
+function fmt(v){if(!v)return '';var d=new Date(v);return isNaN(d.getTime())?String(v):d.toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'})}
+function tag(v,tone){return '<span class="tag '+(tone||'')+'">'+esc(v)+'</span>'}
+
+function renderRoster(){
+ var box=document.getElementById('roster');
+ box.innerHTML=(state.rows||[]).map(function(r){
+   var mt=r.offering_key==='medication_technician_6_hour';
+   var scores=Array.isArray(r.best_scores)?r.best_scores:[];
+   var scoreBlock=mt
+     ? '<div class="notice"><strong>Module assessments:</strong> '+esc(r.assessments_passed)+' of '+esc(r.assessments_total)+' passed at 80% or higher'+(scores.length?'<div class="scoreline muted">'+scores.map(function(s,i){return 'Module '+(i+1)+': '+(s.passed?'Passed '+esc(s.best_score)+'%':s.best_score!=null?'Best '+esc(s.best_score)+'%':'Not taken')}).join(' · ')+'</div>':'')+'</div>'
+     : '<div class="notice"><strong>Written assessment:</strong> Not required by the current IV completion policy.</div>';
+
+   var session=r.skills_session;
+   var skills=session
+     ? '<p><strong>Skills Check-Off:</strong> '+tag(String(session.status||'scheduled').replace(/_/g,' '),session.status==='completed'?'good':'warn')+'</p>'+
+       (session.scheduled_at?'<p class="muted"><strong>Scheduled:</strong> '+esc(fmt(session.scheduled_at))+'</p>':'')+
+       (session.location?'<p class="muted"><strong>Location:</strong> '+esc(session.location)+'</p>':'')+
+       '<button data-open-session="'+esc(session.session_id)+'">Open Skills Check-Off</button>'
+     : '<p><strong>Skills readiness:</strong> '+(r.skills_ready?tag('Ready','good'):tag('Not ready','warn'))+'</p>'+
+       (r.planned_competency_date?'<p class="muted">Planned IV competency date: '+esc(r.planned_competency_date)+'</p>':'')+
+       '<div class="grid2"><div><label>Date & time</label><input type="datetime-local" data-dt></div><div><label>Location</label><input data-location placeholder="Enter skills location"></div></div>'+
+       '<button data-schedule="'+esc(r.student_enrollment_id)+'" '+(!r.skills_ready?'disabled':'')+' style="margin-top:8px">Schedule Skills Check-Off</button>'+
+       (!r.skills_ready?'<p class="muted">The Medical Technician Class online requirements must be complete before scheduling.</p>':'');
+
+   return '<article class="card course" data-row="'+esc(r.student_enrollment_id)+'"><div class="toolbar"><div><div class="eyebrow">'+esc(r.class_name)+'</div><h3>'+esc(r.student_name||'Student')+'</h3><div class="muted">'+esc(r.student_email||'')+'</div></div><div class="push">'+(r.skills_ready?tag('Skills Ready','good'):tag('Online Work In Progress','warn'))+'</div></div>'+scoreBlock+'<p><strong>Required competency items:</strong> '+esc(r.required_skills_count||0)+'</p>'+skills+'</article>';
+ }).join('')||'<p class="muted">No Medical Technician Class or IV enrollments are available.</p>';
+
+ box.querySelectorAll('[data-schedule]').forEach(function(btn){
+   btn.onclick=async function(){
+     var row=btn.closest('[data-row]'),dt=row.querySelector('[data-dt]').value,loc=row.querySelector('[data-location]').value,s=document.getElementById('page-status');hide(s);
+     if(!dt){show(s,'Choose the skills check-off date and time first.','error');return}
+     btn.disabled=true;
+     try{
+       var r=await window.ItasaAssessmentSkillsStaff.scheduleSkills(btn.dataset.schedule,new Date(dt).toISOString(),loc);
+       if(!r||r.status!=='scheduled')throw new Error((r&&r.status)||'The skills check-off could not be scheduled.');
+       show(s,'Skills check-off scheduled. The student will see the appointment in the learning space.','good');
+       await load();
+     }catch(e){show(s,e.message||String(e),'error')}
+     finally{btn.disabled=false}
+   };
+ });
+ box.querySelectorAll('[data-open-session]').forEach(function(btn){btn.onclick=function(){openSession(btn.dataset.openSession)}});
+}
+
+async function openSession(id){
+ var card=document.getElementById('session-detail'),status=document.getElementById('page-status');hide(status);card.hidden=false;card.innerHTML='<p class="muted">Loading skills check-off…</p>';
+ try{
+   var d=await window.ItasaAssessmentSkillsStaff.getSessionDetail(id);
+   if(!d||d.status!=='ok')throw new Error((d&&d.status)||'Unable to load skills check-off.');
+   var items=Array.isArray(d.items)?d.items:[];
+   card.innerHTML='<div class="eyebrow">'+esc(d.class_name)+'</div><h2>'+esc(d.student_name)+' — Skills Check-Off</h2><p><strong>Status:</strong> '+tag(String(d.session_status||'').replace(/_/g,' '),d.session_status==='completed'?'good':'warn')+(d.scheduled_at?'<br><strong>Scheduled:</strong> '+esc(fmt(d.scheduled_at)):'')+'</p>'+
+     '<div>'+items.map(function(i){return '<div class="card competency" data-item="'+esc(i.item_id)+'"><div class="eyebrow">Item '+esc(i.sort_order)+'</div><h3>'+esc(i.item_name)+'</h3><p class="muted">'+esc(i.description||'')+'</p><label>Result</label><select data-result><option value="not_assessed" '+(i.result==='not_assessed'?'selected':'')+'>Not assessed</option><option value="competent" '+(i.result==='competent'?'selected':'')+'>Competent</option><option value="not_yet_competent" '+(i.result==='not_yet_competent'?'selected':'')+'>Not yet competent</option></select><label>Note / deficiency reason</label><input data-reason value="'+esc(i.deficiency_reason||'')+'"><button data-save style="margin-top:8px">Save Result</button></div>'}).join('')+'</div>'+
+     '<div class="card"><div class="eyebrow">Final Validation</div><h3>Finalize Skills Check-Off</h3><p class="muted">All required items must be marked Competent before finalization.</p><div class="grid2"><div><label>Validation location</label><input id="final-location" value="'+esc(d.location||'')+'"></div><div><label>Instructor signature name</label><input id="final-signature" placeholder="Type your name"></div></div><button id="finalize" class="orange" style="margin-top:8px">Finalize Skills Check-Off</button></div>';
+
+   card.querySelectorAll('[data-save]').forEach(function(btn){
+     btn.onclick=async function(){
+       var row=btn.closest('[data-item]'),result=row.querySelector('[data-result]').value,reason=row.querySelector('[data-reason]').value;
+       btn.disabled=true;
+       try{
+         var r=await window.ItasaAssessmentSkillsStaff.saveCompetency(id,row.dataset.item,result,reason);
+         if(!r||r.status!=='saved')throw new Error((r&&r.status)||'The result was not saved.');
+         btn.textContent='Saved';setTimeout(function(){btn.textContent='Save Result'},800);
+       }catch(e){show(status,e.message||String(e),'error')}
+       finally{btn.disabled=false}
+     };
+   });
+
+   document.getElementById('finalize').onclick=async function(){
+     var btn=this,loc=document.getElementById('final-location').value,sig=document.getElementById('final-signature').value;
+     btn.disabled=true;
+     try{
+       var r=await window.ItasaAssessmentSkillsStaff.finalizeSession(id,loc,sig);
+       if(!r||r.status!=='completed'){
+         if(r&&r.status==='competency_incomplete')throw new Error('All required competency items must be marked Competent first. '+r.competent_items+' of '+r.required_items+' are complete.');
+         throw new Error((r&&r.status)||'The skills check-off could not be finalized.');
+       }
+       show(status,'Skills check-off completed and recorded.','good');
+       await load();await openSession(id);
+     }catch(e){show(status,e.message||String(e),'error')}
+     finally{btn.disabled=false}
+   };
+   card.scrollIntoView({behavior:'smooth',block:'start'});
+ }catch(e){card.innerHTML='<div class="notice error">'+esc(e.message||String(e))+'</div>'}
+}
+
+async function load(){
+ try{
+   var r=await window.ItasaAssessmentSkillsStaff.fetchRoster();
+   state.rows=r&&r.status==='ok'?(r.rows||[]):[];
+   renderRoster();
+ }catch(e){show(document.getElementById('page-status'),e.message||'Assessment and skills data could not be loaded.','error')}
+}
+
+function sync(){
+ var st=window.ItasaStaffHub.getCurrentStaff();
+ if(st){
+   document.getElementById('login-shell').hidden=true;document.getElementById('workspace-header').hidden=false;document.getElementById('workspace').hidden=false;
+   document.getElementById('staff-name').textContent=st.full_name||st.email;document.getElementById('staff-meta').textContent=st.role+' · '+st.email;load();
+ }else{
+   document.getElementById('login-shell').hidden=false;document.getElementById('workspace-header').hidden=true;document.getElementById('workspace').hidden=true;
+ }
+}
+document.getElementById('login-form').onsubmit=async function(ev){
+ ev.preventDefault();var b=document.getElementById('login-btn'),s=document.getElementById('login-status');hide(s);b.disabled=true;b.textContent='Signing in…';
+ var r=await window.ItasaStaffHub.signIn(document.getElementById('staff-email').value,document.getElementById('staff-password').value);
+ document.getElementById('staff-password').value='';b.disabled=false;b.textContent='Sign In';
+ if(!r.ok)show(s,r.error&&r.error.message||'Sign-in failed.','error');else sync();
+};
+document.getElementById('refresh').onclick=load;
+document.getElementById('signout').onclick=async function(){await window.ItasaStaffHub.signOut();sync()};
+window.ItasaStaffHub.onSessionChange(function(s){if(s.resolved)sync()});
+})();
+</script>
+</body></html>
