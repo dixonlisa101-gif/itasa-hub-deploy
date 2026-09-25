@@ -266,6 +266,34 @@
     return result.data || [];
   }
 
+
+  async function fetchKnowledgeFeed(channel, offeringKey, limit) {
+    requireStaff();
+    var result = await client.rpc('get_my_staff_knowledge_feed', {
+      p_channel: channel || 'updates',
+      p_offering_key: offeringKey || null,
+      p_limit: Number(limit || 50)
+    });
+    if (result.error) throw result.error;
+    return result.data || { status: 'error', items: [] };
+  }
+
+  async function fetchNclexCompletionRoster() {
+    requireOperator();
+    var result = await client.rpc('get_nclex_completion_roster');
+    if (result.error) throw result.error;
+    return result.data || { status: 'error', rows: [] };
+  }
+
+  async function completeNclexStudent(studentId) {
+    requireOperator();
+    var result = await client.rpc('complete_nclex_student_and_issue_certificate', {
+      p_student_id: studentId
+    });
+    if (result.error) throw result.error;
+    return result.data || { status: 'error' };
+  }
+
   function onSessionChange(fn) {
     if (typeof fn === 'function') listeners.push(fn);
     return function () {
@@ -289,6 +317,9 @@
     fetchOneOnOneRequests: fetchOneOnOneRequests,
     updateOneOnOneStatus: updateOneOnOneStatus,
     fetchAuditLog: fetchAuditLog,
+    fetchKnowledgeFeed: fetchKnowledgeFeed,
+    fetchNclexCompletionRoster: fetchNclexCompletionRoster,
+    completeNclexStudent: completeNclexStudent,
     onSessionChange: onSessionChange
   };
 
