@@ -34,6 +34,7 @@ footer{text-align:center;padding:24px 18px;border-top:1px solid var(--line);back
 <div class="card welcome"><img src="assets/itasa-circular-brand-logo.png" alt="ITASA logo"><div><div class="eyebrow">Welcome back</div><h2 id="student-welcome">Medical Technician Class Student</h2><p class="muted">Six modules · 20 lessons · 360 planned online minutes · required in-person skills validation.</p></div></div>
 <div class="card note"><div class="eyebrow">Course status</div><h2>Coming Soon</h2><p class="muted">This course is still in ITASA review. No registration, payment, certificate release, or production student access is enabled from this preview.</p></div>
 <section id="course-box" class="card"><p class="muted">Loading Medical Technician Class learning materials…</p></section>
+<div class="card"><div class="eyebrow">Completion</div><h2>Completion &amp; Certificate</h2><div id="completion"><p class="muted">Checking your completion information…</p></div></div>
 </section>
 </main>
 <footer>Innovation Training & Staffing Agency · Empowering Nurses. Elevating Healthcare.</footer>
@@ -47,6 +48,11 @@ footer{text-align:center;padding:24px 18px;border-top:1px solid var(--line);back
 const PROGRAM='medtech',form=document.getElementById('login-form'),btn=document.getElementById('login-btn'),status=document.getElementById('status'),workspace=document.getElementById('workspace');
 function esc(v){return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
 function showStatus(html,tone){status.hidden=false;status.className='card status '+(tone||'');status.innerHTML=html}
+function renderCertificates(certs){
+ const box=document.getElementById('completion'),rows=Array.isArray(certs&&certs.certificates)?certs.certificates:[];
+ if(!rows.length){box.innerHTML='<p class="muted">No certificate has been issued yet. Your Certificate of Completion will appear here automatically after all course requirements and the required in-person skills validation are successfully completed.</p>';return}
+ box.innerHTML='<ul>'+rows.map(function(c){return '<li><strong>'+esc(c.certificate_title||c.certificate_number||'Certificate of Completion')+'</strong>'+(c.completion_date?' — '+esc(c.completion_date):'')+' — <a href="certificate-print-preview.html?certificate='+encodeURIComponent(c.certificate_id)+'">View / Print Certificate</a></li>'}).join('')+'</ul>';
+}
 form.addEventListener('submit',async function(ev){
  ev.preventDefault();workspace.classList.remove('active');
  const email=document.getElementById('email').value.trim().toLowerCase(),code=document.getElementById('code').value.trim();
@@ -67,6 +73,7 @@ form.addEventListener('submit',async function(ev){
    }
    document.getElementById('student-welcome').textContent='Welcome, '+((st.first_name||'').trim()||'Student');
    const assessmentStatus=await window.ItasaAssessmentSkills.getStatus(email,code);
+   const certificates=await window.ItasaStudentPortal.getCertificates(email,code);
    const reviewMode=String(st.enrollmentStatus||'').trim().toLowerCase()==='review test';
    window.ItasaMedtechCourse.mount(document.getElementById('course-box'),preview,{
      studentKey:st.id||email,
@@ -83,6 +90,7 @@ form.addEventListener('submit',async function(ev){
          : window.ItasaAssessmentSkills.submitCourseAssessment(email,code,key,answers);
      }
    });
+   renderCertificates(certificates);
    document.getElementById('login-card').hidden=true;document.getElementById('student-signout').hidden=false;workspace.classList.add('active');showStatus('<strong>Welcome to your Medical Technician Class Virtual Learning Space.</strong>','ok');document.getElementById('code').value='';workspace.scrollIntoView({behavior:'smooth',block:'start'});
  }catch(err){console.error(err);showStatus('<strong>Unable to open this learning space right now.</strong> No student records were changed.','error')}
  finally{btn.disabled=false;btn.textContent='Enter Medical Technician Class'}
