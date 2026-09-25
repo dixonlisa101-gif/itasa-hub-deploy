@@ -76,6 +76,7 @@ label{display:block;font-weight:800;margin:.7rem 0 .3rem}input{width:100%;paddin
         <div class="eyebrow">NCLEX Completion</div>
         <h2>Complete class &amp; issue Certificate of Completion</h2>
         <p class="muted">For NCLEX Review, the instructor confirms course completion here. The system then issues the ITASA Certificate of Completion automatically. This is separate from NCLEX licensure or exam results.</p>
+        <p><a class="btn secondary" target="_blank" href="nclex-certificate-sample-preview.html">Preview NCLEX Certificate of Completion</a></p>
         <div id="nclex-completion-status" class="notice" hidden></div>
         <div id="nclex-completion-roster"></div>
       </div>
@@ -195,7 +196,134 @@ function renderOneOnOneAttention(){
   box.innerHTML=pending.map(function(r){
     var prefs=[r.preferred_datetime_1,r.preferred_datetime_2,r.preferred_datetime_3].filter(Boolean);
     var approved=r.status==='Approved'||r.status==='Payment Sent';
-    return '<article class="card" data-one-attention="'+esc(r.id)+'"><div class="toolbar"><div><h3>'+esc((r.first_name||'')+' '+(r.last_name||''))+'</h3><div class="muted">'+esc(r.email)+' · '+esc(r.session_length==='2_hour'?'2 hours — $200':'1 hour — $100')+'</div></div><div class="push">'+(approved?'<span class="tag good">'+esc(r.status)+'</span>':'<span class="tag warn">Pending</span>')+'</div></div>'+
+    return '<article class="card" data-one-attention="'+esc(r.id)+'"><div class="toolbar"><div><h3>'+esc((r.first_name||'')+' '+(r.last_name||''))+'</h3><div class="muted">'+esc(r.email)+' · '+esc(r.session_length==='2_hour'?'2 hours':'1 hour')+' — </div><div class="push">'+(approved?'<span class="tag good">'+esc(r.status)+'</span>':'<span class="tag warn">Pending</span>')+'</div></div>'+
+      (r.assistance_needed?'<p><strong>Support requested:</strong> '+esc(r.assistance_needed)+'</p>':'')+
+      '<p><strong>Preferred times:</strong><br>'+prefs.map(esc).join('<br>')+'</p>'+
+      (approved?'<p><strong>Confirmed:</strong> '+esc(r.confirmed_datetime||'Pending')+'</p>':
+      '<label>Confirmed appointment</label><input data-one-confirmed placeholder="e.g. Thursday, Oct 15 at 4:00 PM">'+
+      '<div class="toolbar" style="margin-top:10px"><button data-one-approve>Approve &amp; Notify Student</button><button class="secondary" data-one-times>Request Different Times</button><button class="secondary" data-one-decline>Decline</button></div>')+
+      '</article>';
+  }).join('')||'<p class="muted">No pending 1:1 session requests right now.</p>';
+
+  box.querySelectorAll('[data-one-approve]').forEach(function(btn){
+    btn.onclick=async function(){
+      var card=btn.closest('[data-one-attention]'),confirmed=card.querySelector('[data-one-confirmed]').value;
+      if(!confirmed){alert('Enter the confirmed appointment date/time first.');return}
+      btn.disabled=true;
+      try{
+        await window.ItasaStaffHub.updateOneOnOneStatus(card.dataset.oneAttention,'Approved',confirmed);
+        await load();
+      }catch(e){alert(e.message||String(e))}
+      finally{btn.disabled=false}
+    };
+  });
+  box.querySelectorAll('[data-one-times]').forEach(function(btn){
+    btn.onclick=async function(){var card=btn.closest('[data-one-attention]');btn.disabled=true;try{await window.ItasaStaffHub.updateOneOnOneStatus(card.dataset.oneAttention,'Request Different Times','');await load()}catch(e){alert(e.message||String(e))}finally{btn.disabled=false}};
+  });
+  box.querySelectorAll('[data-one-decline]').forEach(function(btn){
+    btn.onclick=async function(){var card=btn.closest('[data-one-attention]');if(!confirm('Decline this 1:1 request and notify the student?'))return;btn.disabled=true;try{await window.ItasaStaffHub.updateOneOnOneStatus(card.dataset.oneAttention,'Declined','');await load()}catch(e){alert(e.message||String(e))}finally{btn.disabled=false}};
+  });
+}
+function renderReadiness(){
+  var r=state.readiness||{},assign=Array.isArray(r.assignments)?r.assignments:[],creds=Array.isArray(r.credentials)?r.credentials:[];
+  document.getElementById('readiness-disclaimer').textContent=r.disclaimer||'Course assignment does not by itself establish instructor clearance.';
+  document.getElementById('readiness-credentials').innerHTML='<h3>Verified credentials</h3>'+(creds.length?'<ul>'+creds.map(function(c){return '<li><strong>'+esc(c.credential_name)+'</strong> · '+esc(c.jurisdiction||'')+' · verification: '+esc(c.verification_status||'')+' · good standing: '+esc(c.good_standing_status||'')+(c.expiration_date?' · expires '+esc(fmtDate(c.expiration_date)):'')+'</li>'}).join('')+'</ul>':'<p class="muted">No verified credential record is attached to this staff account.</p>');
+  document.getElementById('readiness-assignments').innerHTML='<h3>Course assignments</h3>'+(assign.length?assign.map(function(a){
+    var cleared=a.clearance_status==='cleared';
+    return '<article class="card course"><div class="toolbar"><div><h3>'+esc(a.class_name)+'</h3><div class="muted">'+esc(a.assignment_role||'Instructor')+'</div></div><div class="push"><span class="tag '+(cleared?'good':'warn')+'">'+esc(cleared?'Cleared':'Not yet cleared')+'</span></div></div>'+
+      '<p>Qualification requirements: <strong>'+esc(a.qualification_verified)+' of '+esc(a.qualification_required)+' verified</strong><br>Organization acknowledgments: <strong>'+esc(a.organization_acknowledgments_completed)+' of '+esc(a.organization_acknowledgments_required)+'</strong><br>Course acknowledgments: <strong>'+esc(a.course_acknowledgments_completed)+' of '+esc(a.course_acknowledgments_required)+'</strong></p>'+
+      (!cleared?'<p class="muted">Final competency validation remains restricted until this assignment is cleared.</p>':'<p class="muted">This assignment is cleared for the course-specific instructor role recorded by ITASA.</p>')+
+      '</article>';
+  }).join(''):'<p class="muted">No active course assignment is attached to this staff account.</p>');
+}
+function renderAttention(){
+  var items=[];
+  state.classes.forEach(function(c){
+    var cap=Number(c.max_seats||0),taken=seatsTaken(c),remain=cap?Math.max(0,cap-taken):null,d=dayDiff(c.start_date);
+    if(remain===0)items.push(programName(c.program_id)+': class is full.');
+    else if(remain!=null&&remain<=2)items.push(programName(c.program_id)+': only '+remain+' seat'+(remain===1?'':'s')+' remaining.');
+    if(d!=null&&d>=0&&d<=7)items.push(programName(c.program_id)+': first day is '+(d===0?'today':d===1?'tomorrow':'in '+d+' days')+'.');
+  });
+  var onePending=(state.one||[]).filter(function(r){return r.status==='Pending'}).length;
+  if(onePending)items.push(onePending+' pending 1:1 Test-Taking Strategies request'+(onePending===1?' needs':'s need')+' instructor review.');
+  (state.skills||[]).forEach(function(r){
+    var name=r.student_name||'Student';
+    if(r.remediation_required)items.push(r.class_name+': '+name+' requires targeted skills remediation/reassessment.');
+    else if(r.skills_session&&r.skills_session.status==='scheduled')items.push(r.class_name+': '+name+' has a skills check-off scheduled '+(r.skills_session.scheduled_at?'for '+fmtDate(r.skills_session.scheduled_at):'')+'.');
+    else if(r.skills_ready&&!r.skills_session)items.push(r.class_name+': '+name+' is ready for skills check-off scheduling.');
+    else if(r.offering_key==='iv_insertion_venipuncture')items.push('IV: '+name+' is still completing the required 80% knowledge assessment before skills readiness.');
+    else items.push('Medical Technician Class: '+name+' has passed '+(r.assessments_passed||0)+' of '+(r.assessments_total||0)+' required module assessments.');
+  });
+  document.getElementById('attention').innerHTML=items.length?'<ul>'+items.map(function(x){return '<li>'+esc(x)+'</li>'}).join('')+'</ul>':'<p class="muted">Nothing currently requires instructor action.</p>';
+}
+function render(){
+  document.getElementById('work-students').textContent=state.students.length;
+  document.getElementById('work-classes').textContent=state.classes.length;
+  document.getElementById('work-access').textContent=state.access.length;
+  renderCourses();renderAttention();renderOneOnOneAttention();renderKnowledgeFeed();renderNclexCompletion();renderReadiness();
+}
+async function load(){
+  try{
+    var all=await Promise.all([
+      window.ItasaStaffHub.fetchStudents(),
+      window.ItasaSharedContentSupabase.fetchCollection('classes'),
+      window.ItasaStaffHub.fetchClassAccess(),
+      window.ItasaStaffHub.fetchKnowledgeFeed('updates',null,30),
+      window.ItasaStaffHub.fetchNclexCompletionRoster(),
+      window.ItasaStaffHub.fetchOneOnOneRequests(),
+      window.ItasaStaffHub.fetchAssessmentSkillsRoster(),
+      window.ItasaStaffHub.fetchInstructorReadiness()
+    ]);
+    state.students=all[0]||[];
+    state.classes=(all[1]&&all[1].data)||[];
+    state.access=all[2]||[];
+    state.knowledge=(all[3]&&all[3].status==='ok')?(all[3].items||[]):[];
+    state.nclex=(all[4]&&all[4].status==='ok')?(all[4].rows||[]):[];
+    state.one=all[5]||[];
+    state.skills=(all[6]&&all[6].status==='ok')?(all[6].rows||[]):[];
+    state.readiness=(all[7]&&all[7].status==='ok')?all[7]:null;
+    render();
+  }catch(e){console.error(e)}
+}
+document.querySelectorAll('.tabs button').forEach(function(b){b.onclick=function(){document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.getElementById('panel-'+b.dataset.panel).classList.add('active')}})
+function sync(){
+  var st=window.ItasaStaffHub.getCurrentStaff();
+  if(st){
+    document.getElementById('login-shell').hidden=true;document.getElementById('workspace-header').hidden=false;document.getElementById('workspace').hidden=false;
+    document.getElementById('staff-name').textContent=st.full_name||st.email;document.getElementById('staff-meta').textContent=st.role+' · '+st.email;
+    document.getElementById('ops-tab').hidden=String(st.role||'').toLowerCase()!=='administrator';load();
+  }else{document.getElementById('login-shell').hidden=false;document.getElementById('workspace-header').hidden=true;document.getElementById('workspace').hidden=true}
+}
+document.getElementById('send-review-reset').onclick=async function(){
+  var s=document.getElementById('reset-status');hide(s);
+  try{
+    var redirect=window.location.origin+window.location.pathname;
+    var r=await window.ItasaStaffHub.client.auth.resetPasswordForEmail('dixonlisa101+instructor@gmail.com',{redirectTo:redirect});
+    if(r.error)throw r.error;
+    show(s,'Password-reset email sent to the Test Instructor review address. Open the email and return here from the recovery link.','good');
+  }catch(e){show(s,e.message||String(e),'error')}
+};
+if(window.location.hash.includes('type=recovery')||window.location.search.includes('type=recovery')){
+  document.getElementById('password-reset-shell').hidden=false;
+}
+document.getElementById('save-review-password').onclick=async function(){
+  var s=document.getElementById('password-reset-status'),pw=document.getElementById('new-review-password').value;hide(s);
+  if(!pw||pw.length<10){show(s,'Use a password with at least 10 characters.','error');return}
+  try{
+    var r=await window.ItasaStaffHub.client.auth.updateUser({password:pw});
+    if(r.error)throw r.error;
+    show(s,'Test Instructor password updated. You can now sign in with the review email and your new password.','good');
+  }catch(e){show(s,e.message||String(e),'error')}
+};
+
+document.getElementById('login-form').onsubmit=async function(ev){ev.preventDefault();var b=document.getElementById('login-btn'),s=document.getElementById('login-status');b.disabled=true;b.textContent='Signing in…';hide(s);var r=await window.ItasaStaffHub.signIn(document.getElementById('staff-email').value,document.getElementById('staff-password').value);document.getElementById('staff-password').value='';b.disabled=false;b.textContent='Sign In';if(!r.ok)show(s,r.error&&r.error.message||'Sign-in failed.','error');else sync()}
+document.getElementById('signout').onclick=async function(){await window.ItasaStaffHub.signOut();sync()}
+document.getElementById('refresh').onclick=load;window.ItasaStaffHub.onSessionChange(function(s){if(s.resolved)sync()});
+setInterval(function(){if(window.ItasaStaffHub.getCurrentStaff())load()},60000);
+})();
+</script>
+</body></html>
++esc(r.session_amount||'')+(r.pricing_version==='legacy_50_per_hour'?' · legacy request':'')+'</div></div><div class="push">'+(approved?'<span class="tag good">'+esc(r.status)+'</span>':'<span class="tag warn">Pending</span>')+'</div></div>'+
       (r.assistance_needed?'<p><strong>Support requested:</strong> '+esc(r.assistance_needed)+'</p>':'')+
       '<p><strong>Preferred times:</strong><br>'+prefs.map(esc).join('<br>')+'</p>'+
       (approved?'<p><strong>Confirmed:</strong> '+esc(r.confirmed_datetime||'Pending')+'</p>':
