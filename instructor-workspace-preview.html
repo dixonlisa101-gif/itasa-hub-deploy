@@ -48,6 +48,7 @@ label{display:block;font-weight:800;margin:.7rem 0 .3rem}input{width:100%;paddin
     <div class="tabs">
       <button data-panel="work" class="active">My Work</button>
       <button data-panel="courses">My Courses</button>
+      <button data-panel="hub-content">Student Hub Content</button>
       <button data-panel="resources">Resources</button>
       <button data-panel="updates">Clinical &amp; Professional Updates</button>
       <button data-panel="readiness">My Readiness</button>
@@ -88,6 +89,57 @@ label{display:block;font-weight:800;margin:.7rem 0 .3rem}input{width:100%;paddin
       <div class="card"><div class="eyebrow">My Courses</div><h2>Class status, registration &amp; seat availability</h2><p class="muted">Countdowns change automatically as calendar days pass. Seat counts recalculate from the current student roster each time the workspace refreshes.</p><div id="course-grid" class="grid"></div></div>
     </section>
 
+    <section id="panel-hub-content" class="panel">
+      <div class="card">
+        <div class="eyebrow">Student Hub Publishing</div>
+        <h2>Manage what students see in their Learning Center</h2>
+        <p class="muted">Publish course announcements, assignments, workbook instructions, class materials/resources, and instructor communications. Items appear only to students in the selected class.</p>
+        <div id="hub-content-status" class="notice" hidden></div>
+        <div class="grid2">
+          <div>
+            <label for="hub-program">Class</label>
+            <select id="hub-program">
+              <option value="review">NCLEX Review &amp; Test-Taking Strategies</option>
+              <option value="skills">Skills Refresher Class</option>
+              <option value="iv">IV Insertion &amp; Venipuncture</option>
+              <option value="medtech">Medical Technician Class</option>
+            </select>
+          </div>
+          <div>
+            <label for="hub-type">Content type</label>
+            <select id="hub-type">
+              <option value="announcement">Announcement</option>
+              <option value="assignment">Assignment</option>
+              <option value="workbook_instruction">Workbook Instruction</option>
+              <option value="material">Course Material</option>
+              <option value="resource">Course Resource</option>
+              <option value="instructor_message">Instructor Communication</option>
+            </select>
+          </div>
+        </div>
+        <input id="hub-id" type="hidden">
+        <label for="hub-title">Title</label>
+        <input id="hub-title" placeholder="Example: Week 1 workbook pages" required>
+        <label for="hub-body">Instructions / message</label>
+        <textarea id="hub-body" style="width:100%;min-height:110px;padding:10px;border:1px solid #b9cbcd;border-radius:9px" placeholder="What does the student need to know or do?"></textarea>
+        <div class="grid2">
+          <div><label for="hub-url">Resource link (optional)</label><input id="hub-url" type="url" placeholder="https://..."></div>
+          <div><label for="hub-due">Due date/time (optional)</label><input id="hub-due" type="datetime-local"></div>
+        </div>
+        <label style="display:flex;gap:8px;align-items:center"><input id="hub-visible" type="checkbox" style="width:auto" checked> Visible to students</label>
+        <div class="toolbar" style="margin-top:10px">
+          <button id="hub-save" class="orange" type="button">Publish to Student Hub</button>
+          <button id="hub-clear" class="secondary" type="button">Clear Form</button>
+          <button id="hub-refresh" class="secondary" type="button">Refresh Class Content</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="eyebrow">Published Course Content</div>
+        <h2>Current student-facing items</h2>
+        <div id="hub-content-list"><p class="muted">Choose a class to load its Hub content.</p></div>
+      </div>
+    </section>
+
     <section id="panel-resources" class="panel">
       <div class="card resource">
         <div class="eyebrow">Instructor Regulatory &amp; Course Resource Center</div>
@@ -125,7 +177,7 @@ label{display:block;font-weight:800;margin:.7rem 0 .3rem}input{width:100%;paddin
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/shared-content-supabase.js"></script>
-<script src="js/staff-hub-supabase.js?v=11"></script>
+<script src="js/staff-hub-supabase.js?v=20260925-6"></script>
 <script>
 (function(){
 'use strict';
@@ -211,6 +263,75 @@ function renderNclexCompletion(){
       finally{btn.disabled=false}
     };
   });
+}
+function hubTypeLabel(v){
+  return v==='announcement'?'Announcement':
+    v==='assignment'?'Assignment':
+    v==='workbook_instruction'?'Workbook Instruction':
+    v==='material'?'Course Material':
+    v==='resource'?'Course Resource':
+    v==='instructor_message'?'Instructor Communication':v||'Item';
+}
+function clearHubForm(){
+  document.getElementById('hub-id').value='';
+  document.getElementById('hub-title').value='';
+  document.getElementById('hub-body').value='';
+  document.getElementById('hub-url').value='';
+  document.getElementById('hub-due').value='';
+  document.getElementById('hub-visible').checked=true;
+  document.getElementById('hub-save').textContent='Publish to Student Hub';
+}
+async function loadHubContent(){
+  var program=document.getElementById('hub-program').value,box=document.getElementById('hub-content-list'),status=document.getElementById('hub-content-status');
+  hide(status);box.innerHTML='<p class="muted">Loading class content…</p>';
+  try{
+    var r=await window.ItasaStaffHub.fetchCourseHubItems(program);
+    if(!r||r.status!=='ok')throw new Error((r&&r.status)||'Unable to load class content.');
+    var items=Array.isArray(r.items)?r.items:[];
+    box.innerHTML=items.length?items.map(function(x){
+      return '<article class="card course" data-hub-item="'+esc(x.id)+'"><div class="toolbar"><div><div class="eyebrow">'+esc(hubTypeLabel(x.item_type))+'</div><h3>'+esc(x.title||'Untitled')+'</h3></div><div class="push"><span class="tag '+(x.is_visible?'good':'warn')+'">'+(x.is_visible?'Visible':'Hidden')+'</span></div></div>'+
+        (x.body?'<p>'+esc(x.body)+'</p>':'')+
+        (x.due_at?'<p class="muted"><strong>Due:</strong> '+esc(fmtDate(x.due_at))+'</p>':'')+
+        (x.resource_url?'<p><a target="_blank" rel="noopener" href="'+esc(x.resource_url)+'">Open linked resource</a></p>':'')+
+        '<button class="secondary" data-edit-hub>Edit</button></article>';
+    }).join(''):'<p class="muted">No Student Hub content has been published for this class yet.</p>';
+    box.querySelectorAll('[data-edit-hub]').forEach(function(btn){
+      btn.onclick=function(){
+        var id=btn.closest('[data-hub-item]').dataset.hubItem,item=items.find(function(x){return x.id===id});if(!item)return;
+        document.getElementById('hub-id').value=item.id||'';
+        document.getElementById('hub-type').value=item.item_type||'announcement';
+        document.getElementById('hub-title').value=item.title||'';
+        document.getElementById('hub-body').value=item.body||'';
+        document.getElementById('hub-url').value=item.resource_url||'';
+        document.getElementById('hub-due').value=item.due_at?String(item.due_at).slice(0,16):'';
+        document.getElementById('hub-visible').checked=item.is_visible!==false;
+        document.getElementById('hub-save').textContent='Save Changes';
+        document.getElementById('panel-hub-content').scrollIntoView({behavior:'smooth',block:'start'});
+      };
+    });
+  }catch(e){
+    box.innerHTML='<p class="muted">This class content could not be loaded.</p>';
+    show(status,e.message||String(e),'error');
+  }
+}
+async function saveHubContent(){
+  var btn=document.getElementById('hub-save'),status=document.getElementById('hub-content-status');hide(status);btn.disabled=true;
+  try{
+    var r=await window.ItasaStaffHub.saveCourseHubItem({
+      id:document.getElementById('hub-id').value||null,
+      program_id:document.getElementById('hub-program').value,
+      item_type:document.getElementById('hub-type').value,
+      title:document.getElementById('hub-title').value,
+      body:document.getElementById('hub-body').value,
+      resource_url:document.getElementById('hub-url').value,
+      due_at:document.getElementById('hub-due').value||null,
+      is_visible:document.getElementById('hub-visible').checked
+    });
+    if(!r||r.status!=='saved')throw new Error((r&&r.status)||'Content was not saved.');
+    show(status,'Saved. Students in this class can now see the item in their Learning Center.','good');
+    clearHubForm();await loadHubContent();
+  }catch(e){show(status,e.message||String(e),'error')}
+  finally{btn.disabled=false}
 }
 function renderCourses(){
   document.getElementById('course-grid').innerHTML=state.classes.map(function(c){
@@ -436,6 +557,11 @@ document.getElementById('save-review-password').onclick=async function(){
 
 document.getElementById('login-form').onsubmit=async function(ev){ev.preventDefault();var b=document.getElementById('login-btn'),s=document.getElementById('login-status');b.disabled=true;b.textContent='Signing in…';hide(s);var r=await window.ItasaStaffHub.signIn(document.getElementById('staff-email').value,document.getElementById('staff-password').value);document.getElementById('staff-password').value='';b.disabled=false;b.textContent='Sign In';if(!r.ok)show(s,r.error&&r.error.message||'Sign-in failed.','error');else sync()}
 document.getElementById('signout').onclick=async function(){await window.ItasaStaffHub.signOut();sync()}
+document.getElementById('hub-save').onclick=saveHubContent;
+document.getElementById('hub-clear').onclick=clearHubForm;
+document.getElementById('hub-refresh').onclick=loadHubContent;
+document.getElementById('hub-program').onchange=function(){clearHubForm();loadHubContent()};
+document.querySelector('[data-panel="hub-content"]').addEventListener('click',function(){setTimeout(loadHubContent,0)});
 document.getElementById('refresh').onclick=async function(){var b=this;b.disabled=true;await load();b.disabled=false};window.ItasaStaffHub.onSessionChange(function(s){if(s.resolved)sync()});
 setInterval(function(){if(window.ItasaStaffHub.getCurrentStaff())load()},60000);
 })();
