@@ -62,7 +62,7 @@ table{width:100%;border-collapse:collapse}th,td{padding:10px 8px;border-bottom:1
       <button data-panel="students" class="active">Students</button>
       <button data-panel="info">Information Session</button>
       <button data-panel="access">Class Access / Zoom</button>
-      <button data-panel="one">1:1 Requests</button>
+      <button data-panel="one">Personalized Learning Requests</button>
       <button data-panel="certs">Certificates</button>
       <button data-panel="audit">Audit Activity</button>
       <button data-panel="it">IT &amp; System Oversight</button>
@@ -95,7 +95,7 @@ table{width:100%;border-collapse:collapse}th,td{padding:10px 8px;border-bottom:1
       <div class="card risk">
         <div class="eyebrow">Operational requirement</div>
         <h2>Zoom Access — Four ITASA Pathways</h2>
-        <p class="muted"><strong>Zoom is used only for:</strong> NCLEX Review, Skills Refresher, the Information Session, and the 1:1 Test-Taking Strategies Session. IV Insertion &amp; Venipuncture and Medical Technician Class do not require Zoom access here.</p>
+        <p class="muted"><strong>Zoom is used only for:</strong> NCLEX Review, Skills Refresher, the Information Session, and the ITASA Personalized Learning Session - 1:1 Session. IV Insertion &amp; Venipuncture and Medical Technician Class do not require Zoom access here.</p>
         <div id="access-status" class="notice warn">Loading current Zoom configuration…</div>
         <h3>Classes</h3><div id="access-grid" class="grid2"></div>
         <h3 style="margin-top:18px">Services</h3><div id="service-access-grid" class="grid2"></div>
@@ -105,7 +105,7 @@ table{width:100%;border-collapse:collapse}th,td{padding:10px 8px;border-bottom:1
     <section id="panel-one" class="panel">
       <div class="card">
         <div class="eyebrow">Scheduling & follow-up</div>
-        <h2>1:1 Test-Taking Strategies Requests</h2>
+        <h2>ITASA Personalized Learning Session - Personalized Learning Requests</h2>
         <p class="muted">The current 1:1 rate is <strong>$100 for one hour</strong>. When an instructor confirms the appointment, the system creates the student's 1:1 access code and queues the confirmation email with the appointment, payment step, Student Space sign-in, and configured Zoom access.</p>
         <div id="one-status" class="notice" hidden></div>
         <div id="one-list"></div>
@@ -198,7 +198,7 @@ function renderAccess(){
   var svc={};(state.serviceAccess||[]).forEach(function(a){svc[a.service_key]=a});
   var serviceDefs=[
     {key:'information_session',name:'ITASA Information Session'},
-    {key:'one_on_one',name:'1:1 Test-Taking Strategies Session'}
+    {key:'one_on_one',name:'ITASA Personalized Learning Session - 1:1 Session'}
   ];
   document.getElementById('service-access-grid').innerHTML=serviceDefs.map(function(s){
     var a=svc[s.key]||{};
