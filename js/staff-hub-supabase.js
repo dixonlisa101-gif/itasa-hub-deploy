@@ -227,7 +227,8 @@
         'id','program_id','first_name','last_name','email','phone',
         'session_length','session_amount','pricing_version','assistance_needed',
         'preferred_datetime_1','preferred_datetime_2','preferred_datetime_3',
-        'confirmed_datetime','status','status_history','created_at','updated_at'
+        'confirmed_datetime','status','status_history','portal_code','access_issued_at',
+        'zoom_link','meeting_id','passcode','created_at','updated_at'
       ].join(','))
       .order('created_at', { ascending: false });
     if (result.error) throw result.error;
