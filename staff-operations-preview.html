@@ -143,7 +143,7 @@ table{width:100%;border-collapse:collapse}th,td{padding:10px 8px;border-bottom:1
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/shared-content-supabase.js"></script>
-<script src="js/staff-hub-supabase.js?v=8"></script>
+<script src="js/staff-hub-supabase.js?v=10"></script>
 <script>
 (function(){
 'use strict';
@@ -234,11 +234,21 @@ function yn(v){return v?'<span class="tag good">Configured</span>':'<span class=
 function renderItOversight(){
   var box=document.getElementById('it-oversight'),d=state.it||{};
   if(d.status!=='ok'){box.innerHTML='<p class="muted">IT oversight data is unavailable for this account.</p>';return}
-  var e=d.email_outbox||{},k=d.knowledge_sources||{},z=d.zoom_access||{},jobs=Array.isArray(d.scheduled_jobs)?d.scheduled_jobs:[];
-  box.innerHTML='<div class="metrics"><div class="metric"><span>Email pending</span><strong>'+esc(e.pending||0)+'</strong></div><div class="metric"><span>Email failed</span><strong>'+esc(e.failed||0)+'</strong></div><div class="metric"><span>Knowledge sources</span><strong>'+esc(k.active_sources||0)+'</strong></div><div class="metric"><span>Source errors</span><strong>'+esc(k.sources_with_errors||0)+'</strong></div><div class="metric"><span>Background jobs</span><strong>'+jobs.filter(function(j){return j.active}).length+'</strong></div></div>'+
+  var e=d.email_outbox||{},k=d.knowledge_sources||{},z=d.zoom_access||{},jobs=Array.isArray(d.scheduled_jobs)?d.scheduled_jobs:[],
+      flags=Array.isArray(d.flags)?d.flags:[],pending=Array.isArray(d.pending_work)?d.pending_work:[],completed=Array.isArray(d.completed_work)?d.completed_work:[];
+  function list(items,empty){
+    return items.length?'<ul>'+items.map(function(x){return '<li><strong>'+esc(x.label||x.key||'Item')+'</strong>'+(x.detail?'<br><span class="muted">'+esc(typeof x.detail==='string'?x.detail:JSON.stringify(x.detail))+'</span>':'')+'</li>'}).join('')+'</ul>':'<p class="muted">'+empty+'</p>';
+  }
+  box.innerHTML='<div class="grid2">'+
+    '<div class="card risk"><div class="eyebrow">Flags to Fix</div><h3>Needs correction</h3>'+list(flags,'No current system flags.')+'</div>'+
+    '<div class="card"><div class="eyebrow">Pending Work</div><h3>Still open</h3>'+list(pending,'No pending system work recorded.')+'</div>'+
+    '</div>'+
+    '<div class="card"><div class="eyebrow">Completed Work</div><h3>Confirmed complete</h3>'+list(completed,'No completed-system milestones are recorded yet.')+'</div>'+
+    '<div class="metrics"><div class="metric"><span>Email pending</span><strong>'+esc(e.pending||0)+'</strong></div><div class="metric"><span>Email failed</span><strong>'+esc(e.failed||0)+'</strong></div><div class="metric"><span>Knowledge sources</span><strong>'+esc(k.active_sources||0)+'</strong></div><div class="metric"><span>Source errors</span><strong>'+esc(k.sources_with_errors||0)+'</strong></div><div class="metric"><span>Background jobs</span><strong>'+jobs.filter(function(j){return j.active}).length+'</strong></div></div>'+
     '<div class="card"><h3>Required Zoom pathways</h3><p>NCLEX Review: '+yn(z.nclex_zoom_configured)+'<br>Skills Refresher: '+yn(z.skills_zoom_configured)+'<br>Information Session: '+yn(z.information_session_zoom_configured)+'<br>1:1 Session: '+yn(z.one_on_one_zoom_configured)+'</p><p class="muted">IV Insertion &amp; Venipuncture and Medical Technician Class are intentionally not Zoom pathways.</p></div>'+
     '<div class="card"><h3>Automation</h3><p>Email queue last sent: '+esc(e.last_sent_at?fmt(e.last_sent_at):'No sent email recorded')+'<br>Knowledge source last success: '+esc(k.last_success_at?fmt(k.last_success_at):'No successful collection recorded')+'</p>'+jobs.map(function(j){return '<p><strong>'+esc(j.jobname)+'</strong> · '+esc(j.schedule)+' · '+(j.active?'active':'inactive')+'</p>'}).join('')+'</div>';
 }
+
 function metrics(){document.getElementById('m-students').textContent=state.students.length;document.getElementById('m-info').textContent=state.info.length;document.getElementById('m-one').textContent=state.one.filter(function(r){return r.status==='Pending'}).length;var classSet=state.access.filter(function(a){return ['cohort-review-fall-2026','cohort-skills-fall-2026'].indexOf(a.cohort_id)!==-1&&a.link}).length;var serviceSet=state.serviceAccess.filter(function(a){return ['information_session','one_on_one'].indexOf(a.service_key)!==-1&&a.link}).length;document.getElementById('m-access').textContent=(classSet+serviceSet)+'/4';document.getElementById('m-certs').textContent=state.certs.length}
 
 async function loadStudents(){state.students=await window.ItasaStaffHub.fetchStudents();renderStudents();metrics()}
