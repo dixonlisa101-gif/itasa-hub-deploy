@@ -321,6 +321,16 @@
     return result.data || { status: 'error', assignments: [], credentials: [] };
   }
 
+
+  async function acknowledgeInstructorRequirement(key) {
+    requireStaff();
+    var result = await client.rpc('acknowledge_my_instructor_requirement', {
+      p_acknowledgment_key: key || ''
+    });
+    if (result.error) throw result.error;
+    return result.data || { status: 'error' };
+  }
+
   async function fetchAssessmentSkillsRoster() {
     requireOperator();
     var result = await client.rpc('get_assessment_skills_roster');
@@ -389,6 +399,7 @@
     updateOneOnOneStatus: updateOneOnOneStatus,
     fetchAuditLog: fetchAuditLog,
     fetchInstructorReadiness: fetchInstructorReadiness,
+    acknowledgeInstructorRequirement: acknowledgeInstructorRequirement,
     fetchAssessmentSkillsRoster: fetchAssessmentSkillsRoster,
     fetchKnowledgeFeed: fetchKnowledgeFeed,
     fetchNclexCompletionRoster: fetchNclexCompletionRoster,
