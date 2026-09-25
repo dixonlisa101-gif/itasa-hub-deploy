@@ -25,7 +25,7 @@
     .path-intro{text-align:center;max-width:760px;margin:34px auto 18px}
     .support-section{display:grid;grid-template-columns:.9fr 1.1fr;gap:22px;align-items:center;margin-top:30px}
     .support-image{min-height:340px;border-radius:18px;overflow:hidden;border:1px solid var(--line);background:#e7f1f1}
-    .support-copy{padding:8px}.marie-section{display:grid;grid-template-columns:1.05fr .95fr;gap:22px;align-items:center;margin-top:24px;border-top:5px solid var(--orange)}.marie-image{min-height:360px;border-radius:16px;overflow:hidden;background:#fff}.marie-image img{width:100%;height:100%;object-fit:cover;object-position:50% 42%;display:block}.orange-kicker{color:#b95e16}
+    .support-copy{padding:8px}.start-marie-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:stretch}.start-marie-grid>.card{margin:0}.marie-mini{display:grid;grid-template-columns:140px 1fr;gap:16px;align-items:center}.marie-mini img{width:140px;height:170px;object-fit:cover;object-position:50% 42%;border-radius:14px;display:block}.orange-kicker{color:#b95e16}
     .welcome-list{padding-left:20px}.welcome-list li{margin:.55rem 0}
     .eyebrow{text-transform:uppercase;letter-spacing:.09em;font-size:.76rem;font-weight:900;color:var(--teal)}
     h1{font-size:clamp(2rem,5vw,3.5rem);line-height:1.03;margin:.4rem 0 1rem}h2{font-size:clamp(1.55rem,3vw,2.35rem);margin:.2rem 0 .8rem}h3{margin:.2rem 0 .55rem}
@@ -49,7 +49,7 @@
     
     footer{border-top:1px solid var(--line);padding:28px 18px;color:#60757a;text-align:center;background:#fff}
     [hidden]{display:none!important}
-    @media(max-width:900px){.hero,.support-section,.marie-section{grid-template-columns:1fr}.hero-image{min-height:330px}.grid,.course-grid{grid-template-columns:1fr 1fr}}
+    @media(max-width:900px){.hero,.support-section,.start-marie-grid{grid-template-columns:1fr}.hero-image{min-height:330px}.grid,.course-grid{grid-template-columns:1fr 1fr}.marie-mini{grid-template-columns:110px 1fr}.marie-mini img{width:110px;height:135px}}
     @media(max-width:640px){.grid,.grid2,.course-grid,.steps,.form-grid{grid-template-columns:1fr}.full{grid-column:auto}.hero-panel{padding:24px}.navlinks{width:100%;overflow:auto;flex-wrap:nowrap}.navlinks a{white-space:nowrap}}
   </style>
 </head>
@@ -116,21 +116,30 @@
         </div>
       </div>
 
-      <div class="support-section">
-        <figure class="support-image" style="margin:0">
-          <img src="https://images.unsplash.com/photo-1783519890730-3436fd0bf965?auto=format&fit=crop&w=1400&q=82" alt="Healthcare learners practicing hands-on clinical skills during supervised training" loading="lazy">
-        </figure>
-        <div class="support-copy">
+      <div class="start-marie-grid">
+        <div class="card">
           <div class="eyebrow">Your next step starts here</div>
           <h2>Your place to learn, prepare, and keep moving forward</h2>
-          <p class="lead">ITASA classes are delivered through Zoom-based instruction. Some classes also include a required in-person skills check-off or hands-on competency phase.</p>
+          <p class="lead">ITASA uses the Learning Center to keep each student's next step clear. NCLEX Review and Skills Refresher use scheduled Zoom instruction. IV Insertion &amp; Venipuncture and Medical Technician Class use their assigned learning and in-person competency pathways rather than a Zoom classroom.</p>
           <ul class="welcome-list">
-            <li>Join your scheduled Zoom-based instruction</li>
+            <li>Use your Learning Center for the access, materials, assignments, testing, and preparation that belong to your class</li>
             <li>Complete required in-person skills check-offs when your class includes them</li>
-            <li>Arrive on time for all required in-person skills sessions</li>
-            <li>Return to the Learning Center for class access, materials, updates, scheduled sessions, and support</li>
+            <li>Arrive on time for required in-person skills sessions</li>
+            <li>Check your Student Home for schedule updates, workbook/assignment instructions, instructor notes, and current information</li>
           </ul>
           <p class="muted"><strong>Location privacy:</strong> Physical skills-location details are not displayed publicly. They are provided to registered students after payment confirmation when their class requires an in-person component.</p>
+        </div>
+        <div class="card warm">
+          <div class="eyebrow orange-kicker">Get to know Marie</div>
+          <div class="marie-mini">
+            <img src="assets/itasa-instructor-welcome.jpg" alt="Marie Florestal, ITASA instructor" loading="lazy">
+            <div>
+              <h2>Welcome to ITASA.</h2>
+              <p>I want the Learning Center to be a place where you can learn, prepare, ask questions, and keep moving forward with support.</p>
+              <p class="muted">At ITASA, we are building a learning community where you can strengthen your knowledge, grow in confidence, and stay connected throughout your journey.</p>
+              <p><strong>Marie S. Florestal, MSN, APRN, FNP-C</strong><br><span class="muted">ITASA Instructor</span></p>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -161,19 +170,6 @@
         </div>
       </div>
 
-      <div class="card marie-section">
-        <div>
-          <div class="eyebrow orange-kicker">A Welcome from Marie</div>
-          <h2>Welcome to ITASA.</h2>
-          <p class="lead">I want the Learning Center to be a place where you can come to learn, prepare, ask questions, and keep moving forward with support.</p>
-          <p class="muted">Whether you are exploring ITASA for the first time or returning as a student, I want you to know that you have a place here and that you do not have to prepare alone. At ITASA, we are building more than classes—we are building a learning community where you can strengthen your knowledge, grow in confidence, and stay connected throughout your journey. I look forward to learning with you.</p>
-          <p><strong>Marie S. Florestal, MSN, APRN, FNP-C</strong><br><span class="muted">ITASA Instructor</span></p>
-        </div>
-        <figure class="marie-image" style="margin:0">
-          <img src="assets/itasa-instructor-welcome.jpg" alt="Marie Florestal, ITASA instructor" loading="lazy">
-        </figure>
-      </div>
-
     </section>
 
     <section id="courses">
@@ -194,7 +190,7 @@
     <section id="one-on-one">
       <div class="eyebrow">Additional Learning Support</div>
       <h2>Request a 1:1 Test-Taking Strategies Session</h2>
-      <p class="lead">Tell ITASA what test-taking support you need and share your preferred dates. Sessions are PRN/as-needed, subject to instructor availability, and limited to a maximum of two hours per request.</p>
+      <p class="lead">Tell ITASA what test-taking support you need and share your preferred dates. Sessions are PRN/as-needed, subject to instructor availability, and scheduled as one-hour private sessions at $100.</p>
       <p><a class="btn secondary" href="one-on-one-learning-space-preview.html">Already approved? Open Your 1:1 Student Space</a></p>
 
       <div class="card form-card">
@@ -206,11 +202,8 @@
             <div><label for="one-phone">Phone</label><input id="one-phone" name="phone" type="tel"></div>
             <div class="full">
               <label for="one-length">Session Selection</label>
-              <select id="one-length" name="session_length" required>
-                <option value="">Select one</option>
-                <option value="1_hour">1-hour private session — $100</option>
-                <option value="2_hour">2-hour private session — $200</option>
-              </select>
+              <input type="hidden" id="one-length" name="session_length" value="1_hour">
+              <div class="notice"><strong>1-hour private session — $100</strong></div>
             </div>
             <div class="full"><label for="one-help">Assistance Needed</label><textarea id="one-help" name="assistance_needed" placeholder="Tell us what test-taking strategies you would like help with"></textarea></div>
             <div class="full"><label for="one-time-1">First Preferred Date/Time</label><input id="one-time-1" name="preferred_datetime_1" placeholder="e.g. Tuesday, Oct 14, 2026 at 4:00 PM" required></div>
