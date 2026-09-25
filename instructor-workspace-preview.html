@@ -112,6 +112,7 @@ label{display:block;font-weight:800;margin:.7rem 0 .3rem}input{width:100%;paddin
         <h2>Instructor qualification, course authority &amp; Florida-regulation acknowledgment</h2>
         <div id="readiness-disclaimer" class="notice"></div>
         <div id="readiness-acknowledgments"></div>
+        <div id="readiness-experience"></div>
         <div id="readiness-credentials"></div>
         <div id="readiness-assignments"></div>
       </div>
@@ -254,6 +255,40 @@ function renderOneOnOneAttention(){
     btn.onclick=async function(){var card=btn.closest('[data-one-attention]');if(!confirm('Decline this 1:1 request and notify the student?'))return;btn.disabled=true;try{await window.ItasaStaffHub.updateOneOnOneStatus(card.dataset.oneAttention,'Declined','');await load()}catch(e){alert(e.message||String(e))}finally{btn.disabled=false}};
   });
 }
+function experienceFormHtml(key,title,help){
+  return '<form class="card" data-experience-form="'+key+'"><div class="eyebrow">'+esc(title)+'</div><p class="muted">'+esc(help)+'</p>'+
+    '<label>Organization / setting</label><input name="organization" required>'+
+    '<label>Role / context</label><input name="role" required>'+
+    '<div class="grid2"><div><label>Start date</label><input name="start" type="date" required></div><div><label>End date</label><input name="end" type="date"></div></div>'+
+    '<label style="display:flex;gap:8px;align-items:center"><input name="current" type="checkbox" style="width:auto"> Current experience</label>'+
+    '<label>Experience summary</label><textarea name="summary" style="width:100%;min-height:90px;padding:10px;border:1px solid #b9cbcd;border-radius:9px" required></textarea>'+
+    '<p class="muted">Submitting this form records your electronic experience attestation for ITASA readiness review.</p>'+
+    '<button type="submit">Submit Experience Attestation</button><div class="notice" data-experience-status hidden></div></form>';
+}
+function bindExperienceForms(){
+  document.querySelectorAll('[data-experience-form]').forEach(function(form){
+    form.onsubmit=async function(ev){
+      ev.preventDefault();
+      var status=form.querySelector('[data-experience-status]'),btn=form.querySelector('button[type="submit"]'),current=form.elements.current.checked;
+      hide(status);btn.disabled=true;
+      try{
+        var r=await window.ItasaStaffHub.submitInstructorExperienceAttestation({
+          evidence_key:form.dataset.experienceForm,
+          organization_name:form.elements.organization.value,
+          role_or_context:form.elements.role.value,
+          experience_start:form.elements.start.value,
+          experience_end:current?null:(form.elements.end.value||null),
+          is_current_experience:current,
+          evidence_summary:form.elements.summary.value
+        });
+        if(!r||r.status!=='attested')throw new Error((r&&r.status)||'Experience attestation could not be saved.');
+        show(status,'Experience attestation saved. Readiness will recalculate automatically.','good');
+        await load();
+      }catch(e){show(status,e.message||String(e),'error')}
+      finally{btn.disabled=false}
+    };
+  });
+}
 function renderReadiness(){
   var r=state.readiness||{},
       assign=Array.isArray(r.assignments)?r.assignments:[],
@@ -280,6 +315,16 @@ function renderReadiness(){
       finally{btn.disabled=false}
     };
   });
+
+  var ivAssignment=assign.find(function(a){return a.offering_key==='iv_insertion_venipuncture'});
+  var needsIvExperience=ivAssignment&&Number(ivAssignment.qualification_verified||0)<Number(ivAssignment.qualification_required||0);
+  document.getElementById('readiness-experience').innerHTML=needsIvExperience
+    ? '<h3>IV qualification experience attestations</h3><p class="muted">ITASA already has an automatic structured-attestation path for the two experience requirements. Complete each declaration; once all required fields are present, readiness recalculates automatically.</p><div class="grid2">'+
+      experienceFormHtml('teaching_experience','Teaching experience','Describe your teaching, faculty, precepting, instructional, or comparable learner-education experience.')+
+      experienceFormHtml('iv_professional_experience','Professional nursing / IV experience','Describe your professional nursing experience that included IV therapy responsibilities.')+
+      '</div>'
+    : '<p class="muted">No additional IV experience declaration is currently required.</p>';
+  bindExperienceForms();
 
   document.getElementById('readiness-credentials').innerHTML='<h3>Verified credentials</h3>'+(creds.length?'<ul>'+creds.map(function(c){return '<li><strong>'+esc(c.credential_name)+'</strong> · '+esc(c.jurisdiction||'')+' · verification: '+esc(c.verification_status||'')+' · good standing: '+esc(c.good_standing_status||'')+(c.expiration_date?' · expires '+esc(fmtDate(c.expiration_date)):'')+'</li>'}).join('')+'</ul>':'<p class="muted">No verified credential record is attached to this staff account.</p>');
 
