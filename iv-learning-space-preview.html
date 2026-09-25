@@ -215,7 +215,7 @@ function renderCertificates(certs){
   const box=document.getElementById('completion');
   const rows=Array.isArray(certs&&certs.certificates)?certs.certificates:[];
   if(!rows.length){box.innerHTML='<p class="muted">No certificate has been issued yet. Completion information will remain here as your class progresses.</p>';return}
-  box.innerHTML='<ul>'+rows.map(function(c){return '<li><strong>'+esc(c.certificate_title||c.certificate_number||'Certificate')+'</strong>'+(c.completion_date?' — '+esc(c.completion_date):'')+(c.certificate_url?' — <a target="_blank" rel="noopener" href="'+esc(c.certificate_url)+'">View certificate</a>':'')+'</li>'}).join('')+'</ul>';
+  box.innerHTML='<ul>'+rows.map(function(c){return '<li><strong>'+esc(c.certificate_title||c.certificate_number||'Certificate')+'</strong>'+(c.completion_date?' — '+esc(c.completion_date):'')+(' — <a href="certificate-print-preview.html?certificate='+encodeURIComponent(c.certificate_id)+'">View / Print Certificate</a>')+'</li>'}).join('')+'</ul>';
 }
 async function loadIvQa(){
     try{
