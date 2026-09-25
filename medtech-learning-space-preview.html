@@ -39,7 +39,8 @@ footer{text-align:center;padding:24px 18px;border-top:1px solid var(--line);back
 <footer>Innovation Training & Staffing Agency · Empowering Nurses. Elevating Healthcare.</footer>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/student-portal-supabase.js"></script>
-<script src="js/medtech-course-reader.js?v=1"></script>
+<script src="js/assessment-skills-supabase.js"></script>
+<script src="js/medtech-course-reader.js?v=2"></script>
 <script>
 (function(){
 'use strict';
@@ -65,7 +66,23 @@ form.addEventListener('submit',async function(ev){
      showStatus('<strong>The Medical Technician Class preview could not be loaded.</strong> No student records were changed.','error');return;
    }
    document.getElementById('student-welcome').textContent='Welcome, '+((st.first_name||'').trim()||'Student');
-   window.ItasaMedtechCourse.mount(document.getElementById('course-box'),preview,{studentKey:st.id||email});
+   const assessmentStatus=await window.ItasaAssessmentSkills.getStatus(email,code);
+   const reviewMode=String(st.enrollmentStatus||'').trim().toLowerCase()==='review test';
+   window.ItasaMedtechCourse.mount(document.getElementById('course-box'),preview,{
+     studentKey:st.id||email,
+     assessmentStatus:assessmentStatus,
+     getStatus:function(){return window.ItasaAssessmentSkills.getStatus(email,code);},
+     getAssessment:function(key){
+       return reviewMode
+         ? window.ItasaAssessmentSkills.getMedtechReviewAssessment(email,code,key)
+         : window.ItasaAssessmentSkills.getCourseAssessment(email,code,key);
+     },
+     submitAssessment:function(key,answers){
+       return reviewMode
+         ? window.ItasaAssessmentSkills.submitMedtechReviewAssessment(email,code,key,answers)
+         : window.ItasaAssessmentSkills.submitCourseAssessment(email,code,key,answers);
+     }
+   });
    document.getElementById('login-card').hidden=true;document.getElementById('student-signout').hidden=false;workspace.classList.add('active');showStatus('<strong>Welcome to your Medical Technician Class Virtual Learning Space.</strong>','ok');document.getElementById('code').value='';workspace.scrollIntoView({behavior:'smooth',block:'start'});
  }catch(err){console.error(err);showStatus('<strong>Unable to open this learning space right now.</strong> No student records were changed.','error')}
  finally{btn.disabled=false;btn.textContent='Enter Medical Technician Class'}
