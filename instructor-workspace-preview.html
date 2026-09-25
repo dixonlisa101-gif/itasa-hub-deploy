@@ -11,7 +11,7 @@ main{max-width:1200px;margin:auto;padding:28px 18px 64px}.card{background:#fff;b
 label{display:block;font-weight:800;margin:.7rem 0 .3rem}input{width:100%;padding:10px 11px;border:1px solid #b9cbcd;border-radius:9px;font:inherit}.btn,button{display:inline-block;border:0;border-radius:9px;padding:10px 13px;font:inherit;font-weight:800;cursor:pointer;background:var(--teal);color:#fff;text-decoration:none}.btn.secondary,button.secondary{background:#e9f4f4;color:var(--dark)}.btn.orange{background:var(--orange)}button[disabled]{opacity:.5}
 .toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.push{margin-left:auto}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}.tabs button{background:#eaf4f4;color:var(--dark)}.tabs button.active{background:var(--teal);color:#fff}.panel{display:none}.panel.active{display:block}
 .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.course{border-top:5px solid var(--orange)}.metric{font-size:1.7rem;font-weight:900}.tag{display:inline-block;border-radius:999px;padding:4px 8px;background:#edf5f5;font-size:.78rem;font-weight:800}.tag.good{background:#e8f6ed;color:#2d6b4b}.tag.warn{background:#fff1dc;color:#8e5619}.tag.bad{background:#fae9e9;color:#8a3131}
-.resource{border-left:4px solid #91aeb1}.readiness{border-left:4px solid var(--orange)}.notice{padding:11px 13px;border-radius:10px;background:#eef7f7;margin:10px 0}.notice.error{background:#fff0f0;color:#8a3131}.notice.good{background:#ecf7f0;color:#2b6447}
+.resource{border-left:4px solid #91aeb1}.readiness{border-left:4px solid var(--orange)}.knowledge-item{border-left:4px solid var(--teal);padding:12px 14px;margin:10px 0;background:#fff;border-radius:10px}.knowledge-meta{font-size:.82rem;color:var(--muted)}.notice{padding:11px 13px;border-radius:10px;background:#eef7f7;margin:10px 0}.notice.error{background:#fff0f0;color:#8a3131}.notice.good{background:#ecf7f0;color:#2b6447}
 [hidden]{display:none!important}@media(max-width:900px){.grid{grid-template-columns:1fr 1fr}}@media(max-width:650px){.grid,.grid2{grid-template-columns:1fr}.brand span{display:none}.push{margin-left:0}}
 </style>
 </head>
@@ -63,22 +63,32 @@ label{display:block;font-weight:800;margin:.7rem 0 .3rem}input{width:100%;paddin
     <section id="panel-courses" class="panel">
       <div class="card"><div class="eyebrow">Assessments &amp; Skills</div><h2>Student readiness &amp; skills check-offs</h2><p class="muted">Review Medical Technician Class assessment results, IV competency status, schedule skills check-offs, and record competency results.</p><a class="btn orange" href="assessment-skills-workspace-preview.html">Open Assessments &amp; Skills</a></div>
       <div class="card"><div class="eyebrow">IV course · Staff review</div><h2>Review the six-module teaching draft</h2><p class="muted">Revision 7 includes the phase-card activity, simpler practice prompts, references, and separate Teaching Notes. Enrollment remains on hold.</p><a class="btn orange" href="iv-course-review-preview.html">Open IV Course Review</a></div>
+      <div class="card">
+        <div class="eyebrow">NCLEX Completion</div>
+        <h2>Complete class &amp; issue Certificate of Completion</h2>
+        <p class="muted">For NCLEX Review, the instructor confirms course completion here. The system then issues the ITASA Certificate of Completion automatically. This is separate from NCLEX licensure or exam results.</p>
+        <div id="nclex-completion-status" class="notice" hidden></div>
+        <div id="nclex-completion-roster"></div>
+      </div>
       <div class="card"><div class="eyebrow">My Courses</div><h2>Class status, registration &amp; seat availability</h2><p class="muted">Countdowns change automatically as calendar days pass. Seat counts recalculate from the current student roster each time the workspace refreshes.</p><div id="course-grid" class="grid"></div></div>
     </section>
 
     <section id="panel-resources" class="panel">
-      <div class="card resource"><div class="eyebrow">Instructor Resource Library</div><h2>Protected teaching resources</h2><p class="muted">The first-generation resource structure is being carried forward. Resource files will be delivered through authenticated storage before production; they will not be exposed in the public deployment repository.</p>
-        <div class="grid2">
-          <div><h3>Workbooks &amp; Instructor Guides</h3><p class="muted">Course workbooks, instructor guides, guided notes, teaching materials, case studies, and approved class resources.</p></div>
-          <div><h3>Assignments &amp; Practice</h3><p class="muted">Assignments, practice questions, quizzes, exam-prep items, instructor-managed Q&amp;A, and course-specific activities.</p></div>
-          <div><h3>Course Libraries</h3><p class="muted">NCLEX resources, IV Resources/Library, Skills Check-Off materials, references, and future approved course-specific resources.</p></div>
-          <div><h3>Student Support Resources</h3><p class="muted">Class reminders, announcements, workbook instructions, preparation guidance, and student progress support.</p></div>
-        </div>
+      <div class="card resource">
+        <div class="eyebrow">Instructor Medical &amp; Professional Resource Center</div>
+        <h2>Clinical knowledge, safety alerts &amp; professional resources</h2>
+        <p class="muted">This protected resource is fed from ITASA's medical and professional knowledge system, including current public-health, medication-safety, nursing, clinical-practice, licensure, and professional sources.</p>
+        <div id="instructor-resource-feed"><p class="muted">Loading instructor resources…</p></div>
       </div>
     </section>
 
     <section id="panel-updates" class="panel">
-      <div class="card"><div class="eyebrow">Clinical &amp; Professional Updates</div><h2>What You Need to Know</h2><p class="muted">This carries forward the first-generation professional-update/resource-center concept. Approved clinical, licensure, testing, and professional updates will be managed here rather than mixed into unrelated student spaces.</p></div>
+      <div class="card">
+        <div class="eyebrow">Clinical &amp; Professional Updates</div>
+        <h2>What You Need to Know</h2>
+        <p class="muted">This feed refreshes automatically from ITASA's active medical and professional knowledge sources. Source links remain available so instructors can review the original material.</p>
+        <div id="instructor-updates-feed"><p class="muted">Loading current updates…</p></div>
+      </div>
     </section>
 
     <section id="panel-readiness" class="panel">
@@ -92,14 +102,15 @@ label{display:block;font-weight:800;margin:.7rem 0 .3rem}input{width:100%;paddin
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/shared-content-supabase.js"></script>
-<script src="js/staff-hub-supabase.js"></script>
+<script src="js/staff-hub-supabase.js?v=5"></script>
 <script>
 (function(){
 'use strict';
-var state={students:[],classes:[],access:[]};
+var state={students:[],classes:[],access:[],knowledge:[],nclex:[]};
 function esc(v){return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
 function show(el,msg,tone){el.hidden=false;el.className='notice '+(tone||'');el.textContent=msg}
 function hide(el){el.hidden=true;el.textContent=''}
+function fmtDate(v){if(!v)return '';var d=new Date(v);return isNaN(d.getTime())?String(v):d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}
 function programName(id){return id==='review'?'NCLEX Review & Test-Taking Strategies':id==='skills'?'Skills Refresher Class':id==='iv'?'IV Insertion & Venipuncture':id||'ITASA Class'}
 function studentView(id){return id==='review'?'nclex-learning-space-preview.html':id==='skills'?'skills-learning-space-preview.html':id==='iv'?'iv-learning-space-preview.html':'student-portal-cutover-preview.html'}
 function easternKey(value){
@@ -117,6 +128,42 @@ function classClock(c){
 }
 function activeStudent(s){return !/cancelled|canceled|declined|refunded|withdrawn|review test/i.test(String(s.enrollment_status||''))}
 function seatsTaken(c){return state.students.filter(s=>activeStudent(s)&&(s.cohort_id===c.class_key||(!s.cohort_id&&s.program_id===c.program_id))).length}
+function renderKnowledgeFeed(){
+  var items=Array.isArray(state.knowledge)?state.knowledge:[];
+  var html=items.length?items.slice(0,20).map(function(item){
+    var src=item.source&&item.source.name?item.source.name:(item.source&&item.source.source_name?item.source.source_name:'ITASA source');
+    var date=item.published_at?fmtDate(item.published_at):'';
+    var link=item.url||item.canonical_url||'';
+    return '<article class="knowledge-item"><h3>'+esc(item.title||'Update')+'</h3><div class="knowledge-meta">'+esc(src)+(date?' · '+esc(date):'')+(item.jurisdiction?' · '+esc(item.jurisdiction):'')+'</div><p>'+esc(item.summary||'')+'</p>'+(link?'<p><a target="_blank" rel="noopener" href="'+esc(link)+'">Open source</a></p>':'')+'</article>';
+  }).join(''):'<p class="muted">No current medical/professional updates are available.</p>';
+  document.getElementById('instructor-resource-feed').innerHTML=html;
+  document.getElementById('instructor-updates-feed').innerHTML=html+'<p class="knowledge-meta">ITASA checks its automated knowledge sources daily.</p>';
+}
+function renderNclexCompletion(){
+  var box=document.getElementById('nclex-completion-roster');
+  var rows=Array.isArray(state.nclex)?state.nclex:[];
+  box.innerHTML=rows.map(function(r){
+    var completed=String(r.enrollment_status||'').toLowerCase()==='completed';
+    return '<article class="card course" data-nclex-student="'+esc(r.student_id)+'"><div class="toolbar"><div><h3>'+esc(r.student_name||'Student')+'</h3><div class="muted">'+esc(r.student_email||'')+'</div></div><div class="push">'+(completed?'<span class="tag good">Completed</span>':'<span class="tag warn">In progress</span>')+'</div></div>'+
+      (completed?'<p><strong>Certificate:</strong> '+esc(r.certificate_number||'Issued')+'</p><a class="btn secondary" target="_blank" href="certificate-staff-print-preview.html?student='+encodeURIComponent(r.student_id)+'">Print Certificate of Completion</a>':'<button class="orange" data-complete-nclex="'+esc(r.student_id)+'">Mark Course Complete &amp; Issue Certificate</button>')+
+      '</article>';
+  }).join('')||'<p class="muted">No NCLEX Review students are currently on the roster.</p>';
+
+  box.querySelectorAll('[data-complete-nclex]').forEach(function(btn){
+    btn.onclick=async function(){
+      var status=document.getElementById('nclex-completion-status');hide(status);
+      if(!confirm('Confirm that this student successfully completed the ITASA NCLEX Review & Test-Taking Strategies course?'))return;
+      btn.disabled=true;
+      try{
+        var r=await window.ItasaStaffHub.completeNclexStudent(btn.dataset.completeNclex);
+        if(!r||r.status!=='completed')throw new Error((r&&r.status)||'Completion could not be recorded.');
+        show(status,'NCLEX course completion recorded and Certificate of Completion issued.','good');
+        await load();
+      }catch(e){show(status,e.message||String(e),'error')}
+      finally{btn.disabled=false}
+    };
+  });
+}
 function renderCourses(){
   document.getElementById('course-grid').innerHTML=state.classes.map(function(c){
     var cap=Number(c.max_seats||0),taken=seatsTaken(c),remain=cap?Math.max(0,cap-taken):null;
@@ -136,12 +183,23 @@ function render(){
   document.getElementById('work-students').textContent=state.students.length;
   document.getElementById('work-classes').textContent=state.classes.length;
   document.getElementById('work-access').textContent=state.access.length;
-  renderCourses();renderAttention();
+  renderCourses();renderAttention();renderKnowledgeFeed();renderNclexCompletion();
 }
 async function load(){
   try{
-    var all=await Promise.all([window.ItasaStaffHub.fetchStudents(),window.ItasaSharedContentSupabase.fetchCollection('classes'),window.ItasaStaffHub.fetchClassAccess()]);
-    state.students=all[0]||[];state.classes=(all[1]&&all[1].data)||[];state.access=all[2]||[];render();
+    var all=await Promise.all([
+      window.ItasaStaffHub.fetchStudents(),
+      window.ItasaSharedContentSupabase.fetchCollection('classes'),
+      window.ItasaStaffHub.fetchClassAccess(),
+      window.ItasaStaffHub.fetchKnowledgeFeed('updates',null,30),
+      window.ItasaStaffHub.fetchNclexCompletionRoster()
+    ]);
+    state.students=all[0]||[];
+    state.classes=(all[1]&&all[1].data)||[];
+    state.access=all[2]||[];
+    state.knowledge=(all[3]&&all[3].status==='ok')?(all[3].items||[]):[];
+    state.nclex=(all[4]&&all[4].status==='ok')?(all[4].rows||[]):[];
+    render();
   }catch(e){console.error(e)}
 }
 document.querySelectorAll('.tabs button').forEach(function(b){b.onclick=function(){document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.getElementById('panel-'+b.dataset.panel).classList.add('active')}})
