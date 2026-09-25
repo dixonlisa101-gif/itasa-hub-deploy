@@ -17,9 +17,9 @@
     label{display:block;font-weight:800;margin:.8rem 0 .35rem}input{width:100%;padding:11px 12px;border:1px solid #b9cbcd;border-radius:9px;font:inherit}.btn{display:inline-block;border:0;border-radius:10px;padding:11px 15px;font:inherit;font-weight:800;cursor:pointer;text-decoration:none;background:var(--teal);color:#fff}.btn.orange{background:var(--orange)}.btn.secondary{background:#e8f4f4;color:var(--teal-dark)}.btnrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
     .status{border-left:5px solid var(--teal)}.ok{border-left-color:#3c8b65}.warn{border-left-color:var(--orange)}.error{border-left-color:#b74848}.workspace{display:none}.workspace.active{display:block}
     .welcome-strip{display:flex;align-items:center;gap:18px;flex-wrap:wrap}.welcome-strip img{width:84px;height:84px;border-radius:50%;object-fit:contain}.schedule{display:grid;grid-template-columns:160px 1fr;gap:8px 14px}.schedule div:nth-child(odd){font-weight:800}
-    .module{border-top:1px solid var(--line);padding:14px 0}.module:first-child{border-top:0}.community{background:var(--warm);border-left:5px solid var(--orange)}.protected{background:#fffaf4;border-left:5px solid var(--orange)}.qa-item{border-top:1px solid var(--line);padding:14px 0}.qa-item:first-child{border-top:0}
+    .module{border-top:1px solid var(--line);padding:14px 0}.module:first-child{border-top:0}.path{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:14px}.path-card{background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:16px}.path-card .num{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--teal);color:#fff;font-weight:900;margin-bottom:10px}.week-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.week{border:1px solid var(--line);border-radius:12px;padding:16px;background:#fff}.week strong{display:block;color:var(--teal-dark);margin-bottom:6px}.checklist label{display:flex;gap:10px;align-items:flex-start;font-weight:700;margin:.7rem 0}.checklist input{width:auto;margin-top:3px}.note{background:var(--warm);border-left:4px solid var(--orange);padding:12px 14px;border-radius:8px}.community{background:var(--warm);border-left:5px solid var(--orange)}.protected{background:#fffaf4;border-left:5px solid var(--orange)}.qa-item{border-top:1px solid var(--line);padding:14px 0}.qa-item:first-child{border-top:0}
     footer{text-align:center;padding:24px 18px;border-top:1px solid var(--line);background:#fff;color:#60757a}[hidden]{display:none!important}
-    @media(max-width:760px){.grid,.grid3{grid-template-columns:1fr}.schedule{grid-template-columns:1fr}.brand span{display:none}}
+    @media(max-width:900px){.path{grid-template-columns:repeat(2,minmax(0,1fr))}.week-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:760px){.grid,.grid3,.path,.week-grid{grid-template-columns:1fr}.schedule{grid-template-columns:1fr}.brand span{display:none}}
 </style>
 </head>
 <body>
@@ -34,7 +34,7 @@
   <section class="hero">
     <div class="eyebrow">Skills Refresher Class</div>
     <h1>Your Skills Refresher Learning Space</h1>
-    <p class="lead">This is your secure student space for the ITASA Skills Refresher Class. Use it for class access, assigned learning materials, updates, and preparation for the required in-person skills check-off.</p>
+    <p class="lead">Refresh your nursing knowledge, prepare with your instructor, practice with purpose, and complete the required in-person skills check-off. Your schedule, assigned materials, class access, and completion information stay together here.</p>
   </section>
 
   <section id="login-card" class="card">
@@ -52,7 +52,7 @@
   <section id="workspace" class="workspace">
     <div class="card welcome-strip">
       <img src="assets/itasa-circular-brand-logo.png" alt="ITASA logo">
-      <div><div class="eyebrow">Welcome back</div><h2 id="student-welcome">Skills Refresher Student</h2><p class="muted">Your Skills Refresher class combines Zoom-based theory with a required in-person skills check-off.</p></div>
+      <div><div class="eyebrow">Welcome back</div><h2 id="student-welcome">Skills Refresher Student</h2><p class="muted">Your 120-hour Skills Refresher course runs across six weeks with online theory and required in-person skills check-off activities.</p></div>
     </div>
 
     <div class="card">
@@ -60,16 +60,51 @@
       <div id="schedule-box" class="schedule"><div>Loading</div><div>Current class information…</div></div>
     </div>
 
-    <div class="grid">
-      <div class="card quick orange"><div class="eyebrow">Class Access</div><h3>Join your scheduled class</h3><div id="class-access"><p class="muted">Checking your secure class-access details…</p></div></div>
-      <div class="card quick"><div class="eyebrow">Learning Materials</div><h3>Your assigned materials</h3><div id="materials"><p class="muted">ITASA-assigned Skills Refresher materials will appear here as they are added to your class.</p></div></div>
+    <section class="card">
+      <div class="eyebrow">Start here</div><h2>How your Skills Refresher course works</h2>
+      <p class="muted">Each part of the course prepares you for the next. Your instructor will add approved learning materials and skills instructions as they are assigned.</p>
+      <div class="path">
+        <div class="path-card"><div class="num">1</div><h3>Prepare</h3><p class="muted">Check the weekend schedule, review assigned materials, and write down questions before class.</p></div>
+        <div class="path-card"><div class="num">2</div><h3>Learn</h3><p class="muted">Participate in the scheduled theory instruction and connect the material to safe nursing practice.</p></div>
+        <div class="path-card"><div class="num">3</div><h3>Practice</h3><p class="muted">Use instructor guidance and assigned practice to prepare for the hands-on portion of the course.</p></div>
+        <div class="path-card"><div class="num">4</div><h3>Check off</h3><p class="muted">Complete required in-person skills check-off activities with the instructor. Arrive on time and follow the posted instructions.</p></div>
+      </div>
+    </section>
 
+    <section class="card">
+      <div class="eyebrow">Six-week journey</div><h2>Your course weekends</h2>
+      <p class="muted">The course is scheduled across six weeks. Exact daily start/end times remain pending ITASA confirmation.</p>
+      <div class="week-grid">
+        <div class="week"><strong>Weekend 1</strong><span class="muted">Orientation, assigned learning, and instructor guidance.</span></div>
+        <div class="week"><strong>Weekend 2</strong><span class="muted">Continue assigned learning and prepare for supervised skills work.</span></div>
+        <div class="week"><strong>Weekend 3</strong><span class="muted">Build confidence through review, questions, and instructor-guided practice.</span></div>
+        <div class="week"><strong>Weekend 4</strong><span class="muted">Continue course learning and skills preparation using assigned materials.</span></div>
+        <div class="week"><strong>Weekend 5</strong><span class="muted">Focus on readiness for required skills check-off activities.</span></div>
+        <div class="week"><strong>Weekend 6</strong><span class="muted">Complete remaining course requirements and review completion status.</span></div>
+      </div>
+    </section>
+
+    <div class="grid">
+      <div class="card quick orange"><div class="eyebrow">Class Access</div><h3>Join your scheduled theory session</h3><div id="class-access"><p class="muted">Checking your secure class-access details…</p></div></div>
+      <div class="card quick"><div class="eyebrow">Learning Materials</div><h3>Your assigned learning</h3><div id="materials"><p class="muted">ITASA-assigned Skills Refresher materials will appear here as they are added to your course.</p></div></div>
     </div>
+
+    <section class="card">
+      <div class="eyebrow">Before skills check-off</div><h2>Your readiness self-check</h2>
+      <p class="muted">Use this quick check before an in-person skills session. It is for your own preparation only and does not record attendance, grades, or course completion.</p>
+      <div class="checklist">
+        <label><input type="checkbox" data-readiness> <span>I reviewed the materials assigned for this session.</span></label>
+        <label><input type="checkbox" data-readiness> <span>I wrote down questions or areas I want the instructor to review.</span></label>
+        <label><input type="checkbox" data-readiness> <span>I checked my class time and in-person instructions.</span></label>
+        <label><input type="checkbox" data-readiness> <span>I am prepared to arrive on time for the required skills session.</span></label>
+      </div>
+      <div id="readiness-message" class="note">Check each item as you prepare.</div>
+    </section>
 
     <div class="grid">
       <div class="card protected"><div class="eyebrow">Required In-Person Phase</div><h2>Skills check-off</h2>
-        <p class="muted">This class includes a required in-person skills check-off. The physical skills location is protected and is provided only to registered students after payment confirmation.</p>
-        <p><strong>Arrival requirement:</strong> Please arrive on time for every required in-person skills session.</p>
+        <p class="muted">This course includes required in-person skills check-off activities. The physical skills location is protected and is provided only to registered students after payment confirmation.</p>
+        <p><strong>Arrival requirement:</strong> Please arrive on time for every required in-person skills session. Your instructor will provide the skills checklist and any session-specific preparation instructions.</p>
         <div id="skills-checkoff"><p class="muted">Your assigned skills checklist and check-off instructions will appear here when ITASA posts them.</p></div>
       </div>
       <div class="card"><div class="eyebrow">Class Updates</div><h2>Announcements</h2><div id="class-announcements"><p class="muted">No current Skills Refresher announcements are posted.</p></div></div>
@@ -79,6 +114,12 @@
       <div class="eyebrow">Completion</div><h2>Completion &amp; Certificate</h2>
       <div id="completion"><p class="muted">Checking your completion information…</p></div>
     </div>
+
+    <details class="card">
+      <summary><strong>Course purpose &amp; professional responsibility</strong></summary>
+      <p class="muted">The Skills Refresher course is provided for educational purposes. Completion does not replace state licensing requirements, clinical experience, employer orientation, work-specific competency validation, or any requirements imposed by a licensing authority.</p>
+      <p class="muted">Students remain responsible for ensuring that their education and training meet applicable laws, Board of Nursing requirements, employer policies, and professional scope-of-practice standards.</p>
+    </details>
 
     <div class="card community">
       <div class="eyebrow">ITASA Community</div><h2>Stay connected between class sessions.</h2>
@@ -202,6 +243,16 @@ form.addEventListener('submit',async function(ev){
   }catch(err){console.error(err);showStatus('<strong>Unable to open this learning space right now.</strong> No student records were changed.','error')}
   finally{btn.disabled=false;btn.textContent='Enter Skills Refresher Learning Space'}
 });
+
+document.querySelectorAll('[data-readiness]').forEach(function(box){
+  box.addEventListener('change',function(){
+    const boxes=Array.from(document.querySelectorAll('[data-readiness]'));
+    const done=boxes.filter(function(b){return b.checked}).length;
+    const msg=document.getElementById('readiness-message');
+    msg.textContent=done===boxes.length?'You completed your readiness self-check. Bring any remaining questions to your instructor.':done+' of '+boxes.length+' preparation items checked.';
+  });
+});
+
 document.getElementById('student-signout').addEventListener('click',function(){
   window.ItasaStudentPortal.clearSessionCredentials();
   window.location.href='student-portal-cutover-preview.html';
