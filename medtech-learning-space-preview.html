@@ -65,7 +65,7 @@ form.addEventListener('submit',async function(ev){
      showStatus('<strong>The MT preview could not be loaded.</strong> No student records were changed.','error');return;
    }
    document.getElementById('student-welcome').textContent='Welcome, '+((st.first_name||'').trim()||'Student');
-   window.ItasaMedtechCourse.mount(document.getElementById('course-box'),preview);
+   window.ItasaMedtechCourse.mount(document.getElementById('course-box'),preview,{studentKey:st.id||email});
    document.getElementById('login-card').hidden=true;document.getElementById('student-signout').hidden=false;workspace.classList.add('active');showStatus('<strong>Welcome to your Medication Technician Virtual Learning Space.</strong>','ok');document.getElementById('code').value='';workspace.scrollIntoView({behavior:'smooth',block:'start'});
  }catch(err){console.error(err);showStatus('<strong>Unable to open this learning space right now.</strong> No student records were changed.','error')}
  finally{btn.disabled=false;btn.textContent='Enter MT Virtual Learning Space'}
