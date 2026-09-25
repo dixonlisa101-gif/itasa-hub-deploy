@@ -85,6 +85,13 @@
       <div id="materials" aria-live="polite"><p class="muted">Checking for approved materials assigned to your IV course…</p></div>
     </section>
 
+    <section id="iv-assessment" class="card protected" aria-labelledby="iv-assessment-title">
+      <div class="eyebrow">Required Testing</div>
+      <h2 id="iv-assessment-title">IV Final Knowledge Assessment</h2>
+      <p class="muted">Complete the final knowledge assessment after reviewing the six IV modules. A score of <strong>80% or higher</strong> is required before final competency validation.</p>
+      <div id="iv-assessment-box"><p class="muted">Checking your assessment status…</p></div>
+    </section>
+
     <div class="grid">
       <div id="hands-on-learning" class="card protected"><div class="eyebrow">Hands-On Skills</div><h2>Practice with your instructor</h2>
         <p class="muted">Each IV class includes 4 hours of theory and 4 hours of hands-on skills. Final competency validation is included in the second class.</p>
@@ -118,7 +125,7 @@
 'use strict';
 const PROGRAM='iv';
 const form=document.getElementById('login-form'),btn=document.getElementById('login-btn'),status=document.getElementById('status'),workspace=document.getElementById('workspace');
-let classRow=null;
+let classRow=null,currentEmail='',currentCode='',ivAssessmentData=null,ivAssessmentAnswers={},ivAssessmentResult=null;
 function esc(v){return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
 function showStatus(html,tone){status.hidden=false;status.className='card status '+(tone||'');status.innerHTML=html}
 function fmtDate(v){if(!v)return '';const d=new Date(v);if(isNaN(d.getTime()))return '';return d.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}
@@ -192,6 +199,57 @@ function renderLearning(ws,st,preview){
     }).join(''):'<p class="muted">No approved items have been posted in this section yet.</p>')+'</details>';
   }).join('');
 }
+function assessmentProgress(s){
+  const rows=s&&Array.isArray(s.assessments)?s.assessments:[];
+  return rows.find(function(x){return x.assessment_key==='iv_final_knowledge_assessment'})||null;
+}
+function renderIvAssessment(s){
+  const box=document.getElementById('iv-assessment-box');
+  if(!box)return;
+  const p=assessmentProgress(s);
+  let html='';
+  if(p&&p.passed)html+='<div class="notice good"><strong>Passed</strong><br>Best score: '+esc(p.best_score)+'%</div>';
+  else if(p&&p.attempts_used)html+='<div class="notice warn"><strong>Not yet passed</strong><br>Best score: '+esc(p.best_score)+'% · 80% required</div>';
+  if(ivAssessmentResult&&ivAssessmentResult.status==='graded'){
+    html+='<div class="notice '+(ivAssessmentResult.passed?'good':'warn')+'"><strong>'+(ivAssessmentResult.passed?'Passed':'Review and try again')+'</strong><br>Score: '+esc(ivAssessmentResult.score)+'% · '+esc(ivAssessmentResult.correct_count)+' of '+esc(ivAssessmentResult.question_count)+' correct</div>';
+  }
+  if(!ivAssessmentData){
+    html+='<button id="start-iv-assessment" class="btn orange" type="button">'+(p&&p.passed?'Open Assessment':'Start Assessment')+'</button>';
+    box.innerHTML=html;
+    document.getElementById('start-iv-assessment').onclick=loadIvAssessment;
+    return;
+  }
+  if(ivAssessmentData.status!=='ok'){
+    box.innerHTML=html+'<div class="notice warn">The assessment is not available right now.</div>';return;
+  }
+  const qs=Array.isArray(ivAssessmentData.questions)?ivAssessmentData.questions:[];
+  html+='<form id="iv-assessment-form">'+qs.map(function(q,i){
+    const selected=ivAssessmentAnswers[q.question_key];
+    return '<fieldset style="border:1px solid var(--line);border-radius:12px;padding:14px;margin:14px 0"><legend><strong>'+(i+1)+'. '+esc(q.prompt)+'</strong></legend>'+
+      (Array.isArray(q.options)?q.options:[]).map(function(o){
+        return '<label style="display:flex;gap:9px;align-items:flex-start;font-weight:500;border:1px solid var(--line);border-radius:9px;padding:10px;margin:8px 0"><input style="width:auto;margin-top:3px" type="radio" name="iv-'+esc(q.question_key)+'" data-iv-question="'+esc(q.question_key)+'" value="'+esc(o.key)+'" '+(selected===o.key?'checked':'')+'> <span>'+esc(o.text)+'</span></label>';
+      }).join('')+'</fieldset>';
+  }).join('')+'<button class="btn orange" type="submit">Submit Assessment</button></form>';
+  box.innerHTML=html;
+  box.querySelectorAll('[data-iv-question]').forEach(function(el){el.onchange=function(){ivAssessmentAnswers[el.dataset.ivQuestion]=el.value}});
+  document.getElementById('iv-assessment-form').onsubmit=submitIvAssessment;
+}
+async function loadIvAssessment(){
+  const box=document.getElementById('iv-assessment-box');
+  box.innerHTML='<p class="muted">Opening secure assessment…</p>';
+  ivAssessmentData=await window.ItasaAssessmentSkills.getIvAssessment(currentEmail,currentCode,'iv_final_knowledge_assessment');
+  renderIvAssessment(await window.ItasaAssessmentSkills.getStatus(currentEmail,currentCode));
+}
+async function submitIvAssessment(ev){
+  ev.preventDefault();
+  const qs=Array.isArray(ivAssessmentData&&ivAssessmentData.questions)?ivAssessmentData.questions:[];
+  if(qs.some(function(q){return !ivAssessmentAnswers[q.question_key]})){showStatus('<strong>Please answer every assessment question before submitting.</strong>','warn');return}
+  const submit=document.querySelector('#iv-assessment-form button[type="submit"]');if(submit){submit.disabled=true;submit.textContent='Submitting…'}
+  ivAssessmentResult=await window.ItasaAssessmentSkills.submitIvAssessment(currentEmail,currentCode,'iv_final_knowledge_assessment',ivAssessmentAnswers);
+  ivAssessmentData=null;ivAssessmentAnswers={};
+  const newStatus=await window.ItasaAssessmentSkills.getStatus(currentEmail,currentCode);
+  renderIvAssessment(newStatus);renderIvSkillsStatus(newStatus);
+}
 function renderIvSkillsStatus(s){
   const box=document.getElementById('iv-competency');
   if(!box)return;
@@ -244,6 +302,7 @@ form.addEventListener('submit',async function(ev){
       showStatus('<strong>Access not opened.</strong><br>'+esc(m[login.status]||'ITASA could not validate this access right now.'),'warn');return;
     }
     const st=login.student;
+    currentEmail=email;currentCode=code;
     window.ItasaStudentPortal.setSessionCredentials(email,code);
     if(st.programId!==PROGRAM){showStatus('<strong>This student account is valid, but it is not assigned to this class.</strong><br><a href="student-portal-cutover-preview.html">Return to Student Home</a>','warn');return}
     document.getElementById('student-welcome').textContent='Welcome, '+((st.first_name||'').trim()||'Student');
@@ -256,7 +315,7 @@ form.addEventListener('submit',async function(ev){
       isIvReviewTest?window.ItasaStudentPortal.getIvReviewPreview(email,code):Promise.resolve(null),
       window.ItasaAssessmentSkills.getStatus(email,code)
     ]);
-    renderAccess(results[0]);renderLearning(results[1],st,results[3]);renderCertificates(results[2]);renderIvSkillsStatus(results[4]);
+    renderAccess(results[0]);renderLearning(results[1],st,results[3]);renderCertificates(results[2]);renderIvAssessment(results[4]);renderIvSkillsStatus(results[4]);
     await loadIvQa();
     document.getElementById('login-card').hidden=true;document.getElementById('student-signout').hidden=false;workspace.classList.add('active');showStatus('<strong>Welcome to your IV Learning Space.</strong>','ok');document.getElementById('code').value='';workspace.scrollIntoView({behavior:'smooth',block:'start'});
   }catch(err){console.error(err);showStatus('<strong>Unable to open this learning space right now.</strong> No student records were changed.','error')}
