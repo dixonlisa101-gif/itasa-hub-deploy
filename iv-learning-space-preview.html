@@ -23,6 +23,7 @@
     footer{text-align:center;padding:24px 18px;border-top:1px solid var(--line);background:#fff;color:#60757a}[hidden]{display:none!important}
     @media(max-width:760px){.grid,.grid3{grid-template-columns:1fr}.schedule{grid-template-columns:1fr}.brand span{display:none}}
 </style>
+<link rel="stylesheet" href="css/iv-course-reader.css?v=7">
 </head>
 <body>
 <div class="preview">IV LEARNING SPACE — Design preview. Lessons are in development; enrollment remains on hold.</div>
@@ -65,10 +66,10 @@
     <section class="card" aria-labelledby="learning-path-title">
       <div class="eyebrow">Start here</div><h2 id="learning-path-title">How each lesson will teach you</h2>
       <span class="draft-label">Lesson design preview</span>
-      <p class="muted">This is the teaching sequence being developed for instructor review. The explanations, demonstrations, practice activities, and feedback still need to be authored and approved.</p>
+      <p class="muted">The six-module teaching draft is in staff review. Lessons and activities will appear here after ITASA approves their release.</p>
       <ol class="learning-path">
         <li><h3>Learn</h3><p>Begin with a clear learning goal and a short explanation of the topic, with examples and the reasons behind each decision.</p></li>
-        <li><h3>Watch</h3><p>Follow an instructor demonstration, live or recorded, with narration explaining what to notice and why.</p></li>
+        <li><h3>Walk through</h3><p>Read a short practice situation and notice the decisions that matter.</p></li>
         <li><h3>Practice</h3><p>Work through a guided scenario or an instructor-supervised activity using the lesson's approved materials.</p></li>
         <li><h3>Explain</h3><p>Describe your reasoning, receive feedback, and revisit anything that needs more practice.</p></li>
         <li><h3>Demonstrate</h3><p>Use the instructor's checklist during supervised skills practice and competency validation.</p></li>
@@ -109,6 +110,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/student-portal-supabase.js"></script>
+<script src="js/iv-course-reader.js?v=7"></script>
 <script src="js/shared-content-supabase.js"></script>
 <script>
 (function(){
@@ -171,8 +173,12 @@ function renderLearning(ws,st){
   const enrollments=Array.isArray(ws.enrollments)?ws.enrollments:[];
   const course=enrollments.find(function(e){return e&&e.offering&&e.offering.offering_key==='iv_insertion_venipuncture'});
   const sections=Array.isArray(course&&course.sections)?course.sections:[];
+  const interactive=sections.flatMap(function(s){return Array.isArray(s.items)?s.items:[]}).find(function(item){return item.content&&item.content.schema_version==='itasa_iv_interactive_v1'});
+  if(interactive&&window.ItasaIvCourse){
+    window.ItasaIvCourse.mount(materials,interactive.content.curriculum,{teachingNotes:false});return;
+  }
   if(!sections.length){
-    materials.innerHTML='<p><strong>No approved IV lessons are available to this account yet.</strong></p><p class="muted">The course outline is in draft. Teaching explanations, demonstrations, guided activities, and feedback must be developed and approved before they can appear here.</p>';return;
+    materials.innerHTML='<p><strong>No approved IV lessons are available to this account yet.</strong></p><p class="muted">The six-module course is in staff review. Approved lessons will appear here when ITASA releases them.</p>';return;
   }
   const labels={learning:'Lesson',overview:'Course overview',orientation:'Preparation',access:'Class access',notice:'Course information',schedule:'Schedule',skills:'Supervised practice',competency:'Instructor validation',requirement:'Completion requirement',progress:'Completion information',certificate:'Certificate information'};
   materials.innerHTML=sections.map(function(s){
@@ -239,3 +245,4 @@ if(cached){
 })();
 </script>
 </body></html>
+
