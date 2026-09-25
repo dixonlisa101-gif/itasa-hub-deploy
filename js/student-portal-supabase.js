@@ -417,6 +417,27 @@
   }
 
 
+  async function getHubFeeds(email, accessCode, limit) {
+    var client = getClient();
+    if (!client) return { status: 'error' };
+    try {
+      var result = await client.rpc('get_my_student_hub_feeds', {
+        p_email: (email || '').trim().toLowerCase(),
+        p_access_code: (accessCode || '').trim(),
+        p_limit: Number(limit || 10)
+      });
+      if (result.error) {
+        console.error('ITASA student portal: get_my_student_hub_feeds failed', result.error);
+        return { status: 'error' };
+      }
+      return result.data || { status: 'error' };
+    } catch (err) {
+      console.error('ITASA student portal: get_my_student_hub_feeds threw', err);
+      return { status: 'error' };
+    }
+  }
+
+
   /**
    * getCertificates(email, accessCode)
    *
@@ -462,6 +483,7 @@
     getIvReviewPreview: getIvReviewPreview,
     getSkillsReviewPreview: getSkillsReviewPreview,
     getMedtechReviewPreview: getMedtechReviewPreview,
+    getHubFeeds: getHubFeeds,
     getCertificates: getCertificates,
     setSessionCredentials: setSessionCredentials,
     getSessionCredentials: getSessionCredentials,
