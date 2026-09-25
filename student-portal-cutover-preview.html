@@ -31,7 +31,7 @@
     .space-card{border-top:4px solid var(--orange)}
     .summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 18px;margin-top:14px}
     .summary div:nth-child(odd){font-weight:800}
-    .community{background:var(--warm);border-left:5px solid var(--orange)}
+    .community{background:var(--warm);border-left:5px solid var(--orange)}.hub-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}.hub-tabs button{background:#e8f4f4;color:var(--teal-dark)}.hub-tabs button.active{background:var(--teal);color:#fff}.hub-panel{display:none}.hub-panel.active{display:block}.feed-item{border-left:4px solid var(--teal);padding:12px 14px;margin:10px 0;background:#fff;border-radius:10px}.feed-item h3{margin:.1rem 0 .4rem}.feed-meta{font-size:.82rem;color:var(--muted)}
     [hidden]{display:none!important}
     footer{text-align:center;padding:24px 18px;border-top:1px solid var(--line);background:#fff;color:#60757a}
     @media(max-width:650px){.summary{grid-template-columns:1fr}.summary div:nth-child(odd){margin-top:8px}.brand span{display:none}}
@@ -76,6 +76,17 @@
 
       <div id="space-card" class="card space-card"></div>
 
+      <div class="card">
+        <div class="eyebrow">Student Information Center</div>
+        <h2>Stay informed while you learn.</h2>
+        <div id="student-info-tabs" class="hub-tabs">
+          <button class="btn secondary active" type="button" data-hub-panel="things">Things You Need to Know</button>
+          <button class="btn secondary" type="button" data-hub-panel="events">Current Events</button>
+        </div>
+        <div id="hub-things" class="hub-panel active"><p class="muted">Loading ITASA updates…</p></div>
+        <div id="hub-events" class="hub-panel"><p class="muted">Loading current healthcare updates…</p></div>
+      </div>
+
       <div class="card community">
         <div class="eyebrow">ITASA Community</div>
         <h2>Stay connected between class sessions.</h2>
@@ -94,7 +105,7 @@
   <footer>Innovation Training &amp; Staffing Agency · Empowering Nurses. Elevating Healthcare.</footer>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/student-portal-supabase.js"></script>
+  <script src="js/student-portal-supabase.js?v=4"></script>
   <script src="js/shared-content-supabase.js"></script>
   <script>
   (function(){
@@ -144,6 +155,31 @@ function classCountdown(row){
       }catch(err){console.error('Unable to load class summary',err)}
     }
     const classesReady=loadClasses();
+
+    function renderFeedItems(items,type){
+      if(!Array.isArray(items)||!items.length)return '<p class="muted">No updates are posted right now.</p>';
+      return items.map(function(item){
+        var title=esc(item.title||'ITASA Update');
+        var body=esc(item.body||item.summary||'');
+        var source=item.source&&item.source.name?'<div class="feed-meta">'+esc(item.source.name)+(item.published_at?' · '+esc(fmtDate(item.published_at)):'')+'</div>':'';
+        var link='';
+        var url=item.resource_url||item.url||'';
+        var label=item.resource_label||'Open source';
+        if(url)link='<p><a target="_blank" rel="noopener" href="'+esc(url)+'">'+esc(label)+'</a></p>';
+        return '<article class="feed-item"><h3>'+title+'</h3>'+source+'<p>'+body+'</p>'+link+'</article>';
+      }).join('');
+    }
+    function renderStudentFeeds(feed){
+      var things=document.getElementById('hub-things'),events=document.getElementById('hub-events');
+      if(!feed||feed.status!=='ok'){
+        things.innerHTML='<p class="muted">ITASA updates are temporarily unavailable.</p>';
+        events.innerHTML='<p class="muted">Current healthcare updates are temporarily unavailable.</p>';
+        return;
+      }
+      things.innerHTML=renderFeedItems(feed.things_to_know,'things');
+      events.innerHTML=renderFeedItems(feed.current_events,'events')+
+        '<p class="feed-meta">Current Events refresh automatically from ITASA medical and professional knowledge sources.</p>';
+    }
 
     function renderSpace(st){
       const id=st.programId||'';
@@ -198,23 +234,15 @@ function classCountdown(row){
         document.getElementById('welcome-name').textContent='Welcome back, '+((st.first_name||'').trim()||'Student')+'.';
         await classesReady;
         renderSpace(st);
+        const feed=await window.ItasaStudentPortal.getHubFeeds(email,code,10);
+        renderStudentFeeds(feed);
         loginCard.hidden=true;
         signout.hidden=false;
         document.getElementById('student-view-label').textContent='Student Home';
         document.getElementById('student-intro').textContent='Your class access, materials, updates, and completion information are ready below.';
         home.hidden=false;
-        showStatus(restoreHome?'<strong>Welcome back to Student Home.</strong>':'<strong>You’re signed in.</strong> Opening your virtual learning space…','ok');
+        showStatus(restoreHome?'<strong>Welcome back to Student Home.</strong>':'<strong>You’re signed in.</strong> Your Student Home is ready below.','ok');
         document.getElementById('code').value='';
-        const routes={
-          review:'nclex-learning-space-preview.html',
-          skills:'skills-learning-space-preview.html',
-          iv:'iv-learning-space-preview.html',
-          medtech:'medtech-learning-space-preview.html'
-        };
-        if(!restoreHome&&routes[st.programId]) {
-          window.location.href=routes[st.programId];
-          return;
-        }
         home.scrollIntoView({behavior:'smooth',block:'start'});
       }catch(err){
         console.error(err);
@@ -224,6 +252,14 @@ function classCountdown(row){
         btn.disabled=false;btn.textContent='Sign In';
       }
     }
+
+    document.querySelectorAll('[data-hub-panel]').forEach(function(tab){
+      tab.addEventListener('click',function(){
+        document.querySelectorAll('[data-hub-panel]').forEach(function(x){x.classList.toggle('active',x===tab)});
+        document.querySelectorAll('.hub-panel').forEach(function(p){p.classList.remove('active')});
+        document.getElementById('hub-'+tab.dataset.hubPanel).classList.add('active');
+      });
+    });
 
     form.addEventListener('submit',function(ev){
       ev.preventDefault();
