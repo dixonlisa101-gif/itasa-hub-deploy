@@ -73,6 +73,11 @@ label{display:block;font-weight:800;margin:.7rem 0 .3rem}input{width:100%;paddin
       <div class="card"><div class="eyebrow">Assessments &amp; Skills</div><h2>Student readiness &amp; skills check-offs</h2><p class="muted">Review Medical Technician Class assessment results, IV competency status, schedule skills check-offs, and record competency results.</p><a class="btn orange" href="assessment-skills-workspace-preview.html">Open Assessments &amp; Skills</a></div>
       <div class="card"><div class="eyebrow">IV course · Staff review</div><h2>Review the six-module teaching draft</h2><p class="muted">Revision 7 includes the phase-card activity, simpler practice prompts, references, and separate Teaching Notes. Enrollment remains on hold.</p><a class="btn orange" href="iv-course-review-preview.html">Open IV Course Review</a></div>
       <div class="card">
+        <div class="eyebrow">Assigned Course Workspaces</div>
+        <h2>Open your assigned course work.</h2>
+        <div id="assigned-course-workspaces" class="grid2"></div>
+      </div>
+      <div class="card">
         <div class="eyebrow">NCLEX Completion</div>
         <h2>Complete class &amp; issue Certificate of Completion</h2>
         <p class="muted">For NCLEX Review, the instructor confirms course completion here. The system then issues the ITASA Certificate of Completion automatically. This is separate from NCLEX licensure or exam results.</p><p><a class="btn secondary" target="_blank" href="nclex-certificate-preview.html">Preview NCLEX Certificate Layout</a></p>
@@ -119,7 +124,7 @@ label{display:block;font-weight:800;margin:.7rem 0 .3rem}input{width:100%;paddin
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/shared-content-supabase.js"></script>
-<script src="js/staff-hub-supabase.js?v=9"></script>
+<script src="js/staff-hub-supabase.js?v=11"></script>
 <script>
 (function(){
 'use strict';
@@ -167,6 +172,19 @@ function renderKnowledgeFeed(){
       '</section>';
   }).join('');
   document.getElementById('instructor-resource-feed').innerHTML=blocks||'<p class="muted">No active course assignment is attached to this instructor account.</p>';
+}
+function renderAssignedCourseWorkspaces(){
+  var box=document.getElementById('assigned-course-workspaces');
+  var assign=state.readiness&&Array.isArray(state.readiness.assignments)?state.readiness.assignments:[];
+  var rows=assign.filter(function(a){return a.offering_key==='iv_insertion_venipuncture'||a.offering_key==='medication_technician_6_hour'});
+  box.innerHTML=rows.map(function(a){
+    var iv=a.offering_key==='iv_insertion_venipuncture';
+    return '<article class="card course"><div class="eyebrow">'+esc(a.class_name)+'</div><h3>'+esc(a.assignment_role||'Instructor')+' workspace</h3><div class="toolbar">'+
+      (iv?'<a class="btn secondary" href="iv-course-review-preview.html">Open IV Course Review</a>':'<a class="btn secondary" href="medtech-learning-space-preview.html">Review Medical Technician Class</a>')+
+      '<a class="btn secondary" href="assessment-skills-workspace-preview.html">Open Assessments &amp; Skills</a>'+
+      '<button class="secondary" type="button" data-open-resources>Open Regulatory Resources</button></div></article>';
+  }).join('')||'<p class="muted">No IV or Medical Technician Class assignment is attached to this account.</p>';
+  box.querySelectorAll('[data-open-resources]').forEach(function(btn){btn.onclick=function(){var tab=document.querySelector('[data-panel="resources"]');if(tab)tab.click()}});
 }
 function renderNclexCompletion(){
   var box=document.getElementById('nclex-completion-roster');
@@ -297,7 +315,7 @@ function render(){
   document.getElementById('work-students').textContent=state.students.length;
   document.getElementById('work-classes').textContent=state.classes.length;
   document.getElementById('work-access').textContent=state.access.length;
-  renderCourses();renderAttention();renderOneOnOneAttention();renderKnowledgeFeed();renderNclexCompletion();renderReadiness();
+  renderCourses();renderAttention();renderOneOnOneAttention();renderKnowledgeFeed();renderAssignedCourseWorkspaces();renderNclexCompletion();renderReadiness();
 }
 async function load(){
   var rs=document.getElementById('refresh-status');
@@ -345,7 +363,7 @@ function sync(){
   if(st){
     document.getElementById('login-shell').hidden=true;document.getElementById('workspace-header').hidden=false;document.getElementById('workspace').hidden=false;
     document.getElementById('staff-name').textContent=st.full_name||st.email;document.getElementById('staff-meta').textContent=st.role+' · '+st.email;
-    document.getElementById('ops-tab').hidden=false;load();
+    document.getElementById('ops-tab').hidden=String(st.role||'').toLowerCase()!=='administrator';load();
   }else{document.getElementById('login-shell').hidden=false;document.getElementById('workspace-header').hidden=true;document.getElementById('workspace').hidden=true}
 }
 document.getElementById('send-review-reset').onclick=async function(){
