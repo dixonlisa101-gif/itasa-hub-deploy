@@ -268,6 +268,14 @@
 
 
 
+
+  async function fetchInstructorReadiness() {
+    requireStaff();
+    var result = await client.rpc('get_my_instructor_readiness');
+    if (result.error) throw result.error;
+    return result.data || { status: 'error', assignments: [], credentials: [] };
+  }
+
   async function fetchAssessmentSkillsRoster() {
     requireOperator();
     var result = await client.rpc('get_assessment_skills_roster');
@@ -325,6 +333,7 @@
     fetchOneOnOneRequests: fetchOneOnOneRequests,
     updateOneOnOneStatus: updateOneOnOneStatus,
     fetchAuditLog: fetchAuditLog,
+    fetchInstructorReadiness: fetchInstructorReadiness,
     fetchAssessmentSkillsRoster: fetchAssessmentSkillsRoster,
     fetchKnowledgeFeed: fetchKnowledgeFeed,
     fetchNclexCompletionRoster: fetchNclexCompletionRoster,
