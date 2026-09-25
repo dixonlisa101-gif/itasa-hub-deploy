@@ -190,7 +190,7 @@ function renderAccess(a){
 function renderLearning(ws,st,preview){
   const materials=document.getElementById('materials');
   if(preview&&preview.status==='ok'&&preview.curriculum&&window.ItasaSkillsCourse){
-    window.ItasaSkillsCourse.mount(materials,preview.curriculum);return;
+    window.ItasaSkillsCourse.mount(materials,preview.curriculum,{studentKey:st.id||st.email||'review'});return;
   }
   const enrollments=Array.isArray(ws&&ws.enrollments)?ws.enrollments:[];
   if(enrollments.length){
