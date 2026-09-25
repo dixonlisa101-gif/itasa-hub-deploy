@@ -397,6 +397,26 @@
   }
 
 
+  async function getMedtechReviewPreview(email, accessCode) {
+    var client = getClient();
+    if (!client) return { status: 'error' };
+    try {
+      var result = await client.rpc('get_medtech_review_student_preview', {
+        p_email: (email || '').trim().toLowerCase(),
+        p_access_code: (accessCode || '').trim()
+      });
+      if (result.error) {
+        console.error('ITASA student portal: get_medtech_review_student_preview failed', result.error);
+        return { status: 'error' };
+      }
+      return result.data || { status: 'error' };
+    } catch (err) {
+      console.error('ITASA student portal: get_medtech_review_student_preview threw', err);
+      return { status: 'error' };
+    }
+  }
+
+
   /**
    * getCertificates(email, accessCode)
    *
@@ -441,6 +461,7 @@
     getLearningWorkspace: getLearningWorkspace,
     getIvReviewPreview: getIvReviewPreview,
     getSkillsReviewPreview: getSkillsReviewPreview,
+    getMedtechReviewPreview: getMedtechReviewPreview,
     getCertificates: getCertificates,
     setSessionCredentials: setSessionCredentials,
     getSessionCredentials: getSessionCredentials,
