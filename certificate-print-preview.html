@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ITASA Certificate of Completion</title>
+<style>
+:root{--teal:#177982;--dark:#0d5961;--orange:#dd7b2d;--ink:#18343b;--muted:#63767b;--line:#d9e7e8;font-family:Arial,sans-serif;color:var(--ink);background:#eef5f5}
+*{box-sizing:border-box}body{margin:0}.bar{max-width:1056px;margin:18px auto 0;display:flex;gap:10px;justify-content:flex-end}.bar button,.bar a{border:0;border-radius:8px;padding:10px 13px;font-weight:800;text-decoration:none;background:var(--teal);color:#fff;cursor:pointer}.bar a{background:#e4eeee;color:var(--dark)}
+.cert{position:relative;width:1056px;height:816px;margin:12px auto 24px;background:white;border:8px solid var(--teal);box-shadow:0 10px 28px rgba(0,0,0,.12);padding:40px 55px;text-align:center}.cert:before{content:"";position:absolute;inset:10px;border:2px solid var(--orange);pointer-events:none}
+.brand{font-size:31px;font-weight:900;color:var(--dark);margin-top:2px}.tagline{color:var(--orange);margin-top:5px}.label{font-size:18px;font-weight:800;color:var(--muted);margin-top:30px}.small{font-size:15px}.name{font-size:43px;font-weight:900;color:var(--dark);margin:18px auto 8px;padding-bottom:6px;border-bottom:1px solid var(--line);max-width:560px}.course{font-size:28px;font-weight:900;color:var(--orange);margin:25px auto 8px;max-width:820px}.details{font-size:16px;margin-top:27px}.signs{position:absolute;left:70px;right:70px;bottom:82px;display:grid;grid-template-columns:1fr 1fr;gap:85px}.sig{border-top:1px solid var(--ink);padding-top:7px;font-weight:800}.provider{position:absolute;bottom:32px;left:0;right:0;color:var(--muted);font-size:13px}.status{max-width:800px;margin:120px auto;background:#fff;padding:24px;border-radius:14px}
+@media(max-width:1100px){.cert{transform-origin:top left;transform:scale(calc((100vw - 24px)/1056));margin-left:12px;margin-bottom:calc((816px * ((100vw - 24px)/1056)) - 816px + 24px)}}
+@media print{body{background:#fff}.bar{display:none}.cert{margin:0;box-shadow:none;transform:none;width:10.5in;height:8in}@page{size:landscape letter;margin:.25in}}
+</style></head><body>
+<div class="bar"><a href="student-portal-cutover-preview.html?stay=1">Student Home</a><button onclick="window.print()">Print / Save PDF</button></div>
+<div id="status" class="status">Loading your certificate…</div>
+<div id="cert" class="cert" hidden>
+<div class="brand">Innovation Training & Staffing Agency</div>
+<div class="tagline">Empowering Nurses. Elevating Healthcare.</div>
+<div class="label">CERTIFICATE OF COMPLETION</div>
+<div class="small" style="margin-top:25px">This certifies that</div>
+<div id="student-name" class="name">Student</div>
+<div class="small">has successfully completed the ITASA training requirements for</div>
+<div id="course-name" class="course">ITASA Training Course</div>
+<div id="course-detail" class="small"></div>
+<div id="details" class="details"></div>
+<div class="signs"><div><div class="sig" id="trainer-name">Instructor / Validator</div></div><div><div class="sig" id="trainer-credential">Instructor Credential / License</div></div></div>
+<div class="provider">Provider: Innovation Training & Staffing Agency (ITASA)</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/student-portal-supabase.js"></script>
+<script>
+(async function(){
+'use strict';
+function esc(v){return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
+var st=document.getElementById('status'),cert=document.getElementById('cert'),creds=window.ItasaStudentPortal.getSessionCredentials();
+if(!creds){st.innerHTML='Please return to Student Home and sign in before opening your certificate.';return}
+try{
+ var r=await window.ItasaStudentPortal.getCertificates(creds.email,creds.accessCode),rows=Array.isArray(r&&r.certificates)?r.certificates:[];
+ var id=new URLSearchParams(location.search).get('certificate');
+ var c=id?rows.find(x=>String(x.certificate_id)===String(id)):rows[0];
+ if(!c){st.innerHTML='No issued certificate is available for this student yet.';return}
+ var login=await window.ItasaStudentPortal.login(creds.email,creds.accessCode,[]);
+ var s=login&&login.student?login.student:null;
+ document.getElementById('student-name').textContent=s?((s.first_name||'')+' '+(s.last_name||'')).trim():'Student';
+ document.getElementById('course-name').textContent=c.certificate_title||c.offering&&c.offering.public_name||'ITASA Training Course';
+ document.getElementById('course-detail').textContent=c.training_location?('Training location: '+c.training_location):'';
+ document.getElementById('details').innerHTML='<strong>Training Hours:</strong> '+esc(c.training_hours||'')+' &nbsp; | &nbsp; <strong>Completion Date:</strong> '+esc(c.completion_date||'')+' &nbsp; | &nbsp; <strong>Certificate #:</strong> '+esc(c.certificate_number||'');
+ document.getElementById('trainer-name').textContent=c.trainer_name||'Instructor / Validator';
+ document.getElementById('trainer-credential').textContent=[c.trainer_credential,c.trainer_license_number].filter(Boolean).join(' · ')||'Instructor Credential / License';
+ st.hidden=true;cert.hidden=false;
+}catch(e){st.textContent='Your certificate could not be loaded right now.';console.error(e)}
+})();
+</script></body></html>
