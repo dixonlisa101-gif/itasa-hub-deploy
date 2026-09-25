@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Medication Technician | ITASA Learning Center</title>
+<link rel="stylesheet" href="css/medtech-course-reader.css?v=1">
+<style>
+:root{--teal:#177982;--teal-dark:#0d5961;--orange:#dd7b2d;--ink:#18343b;--muted:#63767b;--line:#d9e7e8;--soft:#f5fafa;--warm:#fff6ec;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;color:var(--ink);background:#f8fbfb}
+*{box-sizing:border-box}body{margin:0}a{color:var(--teal-dark)}.preview{background:#3b2d23;color:#fff;padding:9px 16px;text-align:center;font-weight:800}
+header{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10}nav{max-width:1100px;margin:auto;padding:12px 18px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--teal-dark);font-weight:900;margin-right:auto}.brand img{width:52px;height:52px;border-radius:50%;object-fit:contain}.brand small{display:block;color:var(--orange);font-size:.72rem;text-transform:uppercase;letter-spacing:.08em}
+main{max-width:1100px;margin:auto;padding:30px 18px 64px}.hero{background:linear-gradient(135deg,#eaf7f6,#fff5e8);border:1px solid var(--line);border-left:6px solid var(--orange);border-radius:20px;padding:28px;margin-bottom:18px}
+.eyebrow{font-size:.76rem;font-weight:900;text-transform:uppercase;letter-spacing:.09em;color:var(--teal)}h1{font-size:clamp(2rem,5vw,3.1rem);line-height:1.05;margin:.35rem 0 .8rem}.lead{font-size:1.08rem;color:#4e666c}
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px;margin:16px 0;box-shadow:0 7px 20px rgba(17,71,78,.05)}.muted{color:var(--muted)}
+label{display:block;font-weight:800;margin:.8rem 0 .35rem}input{width:100%;padding:11px 12px;border:1px solid #b9cbcd;border-radius:9px;font:inherit}.btn{display:inline-block;border:0;border-radius:10px;padding:11px 15px;font:inherit;font-weight:800;cursor:pointer;text-decoration:none;background:var(--teal);color:#fff}.btn.orange{background:var(--orange)}.btn.secondary{background:#e8f4f4;color:var(--teal-dark)}
+.status{border-left:5px solid var(--teal)}.ok{border-left-color:#3c8b65}.warn{border-left-color:var(--orange)}.error{border-left-color:#b74848}.workspace{display:none}.workspace.active{display:block}
+.welcome{display:flex;gap:18px;align-items:center;flex-wrap:wrap}.welcome img{width:84px;height:84px;border-radius:50%;object-fit:contain}.note{background:var(--warm);border-left:5px solid var(--orange)}
+footer{text-align:center;padding:24px 18px;border-top:1px solid var(--line);background:#fff;color:#60757a}[hidden]{display:none!important}@media(max-width:760px){.brand span{display:none}}
+</style></head><body>
+<div class="preview">MEDICATION TECHNICIAN — Student review preview. Registration and payment remain closed.</div>
+<header><nav>
+<a class="brand" href="index.html"><img src="assets/itasa-circular-brand-logo.png" alt="ITASA logo"><span>ITASA<small>Learning Center</small></span></a>
+<a href="student-portal-cutover-preview.html">Student Home</a><a href="index.html">Learning Center Home</a>
+<button id="student-signout" class="btn secondary" type="button" hidden>Sign Out</button>
+</nav></header>
+<main>
+<section class="hero"><div class="eyebrow">Medication Technician</div><h1>Your Virtual Learning Space</h1><p class="lead">Complete the online medication-assistance learning, practice the decision points, and prepare for the required in-person physical and verbal skills validation.</p></section>
+<section id="login-card" class="card">
+<h2>Enter your learning space</h2><p class="muted">Use the Medication Technician review-test student login to view the course exactly from the student side.</p>
+<form id="login-form"><label for="email">Student email</label><input id="email" type="email" autocomplete="username" required>
+<label for="code">Learning Center access code</label><input id="code" type="password" autocomplete="current-password" required>
+<button id="login-btn" class="btn orange" type="submit" style="margin-top:14px">Enter MT Virtual Learning Space</button></form></section>
+<div id="status" class="card status" hidden></div>
+<section id="workspace" class="workspace">
+<div class="card welcome"><img src="assets/itasa-circular-brand-logo.png" alt="ITASA logo"><div><div class="eyebrow">Welcome back</div><h2 id="student-welcome">MT Student</h2><p class="muted">Six modules · 20 lessons · 360 planned online minutes · required in-person skills validation.</p></div></div>
+<div class="card note"><div class="eyebrow">Course status</div><h2>Coming Soon</h2><p class="muted">This course is still in ITASA review. No registration, payment, certificate release, or production student access is enabled from this preview.</p></div>
+<section id="course-box" class="card"><p class="muted">Loading Medication Technician learning materials…</p></section>
+</section>
+</main>
+<footer>Innovation Training & Staffing Agency · Empowering Nurses. Elevating Healthcare.</footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/student-portal-supabase.js"></script>
+<script src="js/medtech-course-reader.js?v=1"></script>
+<script>
+(function(){
+'use strict';
+const PROGRAM='medtech',form=document.getElementById('login-form'),btn=document.getElementById('login-btn'),status=document.getElementById('status'),workspace=document.getElementById('workspace');
+function esc(v){return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
+function showStatus(html,tone){status.hidden=false;status.className='card status '+(tone||'');status.innerHTML=html}
+form.addEventListener('submit',async function(ev){
+ ev.preventDefault();workspace.classList.remove('active');
+ const email=document.getElementById('email').value.trim().toLowerCase(),code=document.getElementById('code').value.trim();
+ btn.disabled=true;btn.textContent='Checking access…';showStatus('<strong>Checking your secure ITASA student access…</strong>','');
+ try{
+   const login=await window.ItasaStudentPortal.login(email,code,[]);
+   if(login.status!=='ok'||!login.student){
+     const m={pending_review:'Your Learning Center access is still pending review.',invalid_code:'The access code was not accepted.',not_found:'No matching student access was found.',invalid_credentials:'The email/access-code pair was not accepted.'};
+     showStatus('<strong>Access not opened.</strong><br>'+esc(m[login.status]||'ITASA could not validate this access right now.'),'warn');return;
+   }
+   const st=login.student;window.ItasaStudentPortal.setSessionCredentials(email,code);
+   if(st.programId!==PROGRAM||String(st.enrollmentStatus||'').trim().toLowerCase()!=='review test'){
+     showStatus('<strong>This student account is valid, but it is not the MT review account.</strong><br><a href="student-portal-cutover-preview.html">Return to Student Home</a>','warn');return;
+   }
+   const preview=await window.ItasaStudentPortal.getMedtechReviewPreview(email,code);
+   if(!preview||preview.status!=='ok'){
+     showStatus('<strong>The MT preview could not be loaded.</strong> No student records were changed.','error');return;
+   }
+   document.getElementById('student-welcome').textContent='Welcome, '+((st.first_name||'').trim()||'Student');
+   window.ItasaMedtechCourse.mount(document.getElementById('course-box'),preview);
+   document.getElementById('login-card').hidden=true;document.getElementById('student-signout').hidden=false;workspace.classList.add('active');showStatus('<strong>Welcome to your Medication Technician Virtual Learning Space.</strong>','ok');document.getElementById('code').value='';workspace.scrollIntoView({behavior:'smooth',block:'start'});
+ }catch(err){console.error(err);showStatus('<strong>Unable to open this learning space right now.</strong> No student records were changed.','error')}
+ finally{btn.disabled=false;btn.textContent='Enter MT Virtual Learning Space'}
+});
+document.getElementById('student-signout').addEventListener('click',function(){window.ItasaStudentPortal.clearSessionCredentials();window.location.href='student-portal-cutover-preview.html';});
+const cached=window.ItasaStudentPortal.getSessionCredentials();if(cached){document.getElementById('email').value=cached.email;document.getElementById('code').value=cached.accessCode;setTimeout(function(){form.requestSubmit();},0);}
+})();
+</script></body></html>
