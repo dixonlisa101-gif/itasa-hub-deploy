@@ -14,8 +14,8 @@ main{max-width:1200px;margin:auto;padding:28px 18px 64px}.card{background:#fff;b
 label{display:block;font-weight:800;margin:.7rem 0 .3rem}input{width:100%;padding:10px 11px;border:1px solid #b9cbcd;border-radius:9px;font:inherit}.btn,button{display:inline-block;border:0;border-radius:9px;padding:10px 13px;font:inherit;font-weight:800;cursor:pointer;background:var(--teal);color:#fff;text-decoration:none}.btn.secondary,button.secondary{background:#e9f4f4;color:var(--dark)}.btn.orange{background:var(--orange)}button[disabled]{opacity:.5}
 .toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.push{margin-left:auto}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}.tabs button{background:#eaf4f4;color:var(--dark)}.tabs button.active{background:var(--teal);color:#fff}.panel{display:none}.panel.active{display:block}
 .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.course{border-top:5px solid var(--orange)}.metric{font-size:1.7rem;font-weight:900}.tag{display:inline-block;border-radius:999px;padding:4px 8px;background:#edf5f5;font-size:.78rem;font-weight:800}.tag.good{background:#e8f6ed;color:#2d6b4b}.tag.warn{background:#fff1dc;color:#8e5619}.tag.bad{background:#fae9e9;color:#8a3131}
-.resource{border-left:4px solid #91aeb1}.readiness{border-left:4px solid var(--orange)}.knowledge-item{border-left:4px solid var(--teal);padding:12px 14px;margin:10px 0;background:#fff;border-radius:10px}.knowledge-meta{font-size:.82rem;color:var(--muted)}.notice{padding:11px 13px;border-radius:10px;background:#eef7f7;margin:10px 0}.notice.error{background:#fff0f0;color:#8a3131}.notice.good{background:#ecf7f0;color:#2b6447}
-[hidden]{display:none!important}@media(max-width:900px){.grid{grid-template-columns:1fr 1fr}}@media(max-width:650px){.grid,.grid2{grid-template-columns:1fr}.brand span{display:none}.push{margin-left:0}}
+.resource{border-left:4px solid #91aeb1}.readiness{border-left:4px solid var(--orange)}.one-grid{display:grid;grid-template-columns:minmax(180px,1fr) minmax(180px,1fr) minmax(240px,1.25fr);gap:18px;align-items:start}.attestation{border:1px solid var(--line);border-left:5px solid var(--orange);border-radius:12px;padding:14px;margin:12px 0;background:#fff}.attestation.done{border-left-color:#3c8b65;background:#f4fbf7}.attestation p{line-height:1.5}.attestation-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px}.knowledge-item{border-left:4px solid var(--teal);padding:12px 14px;margin:10px 0;background:#fff;border-radius:10px}.knowledge-meta{font-size:.82rem;color:var(--muted)}.notice{padding:11px 13px;border-radius:10px;background:#eef7f7;margin:10px 0}.notice.error{background:#fff0f0;color:#8a3131}.notice.good{background:#ecf7f0;color:#2b6447}
+[hidden]{display:none!important}@media(max-width:900px){.grid{grid-template-columns:1fr 1fr}}@media(max-width:760px){.one-grid{grid-template-columns:1fr}}@media(max-width:650px){.grid,.grid2{grid-template-columns:1fr}.brand span{display:none}.push{margin-left:0}}
 </style>
 </head>
 <body>
@@ -106,6 +106,7 @@ label{display:block;font-weight:800;margin:.7rem 0 .3rem}input{width:100%;paddin
         <div class="eyebrow">My Readiness</div>
         <h2>Instructor qualification, course authority &amp; Florida-regulation acknowledgment</h2>
         <div id="readiness-disclaimer" class="notice"></div>
+        <div id="readiness-acknowledgments"></div>
         <div id="readiness-credentials"></div>
         <div id="readiness-assignments"></div>
       </div>
@@ -118,7 +119,7 @@ label{display:block;font-weight:800;margin:.7rem 0 .3rem}input{width:100%;paddin
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/shared-content-supabase.js"></script>
-<script src="js/staff-hub-supabase.js?v=7"></script>
+<script src="js/staff-hub-supabase.js?v=9"></script>
 <script>
 (function(){
 'use strict';
@@ -158,7 +159,9 @@ function renderKnowledgeFeed(){
 
   var assign=state.readiness&&Array.isArray(state.readiness.assignments)?state.readiness.assignments:[];
   var blocks=assign.map(function(a){
-    var items=state.courseLibraries[a.offering_key]||[];
+    var items=(state.courseLibraries[a.offering_key]||[]).filter(function(item){
+      return ['regulatory_requirement','official_guidance','evergreen_reference'].indexOf(item.information_type)!==-1;
+    });
     return '<section class="card course"><div class="eyebrow">'+esc(a.class_name)+'</div><h3>Assigned-course regulatory library</h3>'+
       (items.length?items.map(knowledgeItemHtml).join(''):'<p class="muted">No course-specific regulatory references are currently assigned.</p>')+
       '</section>';
@@ -206,13 +209,12 @@ function renderOneOnOneAttention(){
   box.innerHTML=pending.map(function(r){
     var prefs=[r.preferred_datetime_1,r.preferred_datetime_2,r.preferred_datetime_3].filter(Boolean);
     var approved=r.status==='Approved'||r.status==='Payment Sent';
-    return '<article class="card" data-one-attention="'+esc(r.id)+'"><div class="toolbar"><div><h3>'+esc((r.first_name||'')+' '+(r.last_name||''))+'</h3><div class="muted">'+esc(r.email)+' · '+esc(r.session_length==='2_hour'?'2 hours':'1 hour')+' · '+(r.session_length==='2_hour'?'$200':'$100')+'</div><div class="push">'+(approved?'<span class="tag good">'+esc(r.status)+'</span>':'<span class="tag warn">Pending</span>')+'</div></div>'+
-      (r.assistance_needed?'<p><strong>Support requested:</strong> '+esc(r.assistance_needed)+'</p>':'')+
-      '<p><strong>Preferred times:</strong><br>'+prefs.map(esc).join('<br>')+'</p>'+
-      (approved?'<p><strong>Confirmed:</strong> '+esc(r.confirmed_datetime||'Pending')+'</p>':
-      '<label>Confirmed appointment</label><input data-one-confirmed placeholder="e.g. Thursday, Oct 15 at 4:00 PM">'+
-      '<div class="toolbar" style="margin-top:10px"><button data-one-approve>Approve &amp; Notify Student</button><button class="secondary" data-one-times>Request Different Times</button><button class="secondary" data-one-decline>Decline</button></div>')+
-      '</article>';
+    var student='<div><h3>'+esc((r.first_name||'')+' '+(r.last_name||''))+'</h3><div class="muted">'+esc(r.email)+' · 1 hour · $100</div><p>'+(approved?'<span class="tag good">'+esc(r.status)+'</span>':'<span class="tag warn">Pending</span>')+'</p>'+(r.assistance_needed?'<p><strong>Support requested:</strong><br>'+esc(r.assistance_needed)+'</p>':'')+'</div>';
+    var preferred='<div><label style="margin-top:0">Preferred time'+(prefs.length===1?'':'s')+'</label><div class="muted">'+(prefs.length?prefs.map(esc).join('<br>'):'None provided')+'</div></div>';
+    var confirmBox=approved
+      ? '<div><label style="margin-top:0">Confirmed appointment</label><p><strong>'+esc(r.confirmed_datetime||'Pending')+'</strong></p><p class="muted">The student confirmation email/access package has been queued.</p></div>'
+      : '<div><label for="confirm-'+esc(r.id)+'" style="margin-top:0">Confirmed appointment</label><input id="confirm-'+esc(r.id)+'" data-one-confirmed placeholder="e.g. Thursday, Oct 15 at 4:00 PM"><div class="toolbar" style="margin-top:10px"><button data-one-approve>Approve &amp; Notify Student</button><button class="secondary" data-one-times>Request Different Times</button><button class="secondary" data-one-decline>Decline</button></div></div>';
+    return '<article class="card" data-one-attention="'+esc(r.id)+'"><div class="one-grid">'+student+preferred+confirmBox+'</div></article>';
   }).join('')||'<p class="muted">No pending 1:1 session requests right now.</p>';
 
   box.querySelectorAll('[data-one-approve]').forEach(function(btn){
@@ -235,14 +237,39 @@ function renderOneOnOneAttention(){
   });
 }
 function renderReadiness(){
-  var r=state.readiness||{},assign=Array.isArray(r.assignments)?r.assignments:[],creds=Array.isArray(r.credentials)?r.credentials:[];
-  document.getElementById('readiness-disclaimer').textContent=r.disclaimer||'Course assignment does not by itself establish instructor clearance.';
+  var r=state.readiness||{},
+      assign=Array.isArray(r.assignments)?r.assignments:[],
+      creds=Array.isArray(r.credentials)?r.credentials:[],
+      acks=Array.isArray(r.acknowledgments)?r.acknowledgments:[];
+  document.getElementById('readiness-disclaimer').textContent=r.disclaimer||'Self-attestation does not replace verification of required credentials and qualifications.';
+
+  document.getElementById('readiness-acknowledgments').innerHTML='<h3>My required acknowledgments &amp; attestations</h3><p class="muted">Read each statement carefully. Your electronic acknowledgment is stored with the statement/version you accepted. ITASA still separately verifies credentials and required qualifications.</p>'+
+    (acks.length?acks.map(function(a){
+      return '<article class="attestation '+(a.completed?'done':'')+'"><div class="toolbar"><div><strong>'+esc(a.title)+'</strong>'+(a.class_name?'<div class="muted">'+esc(a.class_name)+'</div>':'')+'</div><div class="push">'+(a.completed?'<span class="tag good">Acknowledged</span>':'<span class="tag warn">Required</span>')+'</div></div><p>'+esc(a.statement_text)+'</p><div class="attestation-actions">'+
+        (a.completed?'<span class="muted">Acknowledged '+esc(a.acknowledged_at?fmtDate(a.acknowledged_at):'')+'</span>':'<button data-acknowledge="'+esc(a.acknowledgment_key)+'">I Acknowledge &amp; Attest</button>')+
+        '</div></article>';
+    }).join(''):'<p class="muted">No acknowledgment is currently assigned to this account.</p>');
+
+  document.querySelectorAll('[data-acknowledge]').forEach(function(btn){
+    btn.onclick=async function(){
+      if(!confirm('Confirm that you have read this statement and electronically acknowledge/attest to it?'))return;
+      btn.disabled=true;
+      try{
+        var result=await window.ItasaStaffHub.acknowledgeInstructorRequirement(btn.dataset.acknowledge);
+        if(!result||result.status!=='acknowledged')throw new Error((result&&result.status)||'Acknowledgment could not be saved.');
+        await load();
+      }catch(e){alert(e.message||String(e))}
+      finally{btn.disabled=false}
+    };
+  });
+
   document.getElementById('readiness-credentials').innerHTML='<h3>Verified credentials</h3>'+(creds.length?'<ul>'+creds.map(function(c){return '<li><strong>'+esc(c.credential_name)+'</strong> · '+esc(c.jurisdiction||'')+' · verification: '+esc(c.verification_status||'')+' · good standing: '+esc(c.good_standing_status||'')+(c.expiration_date?' · expires '+esc(fmtDate(c.expiration_date)):'')+'</li>'}).join('')+'</ul>':'<p class="muted">No verified credential record is attached to this staff account.</p>');
-  document.getElementById('readiness-assignments').innerHTML='<h3>Course assignments</h3>'+(assign.length?assign.map(function(a){
+
+  document.getElementById('readiness-assignments').innerHTML='<h3>Course readiness</h3>'+(assign.length?assign.map(function(a){
     var cleared=a.clearance_status==='cleared';
     return '<article class="card course"><div class="toolbar"><div><h3>'+esc(a.class_name)+'</h3><div class="muted">'+esc(a.assignment_role||'Instructor')+'</div></div><div class="push"><span class="tag '+(cleared?'good':'warn')+'">'+esc(cleared?'Cleared':'Not yet cleared')+'</span></div></div>'+
-      '<p>Qualification requirements: <strong>'+esc(a.qualification_verified)+' of '+esc(a.qualification_required)+' verified</strong><br>Organization acknowledgments: <strong>'+esc(a.organization_acknowledgments_completed)+' of '+esc(a.organization_acknowledgments_required)+'</strong><br>Course acknowledgments: <strong>'+esc(a.course_acknowledgments_completed)+' of '+esc(a.course_acknowledgments_required)+'</strong></p>'+
-      (!cleared?'<p class="muted">Final competency validation remains restricted until this assignment is cleared.</p>':'<p class="muted">This assignment is cleared for the course-specific instructor role recorded by ITASA.</p>')+
+      '<p>Verified qualification requirements: <strong>'+esc(a.qualification_verified)+' of '+esc(a.qualification_required)+'</strong><br>ITASA professional accountability: <strong>'+esc(a.organization_acknowledgments_completed)+' of '+esc(a.organization_acknowledgments_required)+'</strong><br>Course-specific accountability: <strong>'+esc(a.course_acknowledgments_completed)+' of '+esc(a.course_acknowledgments_required)+'</strong></p>'+
+      (!cleared?'<p class="muted">This assignment is not yet cleared. Final competency validation remains restricted until all required verification and acknowledgments are complete.</p>':'<p class="muted">This assignment is cleared for the course-specific instructor role recorded by ITASA.</p>')+
       '</article>';
   }).join(''):'<p class="muted">No active course assignment is attached to this staff account.</p>');
 }
