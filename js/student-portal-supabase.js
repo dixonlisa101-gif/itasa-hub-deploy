@@ -351,6 +351,33 @@
 
 
   /**
+   * getIvReviewPreview(email, accessCode)
+   *
+   * Credential-checked review bridge for the designated IV REVIEW TEST
+   * student account. It returns the draft IV curriculum without changing
+   * offering/course publication status or granting access to real students.
+   */
+  async function getIvReviewPreview(email, accessCode) {
+    var client = getClient();
+    if (!client) return { status: 'error' };
+    try {
+      var result = await client.rpc('get_iv_review_student_preview', {
+        p_email: (email || '').trim().toLowerCase(),
+        p_access_code: (accessCode || '').trim()
+      });
+      if (result.error) {
+        console.error('ITASA student portal: get_iv_review_student_preview failed', result.error);
+        return { status: 'error' };
+      }
+      return result.data || { status: 'error' };
+    } catch (err) {
+      console.error('ITASA student portal: get_iv_review_student_preview threw', err);
+      return { status: 'error' };
+    }
+  }
+
+
+  /**
    * getCertificates(email, accessCode)
    *
    * Read-only certificate retrieval for the validated student via the
@@ -392,6 +419,7 @@
     mapPortalStudent: mapPortalStudent,
     getZoomAccess: getZoomAccess,
     getLearningWorkspace: getLearningWorkspace,
+    getIvReviewPreview: getIvReviewPreview,
     getCertificates: getCertificates,
     setSessionCredentials: setSessionCredentials,
     getSessionCredentials: getSessionCredentials,
