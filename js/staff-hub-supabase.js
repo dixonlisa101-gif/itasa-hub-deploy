@@ -204,6 +204,46 @@
     return result.data;
   }
 
+
+  async function fetchServiceAccess() {
+    requireStaff();
+    var result = await client
+      .from('service_access')
+      .select('service_key,service_name,link,meeting_id,passcode,schedule_text,note,updated_at,updated_by')
+      .order('service_key', { ascending: true });
+    if (result.error) throw result.error;
+    return result.data || [];
+  }
+
+  async function upsertServiceAccess(entry) {
+    var st=requireStaff();
+    if (String(st.role || '').toLowerCase() !== 'administrator') {
+      throw new Error('Administrator access required.');
+    }
+    var serviceKey=String(entry && entry.service_key || '').trim();
+    if (['information_session','one_on_one'].indexOf(serviceKey)===-1) {
+      throw new Error('Invalid service access key.');
+    }
+    var row={
+      service_key: serviceKey,
+      service_name: serviceKey==='information_session'?'ITASA Information Session':'1:1 Test-Taking Strategies Session',
+      link: String(entry && entry.link || '').trim() || null,
+      meeting_id: String(entry && entry.meeting_id || '').trim() || null,
+      passcode: String(entry && entry.passcode || '').trim() || null,
+      schedule_text: String(entry && entry.schedule_text || '').trim() || null,
+      note: String(entry && entry.note || '').trim() || null,
+      updated_by: st.id,
+      updated_at: new Date().toISOString()
+    };
+    var result=await client
+      .from('service_access')
+      .upsert(row,{onConflict:'service_key'})
+      .select('service_key,service_name,link,meeting_id,passcode,schedule_text,note,updated_at,updated_by')
+      .single();
+    if(result.error) throw result.error;
+    return result.data;
+  }
+
   async function fetchCertificates() {
     requireStaff();
     var result = await client
@@ -334,6 +374,8 @@
     fetchStudents: fetchStudents,
     fetchClassAccess: fetchClassAccess,
     upsertClassAccess: upsertClassAccess,
+    fetchServiceAccess: fetchServiceAccess,
+    upsertServiceAccess: upsertServiceAccess,
     fetchCertificates: fetchCertificates,
     fetchOneOnOneRequests: fetchOneOnOneRequests,
     updateOneOnOneStatus: updateOneOnOneStatus,
