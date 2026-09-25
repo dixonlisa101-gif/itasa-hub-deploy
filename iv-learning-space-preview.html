@@ -167,7 +167,7 @@ function renderAccess(a){
 function renderLearning(ws,st,preview){
   const materials=document.getElementById('materials');
   if(preview&&preview.status==='ok'&&preview.curriculum&&window.ItasaIvCourse){
-    window.ItasaIvCourse.mount(materials,preview.curriculum,{review:false,teachingNotes:false,rememberLocation:true});return;
+    window.ItasaIvCourse.mount(materials,preview.curriculum,{review:false,teachingNotes:false,rememberLocation:true,studentKey:st.id||st.email||'review'});return;
   }
   // Use only protected RPC responses; draft preview is limited server-side to the IV REVIEW TEST account.
   if(!ws||ws.status!=='ok'){
@@ -178,7 +178,7 @@ function renderLearning(ws,st,preview){
   const sections=Array.isArray(course&&course.sections)?course.sections:[];
   const interactive=sections.flatMap(function(s){return Array.isArray(s.items)?s.items:[]}).find(function(item){return item.content&&item.content.schema_version==='itasa_iv_interactive_v1'});
   if(interactive&&window.ItasaIvCourse){
-    window.ItasaIvCourse.mount(materials,interactive.content.curriculum,{teachingNotes:false});return;
+    window.ItasaIvCourse.mount(materials,interactive.content.curriculum,{teachingNotes:false,rememberLocation:true,studentKey:st.id||st.email||'student'});return;
   }
   if(!sections.length){
     materials.innerHTML='<p><strong>No approved IV lessons are available to this account yet.</strong></p><p class="muted">The six-module course is in staff review. Approved lessons will appear here when ITASA releases them.</p>';return;
