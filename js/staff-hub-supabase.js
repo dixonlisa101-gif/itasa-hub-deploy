@@ -234,7 +234,7 @@
     return result.data || [];
   }
 
-  async function updateOneOnOneStatus(id, status, confirmedDatetime) {
+  async function updateOneOnOneStatus(id, status, confirmedDatetime, details) {
     requireOperator();
     var allowed = ['Pending','Approved','Request Different Times','Declined','Payment Sent','Paid','Completed'];
     if (allowed.indexOf(status) === -1) throw new Error('Invalid 1:1 request status.');
@@ -243,12 +243,16 @@
     }
     var patch = { status: status };
     if (status === 'Approved') patch.confirmed_datetime = String(confirmedDatetime).trim();
+    details = details || {};
+    if (Object.prototype.hasOwnProperty.call(details,'zoom_link')) patch.zoom_link = String(details.zoom_link || '').trim() || null;
+    if (Object.prototype.hasOwnProperty.call(details,'meeting_id')) patch.meeting_id = String(details.meeting_id || '').trim() || null;
+    if (Object.prototype.hasOwnProperty.call(details,'passcode')) patch.passcode = String(details.passcode || '').trim() || null;
 
     var result = await client
       .from('one_on_one_session_requests')
       .update(patch)
       .eq('id', id)
-      .select('id,status,confirmed_datetime,status_history,updated_at')
+      .select('id,status,confirmed_datetime,zoom_link,meeting_id,passcode,status_history,updated_at')
       .single();
     if (result.error) throw result.error;
     return result.data;
