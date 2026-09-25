@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ITASA Certificate of Completion | Instructor Print</title>
+<style>
+:root{--teal:#177982;--dark:#0d5961;--orange:#dd7b2d;--ink:#18343b;--muted:#63767b;--line:#d9e7e8;font-family:Arial,sans-serif;color:var(--ink);background:#eef5f5}
+*{box-sizing:border-box}body{margin:0}.bar{max-width:1056px;margin:18px auto 0;display:flex;gap:10px;justify-content:flex-end}.bar button,.bar a{border:0;border-radius:8px;padding:10px 13px;font-weight:800;text-decoration:none;background:var(--teal);color:#fff;cursor:pointer}.bar a{background:#e4eeee;color:var(--dark)}
+.cert{position:relative;width:1056px;height:816px;margin:12px auto 24px;background:white;border:8px solid var(--teal);box-shadow:0 10px 28px rgba(0,0,0,.12);padding:40px 55px;text-align:center}.cert:before{content:"";position:absolute;inset:10px;border:2px solid var(--orange);pointer-events:none}
+.brand{font-size:31px;font-weight:900;color:var(--dark);margin-top:2px}.tagline{color:var(--orange);margin-top:5px}.label{font-size:18px;font-weight:800;color:var(--muted);margin-top:30px}.small{font-size:15px}.name{font-size:43px;font-weight:900;color:var(--dark);margin:18px auto 8px;padding-bottom:6px;border-bottom:1px solid var(--line);max-width:560px}.course{font-size:28px;font-weight:900;color:var(--orange);margin:25px auto 8px;max-width:820px}.details{font-size:16px;margin-top:27px}.signs{position:absolute;left:70px;right:70px;bottom:82px;display:grid;grid-template-columns:1fr 1fr;gap:85px}.sig{border-top:1px solid var(--ink);padding-top:7px;font-weight:800}.provider{position:absolute;bottom:32px;left:0;right:0;color:var(--muted);font-size:13px}.status{max-width:800px;margin:80px auto;background:#fff;padding:24px;border-radius:14px}.login{max-width:520px;margin:40px auto;background:#fff;padding:22px;border-radius:14px}label{display:block;font-weight:800;margin:.7rem 0 .3rem}input{width:100%;padding:10px;border:1px solid #b9cbcd;border-radius:8px}.login button{margin-top:12px;padding:10px 13px;border:0;border-radius:8px;background:var(--teal);color:#fff;font-weight:800}
+@media(max-width:1100px){.cert{transform-origin:top left;transform:scale(calc((100vw - 24px)/1056));margin-left:12px;margin-bottom:calc((816px * ((100vw - 24px)/1056)) - 816px + 24px)}}
+@media print{body{background:#fff}.bar,.login,.status{display:none!important}.cert{margin:0;box-shadow:none;transform:none;width:10.5in;height:8in}@page{size:landscape letter;margin:.25in}}
+</style></head><body>
+<div class="bar"><a href="assessment-skills-workspace-preview.html">Assessments & Skills</a><button id="print-btn" hidden onclick="window.print()">Print / Save PDF</button></div>
+<div id="login" class="login">
+<h2>Instructor Sign In</h2>
+<label>ITASA Staff Email</label><input id="email" type="email" autocomplete="username">
+<label>Password</label><input id="password" type="password" autocomplete="current-password">
+<button id="signin">Sign In</button>
+<div id="login-status" style="margin-top:10px"></div>
+</div>
+<div id="status" class="status" hidden>Loading certificate…</div>
+<div id="cert" class="cert" hidden>
+<div class="brand">Innovation Training & Staffing Agency</div>
+<div class="tagline">Empowering Nurses. Elevating Healthcare.</div>
+<div class="label">CERTIFICATE OF COMPLETION</div>
+<div class="small" style="margin-top:25px">This certifies that</div>
+<div id="student-name" class="name">Student</div>
+<div class="small">has successfully completed the ITASA training requirements for</div>
+<div id="course-name" class="course">ITASA Training Course</div>
+<div id="course-detail" class="small"></div>
+<div id="details" class="details"></div>
+<div class="signs"><div><div class="sig" id="trainer-name">Instructor / Validator</div></div><div><div class="sig" id="trainer-credential">Instructor Credential / License</div></div></div>
+<div class="provider">Provider: Innovation Training & Staffing Agency (ITASA)</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/staff-hub-supabase.js"></script>
+<script>
+(function(){
+'use strict';
+var enrollmentId=new URLSearchParams(location.search).get('enrollment')||'';
+var login=document.getElementById('login'),status=document.getElementById('status'),cert=document.getElementById('cert'),printBtn=document.getElementById('print-btn');
+function esc(v){return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
+async function loadCertificate(){
+  if(!enrollmentId){status.hidden=false;status.textContent='No student enrollment was supplied.';return}
+  status.hidden=false;status.textContent='Loading certificate…';
+  var r=await window.ItasaStaffHub.client.rpc('get_staff_certificate_print_data',{p_student_enrollment_id:enrollmentId});
+  if(r.error){status.textContent='Certificate could not be loaded.';return}
+  var d=r.data||{};
+  if(d.status!=='ok'||!d.certificate){status.textContent='No issued Certificate of Completion is available for this student yet.';return}
+  var c=d.certificate;
+  document.getElementById('student-name').textContent=c.student_name||'Student';
+  document.getElementById('course-name').textContent=c.certificate_title||c.offering_name||'ITASA Training Course';
+  document.getElementById('course-detail').textContent=c.training_location?('Training location: '+c.training_location):'';
+  document.getElementById('details').innerHTML='<strong>Training Hours:</strong> '+esc(c.training_hours||'')+' &nbsp; | &nbsp; <strong>Completion Date:</strong> '+esc(c.completion_date||'')+' &nbsp; | &nbsp; <strong>Certificate #:</strong> '+esc(c.certificate_number||'');
+  document.getElementById('trainer-name').textContent=c.trainer_name||'Instructor / Validator';
+  document.getElementById('trainer-credential').textContent=[c.trainer_credential,c.trainer_license_number].filter(Boolean).join(' · ')||'Instructor Credential / License';
+  status.hidden=true;cert.hidden=false;printBtn.hidden=false;
+}
+function sync(){
+  var st=window.ItasaStaffHub.getCurrentStaff();
+  if(st){login.hidden=true;loadCertificate()}
+  else{login.hidden=false;cert.hidden=true;printBtn.hidden=true}
+}
+document.getElementById('signin').onclick=async function(){
+  var b=this,ls=document.getElementById('login-status');b.disabled=true;ls.textContent='Signing in…';
+  var r=await window.ItasaStaffHub.signIn(document.getElementById('email').value,document.getElementById('password').value);
+  b.disabled=false;document.getElementById('password').value='';
+  if(!r.ok){ls.textContent=(r.error&&r.error.message)||'Sign-in failed.';return}
+  ls.textContent='';sync();
+};
+window.ItasaStaffHub.onSessionChange(function(s){if(s.resolved)sync()});
+})();
+</script></body></html>
