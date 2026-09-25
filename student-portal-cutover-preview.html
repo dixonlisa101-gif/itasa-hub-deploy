@@ -114,6 +114,7 @@
       return id==='review'?'NCLEX Review & Test-Taking Strategies':
              id==='skills'?'Skills Refresher Class':
              id==='iv'?'IV Insertion & Venipuncture':
+             id==='medtech'?'Medication Technician':
              'ITASA Class';
     }
     function classFor(id){return classes.find(function(x){return x.program_id===id})||null}
@@ -164,6 +165,9 @@ function classCountdown(row){
       }else if(id==='iv'){
         html+='<p class="muted">Your IV space includes secure class access, IV-specific learning materials, safety Q&amp;A, hands-on skills preparation, competency validation, and completion information.</p>'+
               '<a class="btn orange" href="iv-learning-space-preview.html">Open IV Learning Space</a>';
+      }else if(id==='medtech'){
+        html+='<p class="muted">Your Medication Technician review space includes six online modules, practice activities, module-assessment information, and preparation for required in-person physical and verbal skills validation.</p>'+
+              '<a class="btn orange" href="medtech-learning-space-preview.html">Open MT Virtual Learning Space</a>';
       }else{
         html+='<p class="muted">ITASA will provide the appropriate Learning Center space for your registered class.</p>';
       }
@@ -204,7 +208,8 @@ function classCountdown(row){
         const routes={
           review:'nclex-learning-space-preview.html',
           skills:'skills-learning-space-preview.html',
-          iv:'iv-learning-space-preview.html'
+          iv:'iv-learning-space-preview.html',
+          medtech:'medtech-learning-space-preview.html'
         };
         if(!restoreHome&&routes[st.programId]) {
           window.location.href=routes[st.programId];
