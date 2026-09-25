@@ -115,8 +115,8 @@
   <footer>Innovation Training &amp; Staffing Agency · Empowering Nurses. Elevating Healthcare.</footer>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/student-portal-supabase.js?v=5"></script>
-  <script src="js/shared-content-supabase.js"></script>
+  <script src="js/student-portal-supabase.js?v=20260925-4"></script>
+  <script src="js/shared-content-supabase.js?v=20260925-4"></script>
   <script>
   (function(){
     'use strict';
@@ -178,6 +178,22 @@ function classCountdown(row){
         if(url)link='<p><a target="_blank" rel="noopener" href="'+esc(url)+'">'+esc(label)+'</a></p>';
         return '<article class="feed-item"><h3>'+title+'</h3>'+source+'<p>'+body+'</p>'+link+'</article>';
       }).join('');
+    }
+    async function loadStudentFeedsDirect(email,code){
+      var feed=await window.ItasaStudentPortal.getHubFeeds(email,code,10);
+      if(feed&&feed.status==='ok')return feed;
+      try{
+        var c=window.__itasaStudentPortalClient;
+        if(c){
+          var r=await c.rpc('get_my_student_hub_feeds',{
+            p_email:(email||'').trim().toLowerCase(),
+            p_access_code:(code||'').trim(),
+            p_limit:10
+          });
+          if(!r.error&&r.data)return r.data;
+        }
+      }catch(err){console.error('Direct student feed fallback failed',err)}
+      return {status:'error'};
     }
     function renderStudentFeeds(feed){
       var things=document.getElementById('hub-things-feed'),events=document.getElementById('hub-events');
@@ -244,7 +260,7 @@ function classCountdown(row){
         document.getElementById('welcome-name').textContent='Welcome back, '+((st.first_name||'').trim()||'Student')+'.';
         await classesReady;
         renderSpace(st);
-        const feed=await window.ItasaStudentPortal.getHubFeeds(email,code,10);
+        const feed=await loadStudentFeedsDirect(email,code);
         renderStudentFeeds(feed);
         loginCard.hidden=true;
         signout.hidden=false;
