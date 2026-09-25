@@ -37,13 +37,15 @@
 <script>
 (function(){
 'use strict';
-var enrollmentId=new URLSearchParams(location.search).get('enrollment')||'';
+var params=new URLSearchParams(location.search),enrollmentId=params.get('enrollment')||'',studentId=params.get('student')||'';
 var login=document.getElementById('login'),status=document.getElementById('status'),cert=document.getElementById('cert'),printBtn=document.getElementById('print-btn');
 function esc(v){return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
 async function loadCertificate(){
-  if(!enrollmentId){status.hidden=false;status.textContent='No student enrollment was supplied.';return}
+  if(!enrollmentId&&!studentId){status.hidden=false;status.textContent='No student record was supplied.';return}
   status.hidden=false;status.textContent='Loading certificate…';
-  var r=await window.ItasaStaffHub.client.rpc('get_staff_certificate_print_data',{p_student_enrollment_id:enrollmentId});
+  var r=studentId
+    ? await window.ItasaStaffHub.client.rpc('get_staff_certificate_print_data_by_student',{p_student_id:studentId})
+    : await window.ItasaStaffHub.client.rpc('get_staff_certificate_print_data',{p_student_enrollment_id:enrollmentId});
   if(r.error){status.textContent='Certificate could not be loaded.';return}
   var d=r.data||{};
   if(d.status!=='ok'||!d.certificate){status.textContent='No issued Certificate of Completion is available for this student yet.';return}
