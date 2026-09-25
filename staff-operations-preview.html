@@ -72,7 +72,7 @@ table{width:100%;border-collapse:collapse}th,td{padding:10px 8px;border-bottom:1
       <div class="card read-only">
         <div class="eyebrow">Read-only financial truth</div>
         <h2>Student Operations</h2>
-        <p class="muted">Payment status, balances, portal access, and email-delivery state are displayed here but cannot be manually changed from this workspace. Stripe/Zapier and the authoritative payment RPC remain the source of truth.</p>
+        <p class="muted">Payment status, balances, portal access, and email-delivery state are displayed here but cannot be manually changed from this workspace. Stripe-confirmed payments and the authoritative payment RPC remain the source of truth; email delivery state is tracked by ITASA's email outbox.</p>
         <div class="toolbar">
           <input id="student-search" placeholder="Search name, email, class…" style="max-width:360px">
         </div>
@@ -116,7 +116,7 @@ table{width:100%;border-collapse:collapse}th,td{padding:10px 8px;border-bottom:1
       <div class="card read-only">
         <div class="eyebrow">Read-only first increment</div>
         <h2>Certificates</h2>
-        <p class="muted">Certificate records are visible here. Issuance/editing is intentionally not enabled in this first operations build until the completion/issuance workflow is separately validated.</p>
+        <p class="muted">Certificate records are visible here. Course completion and certificate issuance are completed through the validated instructor workflows; this operations view provides oversight of the resulting records.</p>
         <div style="overflow:auto"><table><thead><tr><th>Certificate</th><th>Student ID</th><th>Class</th><th>Status</th><th>Issued</th></tr></thead><tbody id="certs-body"></tbody></table></div>
       </div>
     </section>
