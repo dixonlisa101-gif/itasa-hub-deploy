@@ -1,8 +1,8 @@
 window.ItasaMedtechCourse={mount:function(container,data,options){
 'use strict';
 options=options||{};
-container.innerHTML='<div id="itasa-medtech"><p class="mt-preview">Medical Technician Class preview · Review account only · Registration remains closed</p><div class="mt-top"><button class="mt-link" data-action="student-home">← Student Home</button><button class="mt-link" data-action="home">All Modules</button><button class="mt-link" data-action="skills">Skills Check-Off</button><span class="spacer"></span><span class="mt-meta">'+data.lesson_count+' lessons · '+data.planned_online_minutes+' online minutes</span></div><section id="mt-home"></section><section id="mt-reader" hidden></section><section id="mt-skills" hidden></section></div>';
-const root=container.querySelector('#itasa-medtech'),home=root.querySelector('#mt-home'),reader=root.querySelector('#mt-reader'),skills=root.querySelector('#mt-skills');
+container.innerHTML='<div id="itasa-medtech"><p class="mt-preview">Medical Technician Class preview · Review account only · Registration remains closed</p><div class="mt-top"><button class="mt-link" data-action="student-home">← Student Home</button><button class="mt-link" data-action="home">All Modules</button><button class="mt-link" data-action="assessments-home">Assessments</button><button class="mt-link" data-action="skills">Skills Check-Off</button><span class="spacer"></span><span class="mt-meta">'+data.lesson_count+' lessons · '+data.planned_online_minutes+' online minutes</span></div><section id="mt-home"></section><section id="mt-assessments-home" hidden></section><section id="mt-reader" hidden></section><section id="mt-skills" hidden></section></div>';
+const root=container.querySelector('#itasa-medtech'),home=root.querySelector('#mt-home'),assessmentsHome=root.querySelector('#mt-assessments-home'),reader=root.querySelector('#mt-reader'),skills=root.querySelector('#mt-skills');
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const studentKey=String(options.studentKey||'review').replace(/[^a-zA-Z0-9_-]/g,'_');
 const POSITION_KEY='itasa_medtech_position_v2_'+studentKey;
@@ -37,7 +37,7 @@ function saveState(){
   sessionStorage.setItem(POSITION_KEY,JSON.stringify({moduleIndex,lessonIndex,tab,currentView,choices,lessonByModule,tabByModule}));
  }catch(e){}
 }
-function show(name){currentView=name;home.hidden=name!=='home';reader.hidden=name!=='reader';skills.hidden=name!=='skills';saveState()}
+function show(name){currentView=name;home.hidden=name!=='home';assessmentsHome.hidden=name!=='assessments';reader.hidden=name!=='reader';skills.hidden=name!=='skills';saveState()}
 function moduleAssessment(m){for(const i of (m.items||[])){if(i.assessment)return i.assessment}return null}
 function assessmentProgress(key){
  const rows=statusData&&Array.isArray(statusData.assessments)?statusData.assessments:[];
@@ -60,6 +60,9 @@ function renderHome(){
    const badge=p?(p.passed?'Passed · '+esc(p.best_score)+'%':(p.attempts_used?'Best score '+esc(p.best_score)+'% · 80% required':'Assessment not taken')):'';
    return '<article class="mt-card"><div class="mt-label">Module '+(i+1)+' of '+data.module_count+'</div><h3>'+esc(m.title)+'</h3><p class="mt-meta">'+(m.items||[]).length+' lessons'+(a?' · required module assessment':'')+'</p>'+(badge?'<p class="mt-meta"><strong>'+badge+'</strong></p>':'')+'<button class="mt-btn" data-action="module" data-value="'+i+'">'+(i===moduleIndex&&currentView==='reader'?'Continue Module':'Open Module')+'</button></article>';
  }).join('')+'</div>';
+}
+function renderAssessmentsHome(){
+ assessmentsHome.innerHTML='<div class="mt-top"><button class="mt-link" data-action="home">← All Modules</button><button class="mt-link" data-action="student-home">← Student Home</button></div><div class="mt-label">Testing</div><h2>Medical Technician Class Assessments</h2><p>Each module has a required 10-question assessment. A score of <strong>80% or higher</strong> is required to pass.</p>'+statusSummary()+'<div class="mt-grid">'+(data.sections||[]).map((m,i)=>{const a=moduleAssessment(m),p=a?assessmentProgress(a.assessment_key):null;const state=p?(p.passed?'Passed · '+esc(p.best_score)+'%':p.attempts_used?'Best score '+esc(p.best_score)+'% · 80% required':'Not taken'):'Not taken';return '<article class="mt-card"><div class="mt-label">Module '+(i+1)+'</div><h3>'+esc(a&&a.title||m.title)+'</h3><p class="mt-meta"><strong>'+state+'</strong></p><button class="mt-btn" data-action="open-assessment" data-value="'+i+'">'+(p&&p.passed?'Review Assessment':'Take Assessment')+'</button></article>'}).join('')+'</div>';
 }
 function lessonHtml(l,idx,total){
  const c=l.content||{},sections=Array.isArray(c.lesson_sections)?c.lesson_sections:[],self=Array.isArray(c.self_check)?c.self_check:[];
@@ -178,6 +181,8 @@ root.addEventListener('click',function(e){
  const b=e.target.closest('button');if(!b)return;
  if(b.dataset.action==='student-home'){saveState();window.location.href='student-portal-cutover-preview.html?stay=1';return}
  if(b.dataset.action==='home'){show('home');renderHome();return}
+ if(b.dataset.action==='assessments-home'){show('assessments');renderAssessmentsHome();return}
+ if(b.dataset.action==='open-assessment'){moduleIndex=Number(b.dataset.value)||0;tab='assessment';tabByModule[moduleIndex]='assessment';show('reader');renderReader();focusReader();return}
  if(b.dataset.action==='skills'){show('skills');renderSkills();return}
  if(b.dataset.action==='module'){lessonByModule[moduleIndex]=lessonIndex;tabByModule[moduleIndex]=tab;moduleIndex=Number(b.dataset.value)||0;lessonIndex=Number(lessonByModule[moduleIndex])||0;tab=tabByModule[moduleIndex]||'lessons';clampState();show('reader');renderReader();focusReader();return}
  if(b.dataset.action==='prev-lesson'){if(lessonIndex>0){lessonIndex--;lessonByModule[moduleIndex]=lessonIndex;tab='lessons';tabByModule[moduleIndex]=tab;renderReader();focusReader()}return}
@@ -190,6 +195,7 @@ root.addEventListener('click',function(e){
 });
 loadState();renderHome();
 if(currentView==='reader'){show('reader');renderReader()}
+else if(currentView==='assessments'){show('assessments');renderAssessmentsHome()}
 else if(currentView==='skills'){show('skills');renderSkills()}
 else show('home');
 return{destroy:function(){saveState();container.innerHTML=''}};
