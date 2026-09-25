@@ -1,0 +1,26 @@
+#itasa-skills-course{--teal:#177982;--teal-dark:#0d5961;--orange:#dd7b2d;--ink:#18343b;--muted:#63767b;--line:#d9e7e8;--soft:#f5fafa;--warm:#fff6ec;color:var(--ink)}
+#itasa-skills-course *{box-sizing:border-box}
+.skills-preview{font-weight:800;background:var(--warm);border-left:5px solid var(--orange);padding:10px 12px;border-radius:8px}
+.skills-top{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:8px 0 18px}
+.skills-top .spacer{flex:1}
+.skills-link,.skills-btn{border:0;border-radius:9px;padding:10px 13px;font:inherit;font-weight:800;cursor:pointer}
+.skills-link{background:#e8f4f4;color:var(--teal-dark)}
+.skills-btn{background:var(--teal);color:white}.skills-btn.orange{background:var(--orange)}
+.skills-label{font-size:.75rem;font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:var(--teal)}
+.skills-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:14px}
+.skills-module{border:1px solid var(--line);border-radius:14px;padding:18px;background:white}
+.skills-module h3{margin:.35rem 0}.skills-module p{color:var(--muted)}
+.skills-meta{font-size:.9rem;color:var(--muted)}
+.skills-nav{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}
+.skills-nav button[aria-pressed="true"]{background:var(--orange);color:#fff}
+.skills-panel{border:1px solid var(--line);border-radius:14px;padding:18px;background:white}
+.skills-lesson{border-top:1px solid var(--line);padding:16px 0}.skills-lesson:first-child{border-top:0}
+.skills-callout{background:var(--soft);border-left:4px solid var(--teal);padding:13px 14px;border-radius:8px;margin-top:12px}
+.skills-choice{display:block;width:100%;text-align:left;border:1px solid var(--line);background:#fff;border-radius:10px;padding:12px;margin:8px 0;cursor:pointer;font:inherit}
+.skills-choice:hover{border-color:var(--teal)}.skills-feedback{margin-top:10px;padding:12px;border-radius:8px;background:var(--soft)}
+.skills-checkoff{border:1px solid var(--line);border-radius:12px;padding:14px;margin:12px 0}
+.skills-checkoff ul{margin-bottom:0}
+.skills-hours{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:12px 0}
+.skills-hours div{background:var(--soft);border-radius:10px;padding:10px;text-align:center}
+.skills-capstone{background:var(--warm);border-left:5px solid var(--orange);border-radius:12px;padding:18px}
+@media(max-width:760px){.skills-grid,.skills-hours{grid-template-columns:1fr}}
