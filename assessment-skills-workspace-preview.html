@@ -21,7 +21,7 @@ label{display:block;font-weight:800;margin:.7rem 0 .3rem}input,select,textarea{w
 <section class="card">
 <div class="eyebrow">Assessments & Skills</div>
 <h1>Student Readiness & Skills Check-Offs</h1>
-<p class="muted">Medical Technician Class assessments, IV competency scheduling, and instructor validation are managed here.</p>
+<p class="muted">Medical Technician Class assessments, IV testing, skills scheduling, competency validation, remediation, completion, and Certificates of Completion are managed here. <strong>Skills readiness is calculated by the system; instructors do not manually change it.</strong></p>
 <div id="login-shell">
 <form id="login-form" style="max-width:520px"><label for="staff-email">ITASA Staff Email</label><input id="staff-email" type="email" autocomplete="username" required><label for="staff-password">Password</label><input id="staff-password" type="password" autocomplete="current-password" required><button id="login-btn" type="submit" style="margin-top:12px">Sign In</button></form>
 <div id="login-status" class="notice" hidden></div>
@@ -54,6 +54,17 @@ function show(el,msg,tone){el.hidden=false;el.className='notice '+(tone||'');el.
 function hide(el){el.hidden=true;el.textContent=''}
 function fmt(v){if(!v)return '';var d=new Date(v);return isNaN(d.getTime())?String(v):d.toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'})}
 function tag(v,tone){return '<span class="tag '+(tone||'')+'">'+esc(v)+'</span>'}
+function studentSpace(r){return r.offering_key==='medication_technician_6_hour'?'medtech-learning-space-preview.html':'iv-learning-space-preview.html'}
+function readinessMessage(r){
+  if(r.skills_ready)return 'Ready for skills scheduling.';
+  if(r.offering_key==='iv_insertion_venipuncture'){
+    return 'Not ready yet: the IV Final Knowledge Assessment must be passed at 80% or higher before the skills check-off can be finalized.';
+  }
+  if(Number(r.assessments_passed||0)<Number(r.assessments_total||0)){
+    return 'Not ready yet: '+esc(r.assessments_passed||0)+' of '+esc(r.assessments_total||0)+' required module assessments have been passed at 80% or higher.';
+  }
+  return 'Not ready yet: the required online Medical Technician Class learning/content requirements are still incomplete.';
+}
 
 function renderRoster(){
  var box=document.getElementById('roster');
@@ -70,12 +81,13 @@ function renderRoster(){
      ? '<p><strong>Skills Check-Off:</strong> '+tag(String(session.status||'scheduled').replace(/_/g,' '),session.status==='completed'?'good':'warn')+'</p>'+
        (session.scheduled_at?'<p class="muted"><strong>Scheduled:</strong> '+esc(fmt(session.scheduled_at))+(session.scheduled_end_at?' - '+esc(fmt(session.scheduled_end_at)):'')+'</p>':'')+
        (session.location?'<p class="muted"><strong>Location:</strong> '+esc(session.location)+'</p>':'')+
-       '<div class="toolbar"><button data-open-session="'+esc(session.session_id)+'">Open Skills Check-Off</button><a class="btn secondary" target="_blank" href="'+checklistLink+'">Print Skills Checklist</a>'+(session.status==='completed'?'<a class="btn secondary" target="_blank" href="certificate-staff-print-preview.html?enrollment='+encodeURIComponent(r.student_enrollment_id)+'">Print Certificate of Completion</a>':'')+'</div>'
+       '<div class="toolbar"><button data-open-session="'+esc(session.session_id)+'">Open Skills Check-Off</button><a class="btn secondary" target="_blank" href="'+checklistLink+'">Print Skills Checklist</a><a class="btn secondary" target="_blank" href="'+studentSpace(r)+'">Review Student Space</a>'+(session.status==='completed'?'<a class="btn secondary" target="_blank" href="certificate-staff-print-preview.html?enrollment='+encodeURIComponent(r.student_enrollment_id)+'">Print Certificate of Completion</a>':'')+'</div>'
      : '<p><strong>Skills readiness:</strong> '+(r.skills_ready?tag('Ready','good'):tag('Not ready','warn'))+'</p>'+
+       '<p class="muted">'+readinessMessage(r)+'</p>'+
        (r.planned_competency_date?'<p class="muted"><strong>Planned skills date:</strong> '+esc(r.planned_competency_date)+'</p>':'')+
-       '<div class="grid2"><div><label>Start date & time</label><input type="datetime-local" data-start></div><div><label>End date & time</label><input type="datetime-local" data-end></div><div><label>Location</label><input data-location placeholder="Enter skills location"></div><div><label>Instructor print copy</label><a class="btn secondary" target="_blank" href="'+checklistLink+'">Print Skills Checklist</a></div></div>'+
-       '<button data-schedule="'+esc(r.student_enrollment_id)+'" '+(!r.skills_ready?'disabled':'')+' style="margin-top:8px">Schedule Skills Check-Off</button>'+
-       (!r.skills_ready?'<p class="muted">The Medical Technician Class online requirements must be complete before scheduling.</p>':'');
+       '<div class="toolbar" style="margin-bottom:10px"><a class="btn secondary" target="_blank" href="'+studentSpace(r)+'">Review Student Space</a><a class="btn secondary" target="_blank" href="'+checklistLink+'">Print Skills Checklist</a></div>'+
+       '<div class="grid2"><div><label>Start date & time</label><input type="datetime-local" data-start></div><div><label>End date & time</label><input type="datetime-local" data-end></div><div><label>Location</label><input data-location placeholder="Enter skills location"></div></div>'+
+       '<button data-schedule="'+esc(r.student_enrollment_id)+'" '+(!r.skills_ready?'disabled':'')+' style="margin-top:8px">Schedule Skills Check-Off</button>';
 
    return '<article class="card course" data-row="'+esc(r.student_enrollment_id)+'"><div class="toolbar"><div><div class="eyebrow">'+esc(r.class_name)+'</div><h3>'+esc(r.student_name||'Student')+'</h3><div class="muted">'+esc(r.student_email||'')+'</div></div><div class="push">'+(r.skills_ready?tag('Skills Ready','good'):tag('Online Work In Progress','warn'))+'</div></div>'+scoreBlock+'<p><strong>Skills to pass:</strong> '+esc(r.required_skills_count||0)+'</p>'+skills+'</article>';
  }).join('')||'<p class="muted">No Medical Technician Class or IV enrollments are available.</p>';
