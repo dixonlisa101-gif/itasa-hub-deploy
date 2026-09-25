@@ -235,7 +235,7 @@ function classCountdown(row){
       box.innerHTML='<ul>'+rows.map(function(c){
         return '<li><strong>'+esc(c.certificate_title||c.certificate_number||'Certificate')+'</strong>'+
           (c.completion_date?' — '+esc(c.completion_date):'')+
-          (c.certificate_url?' — <a target="_blank" rel="noopener" href="'+esc(c.certificate_url)+'">View certificate</a>':'')+
+          (' — <a href="certificate-print-preview.html?certificate='+encodeURIComponent(c.certificate_id)+'">View / Print Certificate</a>')+
           '</li>';
       }).join('')+'</ul>';
     }
