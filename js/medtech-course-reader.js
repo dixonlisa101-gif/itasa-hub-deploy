@@ -6,7 +6,7 @@ const root=container.querySelector('#itasa-medtech'),home=root.querySelector('#m
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const studentKey=String(options.studentKey||'review').replace(/[^a-zA-Z0-9_-]/g,'_');
 const POSITION_KEY='itasa_medtech_position_v1_'+studentKey;
-let moduleIndex=0,tab='lessons',lessonIndex=0,currentView='home',choices={};
+let moduleIndex=0,tab='lessons',lessonIndex=0,currentView='home',choices={},lessonByModule={},tabByModule={};
 
 function clampState(){
  const modules=Array.isArray(data.sections)?data.sections:[];
@@ -25,11 +25,15 @@ function loadState(){
    tab=saved.tab||'lessons';
    currentView=saved.currentView||'home';
    choices=saved.choices&&typeof saved.choices==='object'?saved.choices:{};
+   lessonByModule=saved.lessonByModule&&typeof saved.lessonByModule==='object'?saved.lessonByModule:{};
+   tabByModule=saved.tabByModule&&typeof saved.tabByModule==='object'?saved.tabByModule:{};
+   if(lessonByModule[moduleIndex]!=null)lessonIndex=Number(lessonByModule[moduleIndex])||0;
+   if(tabByModule[moduleIndex])tab=tabByModule[moduleIndex];
    clampState();
  }catch(e){}
 }
 function saveState(){
- try{sessionStorage.setItem(POSITION_KEY,JSON.stringify({moduleIndex,lessonIndex,tab,currentView,choices}));}catch(e){}
+ try{lessonByModule[moduleIndex]=lessonIndex;tabByModule[moduleIndex]=tab;sessionStorage.setItem(POSITION_KEY,JSON.stringify({moduleIndex,lessonIndex,tab,currentView,choices,lessonByModule,tabByModule}));}catch(e){}
 }
 function show(name){currentView=name;home.hidden=name!=='home';reader.hidden=name!=='reader';skills.hidden=name!=='skills';saveState()}
 function moduleAssessment(m){for(const i of (m.items||[])){if(i.assessment)return i.assessment}return null}
@@ -84,12 +88,12 @@ root.addEventListener('click',function(e){
  if(b.dataset.action==='student-home'){saveState();window.location.href='student-portal-cutover-preview.html?stay=1';return}
  if(b.dataset.action==='home'){show('home');renderHome();return}
  if(b.dataset.action==='skills'){show('skills');renderSkills();return}
- if(b.dataset.action==='module'){moduleIndex=Number(b.dataset.value)||0;lessonIndex=(moduleIndex===moduleIndex?lessonIndex:0);tab='lessons';clampState();show('reader');renderReader();focusReader();return}
- if(b.dataset.action==='prev-lesson'){if(lessonIndex>0){lessonIndex--;tab='lessons';renderReader();focusReader()}return}
- if(b.dataset.action==='next-lesson'){const m=(data.sections||[])[moduleIndex];if(lessonIndex<(m.items||[]).length-1){lessonIndex++;tab='lessons';renderReader();focusReader()}return}
- if(b.dataset.action==='assessment'){tab='assessment';renderReader();focusReader();return}
- if(b.dataset.action==='back-to-last-lesson'){const m=(data.sections||[])[moduleIndex];lessonIndex=Math.max((m.items||[]).length-1,0);tab='lessons';renderReader();focusReader();return}
- if(b.dataset.tab){tab=b.dataset.tab;if(tab==='lessons')clampState();renderReader();focusReader();return}
+ if(b.dataset.action==='module'){lessonByModule[moduleIndex]=lessonIndex;tabByModule[moduleIndex]=tab;moduleIndex=Number(b.dataset.value)||0;lessonIndex=Number(lessonByModule[moduleIndex])||0;tab=tabByModule[moduleIndex]||'lessons';clampState();show('reader');renderReader();focusReader();return}
+ if(b.dataset.action==='prev-lesson'){if(lessonIndex>0){lessonIndex--;lessonByModule[moduleIndex]=lessonIndex;tab='lessons';tabByModule[moduleIndex]=tab;renderReader();focusReader()}return}
+ if(b.dataset.action==='next-lesson'){const m=(data.sections||[])[moduleIndex];if(lessonIndex<(m.items||[]).length-1){lessonIndex++;lessonByModule[moduleIndex]=lessonIndex;tab='lessons';tabByModule[moduleIndex]=tab;renderReader();focusReader()}return}
+ if(b.dataset.action==='assessment'){tab='assessment';tabByModule[moduleIndex]=tab;renderReader();focusReader();return}
+ if(b.dataset.action==='back-to-last-lesson'){const m=(data.sections||[])[moduleIndex];lessonIndex=Math.max((m.items||[]).length-1,0);lessonByModule[moduleIndex]=lessonIndex;tab='lessons';tabByModule[moduleIndex]=tab;renderReader();focusReader();return}
+ if(b.dataset.tab){tab=b.dataset.tab;tabByModule[moduleIndex]=tab;if(tab==='lessons')clampState();renderReader();focusReader();return}
  if(b.dataset.self!=null){choices[b.dataset.self]=Number(b.dataset.opt);root.querySelectorAll('[data-self="'+b.dataset.self+'"]').forEach(x=>x.setAttribute('aria-pressed','false'));b.setAttribute('aria-pressed','true');saveState();}
 });
 loadState();
