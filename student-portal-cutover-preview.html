@@ -83,10 +83,10 @@
         <div class="eyebrow">Student Information Center</div>
         <h2>Stay informed while you learn.</h2>
         <div id="student-info-tabs" class="hub-tabs">
-          <button class="btn secondary active" type="button" data-hub-panel="things">Things You Need to Know</button>
+          <button class="btn secondary active" type="button" data-hub-panel="things">What You Need to Know</button>
           <button class="btn secondary" type="button" data-hub-panel="events">Current Events</button>
         </div>
-        <div id="hub-things" class="hub-panel active"><p class="muted">Loading ITASA updates…</p></div>
+        <div id="hub-things" class="hub-panel active"><div class="notice"><strong>Check here before class.</strong><br><span class="muted">This is where ITASA keeps schedule updates, workbook or assignment instructions, required preparation, testing information, and notes from your instructor.</span></div><div id="hub-things-feed"><p class="muted">Loading ITASA updates…</p></div></div>
         <div id="hub-events" class="hub-panel"><p class="muted">Loading current healthcare updates…</p></div>
       </div>
 
@@ -180,7 +180,7 @@ function classCountdown(row){
       }).join('');
     }
     function renderStudentFeeds(feed){
-      var things=document.getElementById('hub-things'),events=document.getElementById('hub-events');
+      var things=document.getElementById('hub-things-feed'),events=document.getElementById('hub-events');
       if(!feed||feed.status!=='ok'){
         things.innerHTML='<p class="muted">ITASA updates are temporarily unavailable.</p>';
         events.innerHTML='<p class="muted">Current healthcare updates are temporarily unavailable.</p>';
