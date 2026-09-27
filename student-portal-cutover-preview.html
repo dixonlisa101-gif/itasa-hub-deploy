@@ -104,7 +104,7 @@
         <div class="eyebrow">Additional Learning Support</div>
         <h2>ITASA Personalized Learning Session (1:1)</h2>
         <p class="muted">Need individual learning or test-taking support? Submit a request from the ITASA Learning Center. After ITASA confirms a date/time, you will receive your Personalized Learning access code and can return to your dedicated space for the appointment, payment step, and session access.</p>
-        <div class="btnrow"><a class="btn secondary" href="one-on-one-request-preview.html">Request a Personalized Learning Session</a><a class="btn secondary" href="one-on-one-learning-space-preview.html">Open Approved Personalized Learning Space</a></div>
+        <div class="btnrow"><a id="personalized-request-link" class="btn secondary" href="one-on-one-request-preview.html">Request a Personalized Learning Session</a><a class="btn secondary" href="one-on-one-learning-space-preview.html">Open Approved Personalized Learning Space</a></div>
       </div>
 
       <div class="card community">
@@ -294,6 +294,12 @@ function classCountdown(row){
         const st=login.student;
         window.ItasaStudentPortal.setSessionCredentials(email,code);
         document.getElementById('welcome-name').textContent='Welcome back, '+((st.first_name||'').trim()||'Student')+'.';
+        var requestLink=document.getElementById('personalized-request-link');
+        if(requestLink){
+          var fromMap={review:'nclex',skills:'skills',iv:'iv',medtech:'medtech'};
+          var fromKey=fromMap[st.program_id]||'';
+          requestLink.href='one-on-one-request-preview.html'+(fromKey?'?from='+encodeURIComponent(fromKey):'');
+        }
         await classesReady;
         renderSpace(st);
         const feed=await loadStudentFeedsDirect(email,code);
