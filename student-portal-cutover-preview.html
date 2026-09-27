@@ -34,7 +34,7 @@
     .space-card{border-top:4px solid var(--orange)}
     .summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 18px;margin-top:14px}
     .summary div:nth-child(odd){font-weight:800}
-    .community{background:var(--warm);border-left:5px solid var(--orange)}.hub-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}.hub-tabs button{background:#e8f4f4;color:var(--teal-dark)}.hub-tabs button.active{background:var(--teal);color:#fff}.hub-panel{display:none}.hub-panel.active{display:block}.feed-item{border-left:4px solid var(--teal);padding:12px 14px;margin:10px 0;background:#fff;border-radius:10px}.feed-item h3{margin:.1rem 0 .4rem}.feed-meta{font-size:.82rem;color:var(--muted)}
+    .community{background:var(--warm);border-left:5px solid var(--orange)}.hub-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0;border-bottom:1px solid var(--line)}.hub-tabs button{background:transparent;color:var(--teal-dark);border-radius:8px 8px 0 0;padding:10px 12px}.hub-tabs button.active{background:#fff;color:var(--teal-dark);border:1px solid var(--line);border-bottom-color:#fff;box-shadow:0 -2px 0 var(--orange) inset}.hub-panel{display:none;padding-top:6px}.hub-panel.active{display:block}.feed-item{border-left:4px solid var(--teal);padding:12px 14px;margin:10px 0;background:#fff;border-radius:10px}.feed-item h3{margin:.1rem 0 .4rem}.feed-meta{font-size:.82rem;color:var(--muted)}
     [hidden]{display:none!important}
     footer{text-align:center;padding:24px 18px;border-top:1px solid var(--line);background:#fff;color:#60757a}
     @media(max-width:650px){.summary{grid-template-columns:1fr}.summary div:nth-child(odd){margin-top:8px}.brand span{display:none}}
@@ -83,10 +83,10 @@
         <div class="eyebrow">Student Information Center</div>
         <h2>Stay informed while you learn.</h2>
         <div id="student-info-tabs" class="hub-tabs">
-          <button class="btn secondary active" type="button" data-hub-panel="things">What You Need to Know</button>
-          <button class="btn secondary" type="button" data-hub-panel="events">Current Events</button>
+          <button class="active" type="button" data-hub-panel="things" aria-selected="true">What You Need to Know</button>
+          <button type="button" data-hub-panel="events" aria-selected="false">Current Events</button>
         </div>
-        <div id="hub-things" class="hub-panel active"><div class="notice"><strong>Check here before class.</strong><br><span class="muted">This is where ITASA keeps schedule updates, workbook or assignment instructions, required preparation, testing information, and notes from your instructor.</span></div><div id="hub-things-feed"><p class="muted">Loading ITASA updates…</p></div></div>
+        <div id="hub-things" class="hub-panel active"><div class="notice"><strong>You are viewing: What You Need to Know</strong><br><span class="muted">Check here before class for schedule updates, workbook or assignment instructions, required preparation, testing information, and notes from your instructor.</span></div><div id="hub-things-feed"><p class="muted">Loading ITASA updates…</p></div></div>
         <div id="hub-events" class="hub-panel"><p class="muted">Loading current healthcare updates…</p></div>
       </div>
 
@@ -315,7 +315,7 @@ function classCountdown(row){
 
     document.querySelectorAll('[data-hub-panel]').forEach(function(tab){
       tab.addEventListener('click',function(){
-        document.querySelectorAll('[data-hub-panel]').forEach(function(x){x.classList.toggle('active',x===tab)});
+        document.querySelectorAll('[data-hub-panel]').forEach(function(x){x.classList.toggle('active',x===tab);x.setAttribute('aria-selected',x===tab?'true':'false')});
         document.querySelectorAll('.hub-panel').forEach(function(p){p.classList.remove('active')});
         document.getElementById('hub-'+tab.dataset.hubPanel).classList.add('active');
       });
