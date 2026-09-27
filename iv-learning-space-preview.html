@@ -78,8 +78,6 @@
       <div class="learning-links"><a href="#lesson-materials">Approved learning materials</a><a href="#iv-assessment">Final Knowledge Assessment</a><a href="#hands-on-learning">Hands-on preparation</a><a href="#review-questions">Review questions</a></div>
     </section>
 
-    <div class="card quick orange"><div class="eyebrow">Class Access</div><h3>Join your scheduled class</h3><div id="class-access"><p class="muted">Checking your secure class-access details…</p></div></div>
-
     <section id="lesson-materials" class="card" aria-labelledby="materials-title">
       <div class="eyebrow">Learn with your instructor</div><h2 id="materials-title">Lessons &amp; learning materials</h2>
       <div id="materials" aria-live="polite"><p class="muted">Checking for approved materials assigned to your IV course…</p></div><div id="course-hub-items" style="margin-top:14px"></div>
@@ -322,7 +320,7 @@ form.addEventListener('submit',async function(ev){
       isIvReviewTest?window.ItasaStudentPortal.getIvReviewPreview(email,code):Promise.resolve(null),
       window.ItasaAssessmentSkills.getStatus(email,code)
     ]);
-    renderAccess(results[0]);renderLearning(results[1],st,results[3]);renderCertificates(results[2]);renderIvAssessment(results[4]);renderIvSkillsStatus(results[4]);
+    renderLearning(results[1],st,results[3]);renderCertificates(results[2]);renderIvAssessment(results[4]);renderIvSkillsStatus(results[4]);
     await loadIvQa();
     document.getElementById('login-card').hidden=true;document.getElementById('student-signout').hidden=false;workspace.classList.add('active');showStatus('<strong>Welcome to your IV Learning Space.</strong>','ok');document.getElementById('code').value='';workspace.scrollIntoView({behavior:'smooth',block:'start'});
   }catch(err){console.error(err);showStatus('<strong>Unable to open this learning space right now.</strong> No student records were changed.','error')}
