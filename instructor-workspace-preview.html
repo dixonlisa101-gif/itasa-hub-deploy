@@ -130,7 +130,7 @@ label{display:block;font-weight:800;margin:.7rem 0 .3rem}input{width:100%;paddin
         <div class="toolbar" style="margin-top:10px">
           <button id="hub-save" class="orange" type="button">Publish to Student Hub</button>
           <button id="hub-clear" class="secondary" type="button">Clear Form</button>
-          <button id="hub-refresh" class="secondary" type="button">Refresh Class Content</button>
+          <button id="hub-refresh" class="secondary" type="button">Refresh Class Content</button><a id="hub-preview" class="btn secondary" target="_blank" href="student-portal-cutover-preview.html">Preview Student Home</a>
         </div>
       </div>
       <div class="card">
@@ -272,6 +272,35 @@ function hubTypeLabel(v){
     v==='resource'?'Course Resource':
     v==='instructor_message'?'Instructor Communication':v||'Item';
 }
+function hubProgramMeta(){
+  var st=window.ItasaStaffHub.getCurrentStaff()||{},admin=String(st.role||'').toLowerCase()==='administrator';
+  var all=[
+    {id:'review',label:'NCLEX Review & Test-Taking Strategies',url:'nclex-learning-space-preview.html'},
+    {id:'skills',label:'Skills Refresher Class',url:'skills-learning-space-preview.html'},
+    {id:'iv',label:'IV Insertion & Venipuncture',url:'iv-learning-space-preview.html'},
+    {id:'medtech',label:'Medical Technician Class',url:'medtech-learning-space-preview.html'}
+  ];
+  if(admin)return all;
+  var assigns=state.readiness&&Array.isArray(state.readiness.assignments)?state.readiness.assignments:[];
+  var allowed={};
+  assigns.forEach(function(a){
+    if(a.offering_key==='rn_skills_refresher_120_hour')allowed.skills=true;
+    if(a.offering_key==='iv_insertion_venipuncture')allowed.iv=true;
+    if(a.offering_key==='medication_technician_6_hour')allowed.medtech=true;
+  });
+  return all.filter(function(x){return allowed[x.id]});
+}
+function configureHubProgramOptions(){
+  var sel=document.getElementById('hub-program'),rows=hubProgramMeta(),current=sel.value;
+  sel.innerHTML=rows.map(function(x){return '<option value="'+esc(x.id)+'">'+esc(x.label)+'</option>'}).join('');
+  if(rows.some(function(x){return x.id===current}))sel.value=current;
+  var chosen=rows.find(function(x){return x.id===sel.value})||rows[0];
+  var preview=document.getElementById('hub-preview');
+  if(preview&&chosen)preview.href=chosen.url;
+  document.getElementById('hub-save').disabled=!chosen;
+  document.getElementById('hub-refresh').disabled=!chosen;
+  if(!chosen)document.getElementById('hub-content-list').innerHTML='<p class="muted">No course publishing assignment is attached to this account.</p>';
+}
 function clearHubForm(){
   document.getElementById('hub-id').value='';
   document.getElementById('hub-title').value='';
@@ -292,6 +321,7 @@ async function loadHubContent(){
       return '<article class="card course" data-hub-item="'+esc(x.id)+'"><div class="toolbar"><div><div class="eyebrow">'+esc(hubTypeLabel(x.item_type))+'</div><h3>'+esc(x.title||'Untitled')+'</h3></div><div class="push"><span class="tag '+(x.is_visible?'good':'warn')+'">'+(x.is_visible?'Visible':'Hidden')+'</span></div></div>'+
         (x.body?'<p>'+esc(x.body)+'</p>':'')+
         (x.due_at?'<p class="muted"><strong>Due:</strong> '+esc(fmtDate(x.due_at))+'</p>':'')+
+        (x.posted_by?'<p class="muted"><strong>Posted by:</strong> '+esc(x.posted_by)+(x.updated_at?' · '+esc(fmtDate(x.updated_at)):'')+'</p>':'')+
         (x.resource_url?'<p><a target="_blank" rel="noopener" href="'+esc(x.resource_url)+'">Open linked resource</a></p>':'')+
         '<button class="secondary" data-edit-hub>Edit</button></article>';
     }).join(''):'<p class="muted">No Student Hub content has been published for this class yet.</p>';
@@ -482,7 +512,7 @@ function render(){
   document.getElementById('work-students').textContent=state.students.length;
   document.getElementById('work-classes').textContent=state.classes.length;
   document.getElementById('work-access').textContent=state.access.length;
-  renderCourses();renderAttention();renderOneOnOneAttention();renderKnowledgeFeed();renderAssignedCourseWorkspaces();renderNclexCompletion();renderReadiness();
+  renderCourses();renderAttention();renderOneOnOneAttention();renderKnowledgeFeed();renderAssignedCourseWorkspaces();renderNclexCompletion();renderReadiness();configureHubProgramOptions();
 }
 async function load(){
   var rs=document.getElementById('refresh-status');
@@ -560,7 +590,7 @@ document.getElementById('signout').onclick=async function(){await window.ItasaSt
 document.getElementById('hub-save').onclick=saveHubContent;
 document.getElementById('hub-clear').onclick=clearHubForm;
 document.getElementById('hub-refresh').onclick=loadHubContent;
-document.getElementById('hub-program').onchange=function(){clearHubForm();loadHubContent()};
+document.getElementById('hub-program').onchange=function(){clearHubForm();configureHubProgramOptions();loadHubContent()};
 document.querySelector('[data-panel="hub-content"]').addEventListener('click',function(){setTimeout(loadHubContent,0)});
 document.getElementById('refresh').onclick=async function(){var b=this;b.disabled=true;await load();b.disabled=false};window.ItasaStaffHub.onSessionChange(function(s){if(s.resolved)sync()});
 setInterval(function(){if(window.ItasaStaffHub.getCurrentStaff())load()},60000);
