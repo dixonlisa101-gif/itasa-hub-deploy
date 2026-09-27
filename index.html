@@ -51,6 +51,9 @@
     [hidden]{display:none!important}
     @media(max-width:900px){.hero,.support-section,.start-marie-grid{grid-template-columns:1fr}.hero-image{min-height:330px}.grid,.course-grid{grid-template-columns:1fr 1fr}.marie-mini{grid-template-columns:150px 1fr}.marie-mini img{width:100%;height:auto;max-height:220px}}
     @media(max-width:640px){.grid,.grid2,.course-grid,.steps,.form-grid{grid-template-columns:1fr}.full{grid-column:auto}.hero-panel{padding:24px}.navlinks{width:100%;overflow:auto;flex-wrap:nowrap}.navlinks a{white-space:nowrap}}
+      /* Keep the two welcome cards side by side */
+    @media (min-width:721px){.start-marie-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:stretch}}
+    @media (max-width:720px){.start-marie-grid{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
