@@ -80,18 +80,10 @@
       <div id="space-card" class="card space-card"></div>
 
       <div class="card">
-        <div class="eyebrow">Student Information Center</div>
-        <h2>Stay informed while you learn.</h2>
-        <div id="hub-things">
-          <h3>What You Need to Know</h3>
-          <div class="notice"><strong>Check here before class.</strong><br><span class="muted">This is where ITASA keeps schedule updates, workbook or assignment instructions, required preparation, testing information, and notes from your instructor.</span></div>
-          <div id="hub-things-feed"><p class="muted">Loading ITASA updates…</p></div>
-        </div>
-        <div id="hub-events" style="margin-top:24px">
-          <h3>Current Events</h3>
-          <p class="muted">Current healthcare and professional updates relevant to your learning appear below.</p>
-          <div id="hub-events-feed"><p class="muted">Loading current healthcare updates…</p></div>
-        </div>
+        <div class="eyebrow">Current Events</div>
+        <h2>Healthcare &amp; professional updates</h2>
+        <p class="muted">Current healthcare and professional updates relevant to your learning appear below.</p>
+        <div id="hub-events-feed"><p class="muted">Loading current healthcare updates…</p></div>
       </div>
 
       <div class="card">
@@ -207,13 +199,11 @@ function classCountdown(row){
       return {status:'error'};
     }
     function renderStudentFeeds(feed){
-      var things=document.getElementById('hub-things-feed'),events=document.getElementById('hub-events-feed');
+      var events=document.getElementById('hub-events-feed');
       if(!feed||feed.status!=='ok'){
-        things.innerHTML='<p class="muted">ITASA updates are temporarily unavailable.</p>';
         events.innerHTML='<p class="muted">Current healthcare updates are temporarily unavailable.</p>';
         return;
       }
-      things.innerHTML=renderFeedItems(feed.things_to_know,'things');
       events.innerHTML=renderFeedItems(feed.current_events,'events')+
         '<p class="feed-meta">Current Events refresh automatically from ITASA medical and professional knowledge sources.</p>';
     }
