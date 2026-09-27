@@ -135,6 +135,20 @@ table{width:100%;border-collapse:collapse}th,td{padding:10px 8px;border-bottom:1
         <h2>System health &amp; automation checks</h2>
         <p class="muted">Administrator-only view of the student-email queue, knowledge-source health, required Zoom pathways, and scheduled background jobs.</p>
         <div id="it-status" class="notice" hidden></div>
+        <div class="card">
+          <div class="eyebrow">Release Readiness</div>
+          <h3>Final TLC functional audit</h3>
+          <ul>
+            <li>Verify Explore Courses shows NCLEX Review, Skills Refresher, IV Insertion &amp; Venipuncture, and Medical Technician Class correctly.</li>
+            <li>Verify Direct Registration allows only courses currently open for enrollment; IV registration/payment must remain blocked, and Medical Technician must remain Coming Soon with registration/payment closed.</li>
+            <li>Verify Student Sign In and each student learning space route correctly: NCLEX, Skills Refresher, IV, and Medical Technician.</li>
+            <li>Verify Instructor → My Courses, Review Student View, assessments/skills work, and IV/Medical Technician instructor resources route correctly.</li>
+            <li>Test all major navigation links, buttons, forms, images, and protected routes on desktop and mobile.</li>
+            <li>Confirm there are no broken images, dead links, misleading availability messages, or unintended payment/registration paths.</li>
+            <li><strong>Email release hold:</strong> Resend domain verification is still required for innovationtrainingnstaffing.com before TLC registration and 1:1 notification emails can be confirmed live.</li>
+            <li>After DNS verification, run a controlled live email test and confirm prospect/student and instructor notifications change from pending to sent.</li>
+          </ul>
+        </div>
         <div id="it-oversight"></div>
       </div>
     </section>
