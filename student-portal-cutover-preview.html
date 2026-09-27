@@ -34,7 +34,7 @@
     .space-card{border-top:4px solid var(--orange)}
     .summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 18px;margin-top:14px}
     .summary div:nth-child(odd){font-weight:800}
-    .community{background:var(--warm);border-left:5px solid var(--orange)}.hub-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0;border-bottom:1px solid var(--line)}.hub-tabs button{background:transparent;color:var(--teal-dark);border-radius:8px 8px 0 0;padding:10px 12px}.hub-tabs button.active{background:#fff;color:var(--teal-dark);border:1px solid var(--line);border-bottom-color:#fff;box-shadow:0 -2px 0 var(--orange) inset}.hub-panel{display:none;padding-top:6px}.hub-panel.active{display:block}.feed-item{border-left:4px solid var(--teal);padding:12px 14px;margin:10px 0;background:#fff;border-radius:10px}.feed-item h3{margin:.1rem 0 .4rem}.feed-meta{font-size:.82rem;color:var(--muted)}
+    .community{background:var(--warm);border-left:5px solid var(--orange)}.current-events-card summary{cursor:pointer;list-style:none}.current-events-card summary::-webkit-details-marker{display:none}.current-events-card summary::after{content:'Show';float:right;margin-top:-2rem;font-weight:800;color:var(--teal-dark)}.current-events-card[open] summary::after{content:'Hide'}.current-events-card .current-events-body{padding-top:12px;border-top:1px solid var(--line);margin-top:12px}.hub-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0;border-bottom:1px solid var(--line)}.hub-tabs button{background:transparent;color:var(--teal-dark);border-radius:8px 8px 0 0;padding:10px 12px}.hub-tabs button.active{background:#fff;color:var(--teal-dark);border:1px solid var(--line);border-bottom-color:#fff;box-shadow:0 -2px 0 var(--orange) inset}.hub-panel{display:none;padding-top:6px}.hub-panel.active{display:block}.feed-item{border-left:4px solid var(--teal);padding:12px 14px;margin:10px 0;background:#fff;border-radius:10px}.feed-item h3{margin:.1rem 0 .4rem}.feed-meta{font-size:.82rem;color:var(--muted)}
     [hidden]{display:none!important}
     footer{text-align:center;padding:24px 18px;border-top:1px solid var(--line);background:#fff;color:#60757a}
     @media(max-width:650px){.summary{grid-template-columns:1fr}.summary div:nth-child(odd){margin-top:8px}.brand span{display:none}}
@@ -79,12 +79,16 @@
 
       <div id="space-card" class="card space-card"></div>
 
-      <div class="card">
-        <div class="eyebrow">Current Events</div>
-        <h2>Healthcare &amp; professional updates</h2>
-        <p class="muted">Current healthcare and professional updates relevant to your learning appear below.</p>
-        <div id="hub-events-feed"><p class="muted">Loading current healthcare updates…</p></div>
-      </div>
+      <details class="card current-events-card">
+        <summary>
+          <div class="eyebrow">Current Events</div>
+          <h2>Healthcare &amp; professional updates <span id="current-events-count"></span></h2>
+          <p class="muted">Course-relevant updates are available here when you want to review them.</p>
+        </summary>
+        <div class="current-events-body">
+          <div id="hub-events-feed"><p class="muted">Loading current healthcare updates…</p></div>
+        </div>
+      </details>
 
       <div class="card">
         <div class="eyebrow">Your Class Hub</div>
@@ -204,7 +208,10 @@ function classCountdown(row){
         events.innerHTML='<p class="muted">Current healthcare updates are temporarily unavailable.</p>';
         return;
       }
-      events.innerHTML=renderFeedItems(feed.current_events,'events')+
+      var eventItems=Array.isArray(feed.current_events)?feed.current_events:[];
+      var count=document.getElementById('current-events-count');
+      if(count)count.textContent=eventItems.length?'('+eventItems.length+')':'';
+      events.innerHTML=renderFeedItems(eventItems,'events')+
         '<p class="feed-meta">Current Events refresh automatically from ITASA medical and professional knowledge sources.</p>';
     }
 
