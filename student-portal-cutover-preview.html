@@ -170,7 +170,7 @@ function classCountdown(row){
     const classesReady=loadClasses();
 
     function renderFeedItems(items,type){
-      if(!Array.isArray(items)||!items.length)return '<p class="muted">No updates are posted right now.</p>';
+      if(!Array.isArray(items)||!items.length)return '<p class="muted">No course-specific updates are posted right now.</p>';
       return items.map(function(item){
         var title=esc(item.title||'ITASA Update');
         var body=esc(item.body||item.summary||'');
