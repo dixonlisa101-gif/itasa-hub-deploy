@@ -20,7 +20,7 @@
   </style>
 </head>
 <body>
-<header><nav><a class="brand" href="index.html"><img src="assets/itasa-circular-brand-logo.png" alt="ITASA logo">ITASA Learning Center</a><a href="nclex-learning-space-preview.html">Back to NCLEX Space</a></nav></header>
+<header><nav><a class="brand" href="index.html"><img src="assets/itasa-circular-brand-logo.png" alt="ITASA logo">ITASA Learning Center</a><a id="back-link" href="student-portal-cutover-preview.html?stay=1">Back to Student Home</a></nav></header>
 <main>
   <div class="card">
     <div class="eyebrow">Additional Learning Support</div>
@@ -48,6 +48,21 @@
 <script src="js/public-hub-vnext.js"></script>
 <script>
 (function(){
+  var back=document.getElementById('back-link');
+  var from=(new URLSearchParams(window.location.search).get('from')||'').toLowerCase();
+  var ref=(document.referrer||'').toLowerCase();
+  var source=from||ref;
+  var routes=[
+    {match:['iv','iv-learning-space-preview'],href:'iv-learning-space-preview.html',label:'Back to IV Space'},
+    {match:['skills','skills-refresher','skills-learning-space-preview'],href:'skills-learning-space-preview.html',label:'Back to Skills Refresher Space'},
+    {match:['medtech','medication','medtech-learning-space-preview'],href:'medtech-learning-space-preview.html',label:'Back to Medication Technician Space'},
+    {match:['nclex','review','nclex-learning-space-preview'],href:'nclex-learning-space-preview.html',label:'Back to NCLEX Space'}
+  ];
+  for(var i=0;i<routes.length;i++){
+    if(routes[i].match.some(function(v){return source.indexOf(v)>-1})){
+      back.href=routes[i].href;back.textContent=routes[i].label;break;
+    }
+  }
   function esc(v){return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
   function show(el,html,tone){el.hidden=false;el.className='notice '+(tone||'');el.innerHTML=html}
   document.getElementById('one-on-one-form').addEventListener('submit',async function(ev){
