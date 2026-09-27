@@ -33,12 +33,13 @@ footer{text-align:center;padding:24px 18px;border-top:1px solid var(--line);back
 <section id="workspace" class="workspace">
 <div class="card welcome"><img src="assets/itasa-circular-brand-logo.png" alt="ITASA logo"><div><div class="eyebrow">Welcome back</div><h2 id="student-welcome">Medical Technician Class Student</h2><p class="muted">Six modules · 20 lessons · 360 planned online minutes · required in-person skills validation.</p></div></div>
 <div class="card note"><div class="eyebrow">Course status</div><h2>Coming Soon</h2><p class="muted">This course is still in ITASA review. No registration, payment, certificate release, or production student access is enabled from this preview.</p></div>
-<section id="course-box" class="card"><p class="muted">Loading Medical Technician Class learning materials…</p></section>
+<section id="course-box" class="card"><p class="muted">Loading Medical Technician Class learning materials…</p></section><section class="card"><div class="eyebrow">Instructor Hub</div><h2>Announcements, assignments &amp; class materials</h2><div id="course-hub-items"><p class="muted">Loading instructor-posted class items…</p></div></section>
 <div class="card"><div class="eyebrow">Completion</div><h2>Completion &amp; Certificate</h2><div id="completion"><p class="muted">Checking your completion information…</p></div></div>
 </section>
 </main>
 <footer>Innovation Training & Staffing Agency · Empowering Nurses. Elevating Healthcare.</footer>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/student-course-hub-content.js?v=1"></script>
 <script src="js/student-portal-supabase.js"></script>
 <script src="js/assessment-skills-supabase.js?v=2"></script>
 <script src="js/medtech-course-reader.js?v=3"></script>
@@ -91,6 +92,7 @@ form.addEventListener('submit',async function(ev){
      }
    });
    renderCertificates(certificates);
+   await window.ItasaStudentCourseHub.load(document.getElementById('course-hub-items'),email,code);
    document.getElementById('login-card').hidden=true;document.getElementById('student-signout').hidden=false;workspace.classList.add('active');showStatus('<strong>Welcome to your Medical Technician Class Virtual Learning Space.</strong>','ok');document.getElementById('code').value='';workspace.scrollIntoView({behavior:'smooth',block:'start'});
  }catch(err){console.error(err);showStatus('<strong>Unable to open this learning space right now.</strong> No student records were changed.','error')}
  finally{btn.disabled=false;btn.textContent='Enter Medical Technician Class'}
