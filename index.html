@@ -25,7 +25,7 @@
     .path-intro{text-align:center;max-width:760px;margin:34px auto 18px}
     .support-section{display:grid;grid-template-columns:.9fr 1.1fr;gap:22px;align-items:center;margin-top:30px}
     .support-image{min-height:340px;border-radius:18px;overflow:hidden;border:1px solid var(--line);background:#e7f1f1}
-    .support-copy{padding:8px}.start-marie-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:stretch}.start-marie-grid>.card{margin:0}.marie-mini{display:grid;grid-template-columns:minmax(180px,220px) 1fr;gap:18px;align-items:center}.marie-mini img{width:100%;height:auto;max-height:280px;object-fit:contain;object-position:center;border-radius:14px;display:block;background:#fff}.orange-kicker{color:#b95e16}
+    .support-copy{padding:8px}.start-marie-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:stretch}.start-marie-grid>.card{margin:0}.marie-mini{display:grid;grid-template-columns:minmax(230px,280px) minmax(0,1fr);gap:22px;align-items:center}.marie-mini>div{min-width:0}.marie-mini img{width:100%;height:340px;object-fit:cover;object-position:center top;border-radius:14px;display:block;background:#fff}.marie-credentials strong{display:inline-block}.orange-kicker{color:#b95e16}
     .welcome-list{padding-left:20px}.welcome-list li{margin:.55rem 0}
     .eyebrow{text-transform:uppercase;letter-spacing:.09em;font-size:.76rem;font-weight:900;color:var(--teal)}
     h1{font-size:clamp(2rem,5vw,3.5rem);line-height:1.03;margin:.4rem 0 1rem}h2{font-size:clamp(1.55rem,3vw,2.35rem);margin:.2rem 0 .8rem}h3{margin:.2rem 0 .55rem}
@@ -49,8 +49,8 @@
     
     footer{border-top:1px solid var(--line);padding:28px 18px;color:#60757a;text-align:center;background:#fff}
     [hidden]{display:none!important}
-    @media(max-width:900px){.hero,.support-section,.start-marie-grid{grid-template-columns:1fr}.hero-image{min-height:330px}.grid,.course-grid{grid-template-columns:1fr 1fr}.marie-mini{grid-template-columns:150px 1fr}.marie-mini img{width:100%;height:auto;max-height:220px}}
-    @media(max-width:640px){.grid,.grid2,.course-grid,.steps,.form-grid{grid-template-columns:1fr}.full{grid-column:auto}.hero-panel{padding:24px}.navlinks{width:100%;overflow:auto;flex-wrap:nowrap}.navlinks a{white-space:nowrap}}
+    @media(max-width:900px){.hero,.support-section,.start-marie-grid{grid-template-columns:1fr}.hero-image{min-height:330px}.grid,.course-grid{grid-template-columns:1fr 1fr}.marie-mini{grid-template-columns:minmax(200px,240px) minmax(0,1fr)}.marie-mini img{width:100%;height:320px}}
+    @media(max-width:640px){.grid,.grid2,.course-grid,.steps,.form-grid{grid-template-columns:1fr}.full{grid-column:auto}.hero-panel{padding:24px}.navlinks{width:100%;overflow:auto;flex-wrap:nowrap}.navlinks a{white-space:nowrap}.marie-mini{grid-template-columns:1fr}.marie-mini img{height:380px;max-height:none;object-position:center top}}
       /* Keep the two welcome cards side by side */
     @media (min-width:721px){.start-marie-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:stretch}}
     @media (max-width:720px){.start-marie-grid{grid-template-columns:1fr}}
@@ -135,12 +135,12 @@
         <div class="card warm">
           <div class="eyebrow orange-kicker">Get to know Marie</div>
           <div class="marie-mini">
-            <img src="assets/itasa-instructor-welcome-restored.jpg?v=2a41c551" alt="Marie Florestal, ITASA instructor" loading="lazy">
+            <img src="https://raw.githubusercontent.com/dixonlisa101-gif/itasa-learning-center/main/images/marie-florestal-instructor.png" alt="Marie Florestal, ITASA instructor" loading="lazy">
             <div>
               <h2>Welcome to ITASA.</h2>
               <p>I want the Learning Center to be a place where you can learn, prepare, ask questions, and keep moving forward with support.</p>
               <p class="muted">At ITASA, we are building a learning community where you can strengthen your knowledge, grow in confidence, and stay connected throughout your journey.</p>
-              <p><strong>Marie S. Florestal, MSN, APRN, FNP-C</strong><br><span class="muted">ITASA Instructor</span></p>
+              <p class="marie-credentials"><strong>Marie S. Florestal</strong><br><strong>MSN, APRN, FNP-C</strong><br><span class="muted">ITASA Instructor</span></p>
             </div>
           </div>
         </div>
