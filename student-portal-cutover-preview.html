@@ -174,12 +174,12 @@ function classCountdown(row){
       return items.map(function(item){
         var title=esc(item.title||'ITASA Update');
         var body=esc(item.body||item.summary||'');
-        var source=item.source&&item.source.name?'<div class="feed-meta">'+esc(item.source.name)+(item.published_at?' · '+esc(fmtDate(item.published_at)):'')+'</div>':'';
+        var badge=type==='events'&&item.course_label?'<div class="feed-meta"><strong>'+esc(item.course_label)+'</strong></div>':''; var source=item.source&&item.source.name?'<div class="feed-meta">'+esc(item.source.name)+(item.published_at?' · '+esc(fmtDate(item.published_at)):'')+'</div>':'';
         var link='';
         var url=item.resource_url||item.url||'';
         var label=item.resource_label||'Open source';
         if(url)link='<p><a target="_blank" rel="noopener" href="'+esc(url)+'">'+esc(label)+'</a></p>';
-        return '<article class="feed-item"><h3>'+title+'</h3>'+source+'<p>'+body+'</p>'+link+'</article>';
+        return '<article class="feed-item">'+badge+'<h3>'+title+'</h3>'+source+'<p>'+body+'</p>'+link+'</article>';
       }).join('');
     }
     async function loadStudentFeedsDirect(email,code){
