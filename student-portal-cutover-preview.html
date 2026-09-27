@@ -82,12 +82,16 @@
       <div class="card">
         <div class="eyebrow">Student Information Center</div>
         <h2>Stay informed while you learn.</h2>
-        <div id="student-info-tabs" class="hub-tabs">
-          <button class="active" type="button" data-hub-panel="things" aria-selected="true">What You Need to Know</button>
-          <button type="button" data-hub-panel="events" aria-selected="false">Current Events</button>
+        <div id="hub-things">
+          <h3>What You Need to Know</h3>
+          <div class="notice"><strong>Check here before class.</strong><br><span class="muted">This is where ITASA keeps schedule updates, workbook or assignment instructions, required preparation, testing information, and notes from your instructor.</span></div>
+          <div id="hub-things-feed"><p class="muted">Loading ITASA updates…</p></div>
         </div>
-        <div id="hub-things" class="hub-panel active"><div class="notice"><strong>You are viewing: What You Need to Know</strong><br><span class="muted">Check here before class for schedule updates, workbook or assignment instructions, required preparation, testing information, and notes from your instructor.</span></div><div id="hub-things-feed"><p class="muted">Loading ITASA updates…</p></div></div>
-        <div id="hub-events" class="hub-panel"><p class="muted">Loading current healthcare updates…</p></div>
+        <div id="hub-events" style="margin-top:24px">
+          <h3>Current Events</h3>
+          <p class="muted">Current healthcare and professional updates relevant to your learning appear below.</p>
+          <div id="hub-events-feed"><p class="muted">Loading current healthcare updates…</p></div>
+        </div>
       </div>
 
       <div class="card">
@@ -203,7 +207,7 @@ function classCountdown(row){
       return {status:'error'};
     }
     function renderStudentFeeds(feed){
-      var things=document.getElementById('hub-things-feed'),events=document.getElementById('hub-events');
+      var things=document.getElementById('hub-things-feed'),events=document.getElementById('hub-events-feed');
       if(!feed||feed.status!=='ok'){
         things.innerHTML='<p class="muted">ITASA updates are temporarily unavailable.</p>';
         events.innerHTML='<p class="muted">Current healthcare updates are temporarily unavailable.</p>';
@@ -312,14 +316,6 @@ function classCountdown(row){
         btn.disabled=false;btn.textContent='Sign In';
       }
     }
-
-    document.querySelectorAll('[data-hub-panel]').forEach(function(tab){
-      tab.addEventListener('click',function(){
-        document.querySelectorAll('[data-hub-panel]').forEach(function(x){x.classList.toggle('active',x===tab);x.setAttribute('aria-selected',x===tab?'true':'false')});
-        document.querySelectorAll('.hub-panel').forEach(function(p){p.classList.remove('active')});
-        document.getElementById('hub-'+tab.dataset.hubPanel).classList.add('active');
-      });
-    });
 
     form.addEventListener('submit',function(ev){
       ev.preventDefault();
