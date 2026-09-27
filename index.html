@@ -269,6 +269,7 @@
                 <option value="review">NCLEX Review & Test-Taking Strategies</option>
                 <option value="skills">Skills Refresher Class</option>
                 <option value="iv">IV Insertion & Venipuncture</option>
+                <option value="medtech" disabled>Medical Technician Class — Coming Soon</option>
               </select>
             </div>
 
@@ -346,7 +347,8 @@
     var purpose={
       review:'Focused review, practice questions, and test-taking strategies for NCLEX preparation.',
       skills:'Structured refresher learning with in-person skills practice.',
-      iv:'Focused IV insertion and venipuncture learning with hands-on skills practice.'
+      iv:'Focused IV insertion and venipuncture learning with hands-on skills practice.',
+      medtech:'Medication-assistance learning with required in-person physical and verbal skills validation.'
     };
 
     function pricingMarkup(id,row,forForm){
@@ -408,8 +410,8 @@
 
     function courseCard(row){
       var id=row.program_id;
-      var title=id==='review'?'NCLEX Review & Test-Taking Strategies':id==='skills'?'Skills Refresher Class':'IV Insertion & Venipuncture';
-      var certificate=id==='skills'||id==='iv'
+      var title=id==='review'?'NCLEX Review & Test-Taking Strategies':id==='skills'?'Skills Refresher Class':id==='iv'?'IV Insertion & Venipuncture':'Medical Technician Class';
+      var certificate=id==='skills'||id==='iv'||id==='medtech'
         ?'<p class="muted">Certificate of Completion provided upon successful completion of course requirements. CEU/CNE approval is not currently being advertised.</p>':'';
       return '<div class="card course-card">'+
         '<span class="tag">'+esc(row.registration_status||'')+'</span>'+
@@ -422,17 +424,19 @@
             ? 'Live online instruction via Zoom'
             : (id==='skills'||id==='iv')
               ? 'Zoom-based instruction + required in-person skills check-off. Location details are provided after registration and payment confirmation. Arrive on time for the in-person phase.'
-              : (row.delivery_method||'')
+              : id==='medtech'
+                ? 'Online learning with required in-person physical and verbal skills validation.'
+                : (row.delivery_method||'')
         )+'</p>'+
         certificate+
-        '<details><summary>View Class Pricing &amp; Payment Options</summary><div style="margin-top:10px">'+pricingMarkup(id,row,false)+
-        '<div class="btnrow">'+(id==='iv'?'<span class="tag">Registration Temporarily Unavailable</span>':(classRegistrationOpen(row)?'<button class="btn" type="button" data-register-course="'+esc(id)+'">Register for This Course</button>':'<span class="tag">Registration Closed</span>'))+'</div></div></details>'+
+        (id==='medtech'?'<div class="notice"><strong>Coming Soon.</strong><br><span class="muted">Registration, payment, price, and class schedule will be added when ITASA opens this course.</span></div>':'<details><summary>View Class Pricing &amp; Payment Options</summary><div style="margin-top:10px">'+pricingMarkup(id,row,false)+'<div class="btnrow">'+(id==='iv'?'<span class="tag">Registration Temporarily Unavailable</span>':(classRegistrationOpen(row)?'<button class="btn" type="button" data-register-course="'+esc(id)+'">Register for This Course</button>':'<span class="tag">Registration Closed</span>'))+'</div></div></details>')+
       '</div>';
     }
 
     async function loadClasses(){
       try{
         classes=await window.ItasaPublicHubVNext.getClasses();
+        if(!classes.some(function(c){return c.program_id==='medtech'}))classes.push({program_id:'medtech',name:'Medical Technician Class',registration_status:'Coming Soon',start_date:null,notes:'Course learning space is in ITASA review. Registration and payment remain closed.'});
         courseGrid.innerHTML=classes.map(courseCard).join('');
         courseGrid.querySelectorAll('[data-register-course]').forEach(function(b){b.onclick=function(){regCourse.value=b.dataset.registerCourse;refreshPayments();location.hash='#register'}});
         courseGrid.querySelectorAll('[data-info-course]').forEach(function(b){b.onclick=function(){document.getElementById('info-interest').value=b.dataset.infoCourse;location.hash='#information-session'}});
