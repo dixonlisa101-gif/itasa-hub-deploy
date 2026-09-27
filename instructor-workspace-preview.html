@@ -186,8 +186,8 @@ function esc(v){return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'
 function show(el,msg,tone){el.hidden=false;el.className='notice '+(tone||'');el.textContent=msg}
 function hide(el){el.hidden=true;el.textContent=''}
 function fmtDate(v){if(!v)return '';var d=new Date(v);return isNaN(d.getTime())?String(v):d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}
-function programName(id){return id==='review'?'NCLEX Review & Test-Taking Strategies':id==='skills'?'Skills Refresher Class':id==='iv'?'IV Insertion & Venipuncture':id||'ITASA Class'}
-function studentView(id){return id==='review'?'nclex-learning-space-preview.html':id==='skills'?'skills-learning-space-preview.html':id==='iv'?'iv-learning-space-preview.html':'student-portal-cutover-preview.html'}
+function programName(id){return id==='review'?'NCLEX Review & Test-Taking Strategies':id==='skills'?'Skills Refresher Class':id==='iv'?'IV Insertion & Venipuncture':id==='medtech'?'Medical Technician Class':id||'ITASA Class'}
+function studentView(id){return id==='review'?'nclex-learning-space-preview.html':id==='skills'?'skills-learning-space-preview.html':id==='iv'?'iv-learning-space-preview.html':id==='medtech'?'medtech-learning-space-preview.html':'student-portal-cutover-preview.html'}
 function easternKey(value){
   var d=value?new Date(value):new Date(); if(isNaN(d.getTime()))return '';
   var ps=new Intl.DateTimeFormat('en-CA',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(d),o={};ps.forEach(p=>{if(p.type!=='literal')o[p.type]=p.value});return o.year+'-'+o.month+'-'+o.day;
@@ -530,6 +530,7 @@ async function load(){
     ]);
     state.students=all[0]||[];
     state.classes=(all[1]&&all[1].data)||[];
+    if(!state.classes.some(function(c){return c.program_id==='medtech'}))state.classes.push({program_id:'medtech',name:'Medical Technician Class',registration_status:'Coming Soon',start_date:null,max_seats:null,notes:'Registration and payment remain closed while ITASA finalizes course launch details.'});
     state.access=all[2]||[];
     state.knowledge=(all[3]&&all[3].status==='ok')?(all[3].items||[]):[];
     state.nclex=(all[4]&&all[4].status==='ok')?(all[4].rows||[]):[];
