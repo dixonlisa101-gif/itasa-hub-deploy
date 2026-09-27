@@ -53,7 +53,7 @@
     },
     iv: {
       standardPrice: '$599',
-      checkoutUrl: 'https://buy.stripe.com/8x28wPeXkgf15Og0Ag7Vm02',
+      checkoutUrl: null,
       options: [
         { key: 'full', label: 'Pay in Full', amountText: '$599' }
       ],
@@ -108,6 +108,7 @@
   }
 
   function paymentOptions(courseId, classRow) {
+    if (courseId === 'iv') return [];
     var cfg = PAYMENT_CONFIG[courseId];
     if (!cfg) return [];
     if (isFirstDay(classRow)) return cfg.options.filter(function (o) { return o.key === 'full'; });
@@ -129,7 +130,7 @@
         .eq('is_current', true);
       if (response.error) return;
       (response.data || []).forEach(function (row) {
-        if (['review', 'skills', 'iv'].indexOf(row.program_id) === -1 ||
+        if (['review', 'skills'].indexOf(row.program_id) === -1 ||
             Number(row.payment_number) !== 1 ||
             row.checkout_stage !== 'registration' || row.is_current !== true ||
             !/^https:\/\/buy[.]stripe[.]com\/[A-Za-z0-9]+$/.test(row.checkout_url || '')) return;
@@ -142,6 +143,7 @@
   }
 
   function checkoutFor(courseId, paymentOptionKey) {
+    if (courseId === 'iv') return null;
     return currentCheckoutLinks[courseId + ':' + paymentOptionKey] || null;
   }
 
@@ -184,6 +186,7 @@
   }
 
   async function submitRegistration(entry) {
+    if ((entry.course_id || '').toLowerCase() === 'iv') return { status: 'registration_not_open', reason: 'iv_compliance_hold' };
     var c = client();
     if (!c) return { status: 'error', error: new Error('Supabase client unavailable.') };
     try {
