@@ -126,7 +126,7 @@
 'use strict';
 const PROGRAM='iv';
 const form=document.getElementById('login-form'),btn=document.getElementById('login-btn'),status=document.getElementById('status'),workspace=document.getElementById('workspace');
-let classRow=null,currentEmail='',currentCode='',ivAssessmentData=null,ivAssessmentAnswers={},ivAssessmentResult=null;
+let classRow=null,currentEmail='',currentCode='',ivAssessmentData=null,ivAssessmentAnswers={},ivAssessmentResult=null,ivLessonsAvailable=false;
 function esc(v){return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
 function showStatus(html,tone){status.hidden=false;status.className='card status '+(tone||'');status.innerHTML=html}
 function fmtDate(v){if(!v)return '';const d=new Date(v);if(isNaN(d.getTime()))return '';return d.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}
@@ -175,8 +175,9 @@ function renderAccess(a){
 }
 function renderLearning(ws,st,preview){
   const materials=document.getElementById('materials');
+  ivLessonsAvailable=false;
   if(preview&&preview.status==='ok'&&preview.curriculum&&window.ItasaIvCourse){
-    window.ItasaIvCourse.mount(materials,preview.curriculum,{review:false,teachingNotes:false,rememberLocation:true,studentKey:st.id||st.email||'review'});return;
+    ivLessonsAvailable=true;window.ItasaIvCourse.mount(materials,preview.curriculum,{review:false,teachingNotes:false,rememberLocation:true,studentKey:st.id||st.email||'review'});return;
   }
   // Use only protected RPC responses; draft preview is limited server-side to the IV REVIEW TEST account.
   if(!ws||ws.status!=='ok'){
@@ -187,11 +188,12 @@ function renderLearning(ws,st,preview){
   const sections=Array.isArray(course&&course.sections)?course.sections:[];
   const interactive=sections.flatMap(function(s){return Array.isArray(s.items)?s.items:[]}).find(function(item){return item.content&&item.content.schema_version==='itasa_iv_interactive_v1'});
   if(interactive&&window.ItasaIvCourse){
-    window.ItasaIvCourse.mount(materials,interactive.content.curriculum,{teachingNotes:false,rememberLocation:true,studentKey:st.id||st.email||'student'});return;
+    ivLessonsAvailable=true;window.ItasaIvCourse.mount(materials,interactive.content.curriculum,{teachingNotes:false,rememberLocation:true,studentKey:st.id||st.email||'student'});return;
   }
   if(!sections.length){
     materials.innerHTML='<p><strong>No approved IV lessons are available to this account yet.</strong></p><p class="muted">The six-module course is in staff review. Approved lessons will appear here when ITASA releases them.</p>';return;
   }
+  ivLessonsAvailable=true;
   const labels={learning:'Lesson',overview:'Course overview',orientation:'Preparation',access:'Class access',notice:'Course information',schedule:'Schedule',skills:'Supervised practice',competency:'Instructor validation',requirement:'Completion requirement',progress:'Completion information',certificate:'Certificate information'};
   materials.innerHTML=sections.map(function(s){
     const items=Array.isArray(s.items)?s.items:[];
@@ -213,6 +215,10 @@ function renderIvAssessment(s){
   else if(p&&p.attempts_used)html+='<div class="notice warn"><strong>Not yet passed</strong><br>Best score: '+esc(p.best_score)+'% · 80% required</div>';
   if(ivAssessmentResult&&ivAssessmentResult.status==='graded'){
     html+='<div class="notice '+(ivAssessmentResult.passed?'good':'warn')+'"><strong>'+(ivAssessmentResult.passed?'Passed':'Review and try again')+'</strong><br>Score: '+esc(ivAssessmentResult.score)+'% · '+esc(ivAssessmentResult.correct_count)+' of '+esc(ivAssessmentResult.question_count)+' correct</div>';
+  }
+  if(!ivLessonsAvailable){
+    html+='<div class="notice warn"><strong>Assessment locked</strong><br>The IV Final Knowledge Assessment becomes available after the approved six-module IV program is released to your Learning Space.</div>';
+    box.innerHTML=html;return;
   }
   if(!ivAssessmentData){
     html+='<button id="start-iv-assessment" class="btn orange" type="button">'+(p&&p.passed?'Open Assessment':'Start Assessment')+'</button>';
