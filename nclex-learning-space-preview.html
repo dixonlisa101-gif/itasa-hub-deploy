@@ -109,7 +109,7 @@
         <div class="card quick">
           <div class="eyebrow">Learning Materials</div>
           <h3>Assigned class materials</h3>
-          <div id="materials"><p class="muted">Instructor-assigned materials will appear here as they are made available to your class.</p></div>
+          <div id="materials"><p class="muted">Instructor-assigned materials will appear here as they are made available to your class.</p></div><div id="course-hub-items" style="margin-top:14px"></div>
         </div>
       </div>
 
@@ -153,7 +153,8 @@
   <footer>Innovation Training &amp; Staffing Agency · Empowering Nurses. Elevating Healthcare.</footer>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/student-portal-supabase.js"></script>
+  <script src="js/student-course-hub-content.js?v=1"></script>
+<script src="js/student-portal-supabase.js"></script>
   <script src="js/shared-content-supabase.js"></script>
   <script>
   (function(){
@@ -302,6 +303,7 @@ function classCountdown(row){
         renderAccess(results[0]);
         renderWorkspace(results[1],st);
         renderCertificates(results[2]);
+        await window.ItasaStudentCourseHub.load(document.getElementById('course-hub-items'),email,code);
         await loadAnnouncements();
         document.getElementById('login-card').hidden=true;
         document.getElementById('student-signout').hidden=false;
