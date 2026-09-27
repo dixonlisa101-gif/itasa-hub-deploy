@@ -21,7 +21,7 @@
 <div class="small">has successfully completed the ITASA training requirements for</div>
 <div id="course-name" class="course">ITASA Training Course</div>
 <div id="course-detail" class="small"></div>
-<div id="details" class="details"></div>
+<div id="details" class="details"></div><div id="program-disclaimer" class="small" style="margin:18px auto 0;max-width:820px;color:var(--muted);line-height:1.35" hidden></div>
 <div class="signs"><div><div class="sig" id="trainer-name">Instructor / Validator</div></div><div><div class="sig" id="trainer-credential">Instructor Credential / License</div></div></div>
 <div class="provider">Provider: Innovation Training & Staffing Agency (ITASA)</div>
 </div>
@@ -46,6 +46,9 @@ try{
  document.getElementById('details').innerHTML='<strong>Training Hours:</strong> '+esc(c.training_hours||'')+' &nbsp; | &nbsp; <strong>Completion Date:</strong> '+esc(c.completion_date||'')+' &nbsp; | &nbsp; <strong>Certificate #:</strong> '+esc(c.certificate_number||'');
  document.getElementById('trainer-name').textContent=c.trainer_name||'Instructor / Validator';
  document.getElementById('trainer-credential').textContent=[c.trainer_credential,c.trainer_license_number].filter(Boolean).join(' · ')||'Instructor Credential / License';
+ var disclaimer=document.getElementById('program-disclaimer');
+ var certName=String(c.certificate_title||c.offering&&c.offering.public_name||'').toLowerCase();
+ if(c.program_id==='medtech'||certName.includes('medical technician')){disclaimer.hidden=false;disclaimer.textContent='Florida ALF pathway only: assistance with self-administration of medications under Chapter 429, Florida Statutes. This is not the separate CNA medication-administration pathway under section 464.2035, Florida Statutes, and does not authorize independent medication administration.';}
  st.hidden=true;cert.hidden=false;
 }catch(e){st.textContent='Your certificate could not be loaded right now.';console.error(e)}
 })();
