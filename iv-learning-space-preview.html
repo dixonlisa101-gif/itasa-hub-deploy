@@ -270,8 +270,7 @@ function renderIvSkillsStatus(s){
     return;
   }
   box.innerHTML='<p><strong>Final competency validation is required.</strong></p>'+
-    (s.planned_competency_date?'<p class="muted">Planned class date: '+esc(fmtDate(s.planned_competency_date))+'</p>':'')+
-    '<p class="muted">Your exact check-off time and location will appear here after ITASA schedules it.</p>';
+    '<p class="muted">Your check-off date, time, and location will appear here after ITASA schedules your in-person skills validation.</p>';
 }
 
 function renderCertificates(certs){
