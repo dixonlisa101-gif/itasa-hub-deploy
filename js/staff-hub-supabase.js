@@ -375,6 +375,65 @@
     return result.data || { status: 'error' };
   }
 
+  async function uploadQualificationDocument(file, meta) {
+    requireStaff();
+    if (!file) throw new Error('Choose a document to upload.');
+    meta = meta || {};
+    var safeName = String(file.name || 'document').replace(/[^a-zA-Z0-9._-]+/g, '_');
+    var path = currentStaff.id + '/' + Date.now() + '-' + safeName;
+    var up = await client.storage.from('staff-qualification-documents').upload(path, file, {
+      contentType: file.type || 'application/octet-stream',
+      upsert: false
+    });
+    if (up.error) throw up.error;
+    var rec = await client.rpc('record_my_qualification_document', {
+      p_document_type: meta.document_type || 'other_qualification',
+      p_evidence_key: meta.evidence_key || null,
+      p_storage_path: path,
+      p_original_filename: file.name || safeName,
+      p_mime_type: file.type || 'application/octet-stream',
+      p_file_size: Number(file.size || 0),
+      p_instructor_note: meta.instructor_note || null
+    });
+    if (rec.error) {
+      await client.storage.from('staff-qualification-documents').remove([path]);
+      throw rec.error;
+    }
+    return rec.data || { status: 'error' };
+  }
+
+  async function fetchMyQualificationDocuments() {
+    requireStaff();
+    var result = await client.rpc('get_my_qualification_documents');
+    if (result.error) throw result.error;
+    return result.data || { status: 'error', documents: [] };
+  }
+
+  async function qualificationDocumentSignedUrl(path) {
+    requireStaff();
+    var result = await client.storage.from('staff-qualification-documents').createSignedUrl(path, 300);
+    if (result.error) throw result.error;
+    return result.data && result.data.signedUrl ? result.data.signedUrl : null;
+  }
+
+  async function fetchQualificationDocumentReviewQueue() {
+    requireStaff();
+    var result = await client.rpc('get_staff_qualification_document_review_queue');
+    if (result.error) throw result.error;
+    return result.data || { status: 'error', documents: [] };
+  }
+
+  async function reviewQualificationDocument(id, decision, note) {
+    requireStaff();
+    var result = await client.rpc('review_staff_qualification_document', {
+      p_document_id: id,
+      p_decision: decision,
+      p_admin_note: note || null
+    });
+    if (result.error) throw result.error;
+    return result.data || { status: 'error' };
+  }
+
   async function fetchAssessmentSkillsRoster() {
     requireOperator();
     var result = await client.rpc('get_assessment_skills_roster');
@@ -447,6 +506,11 @@
     fetchInstructorReadiness: fetchInstructorReadiness,
     acknowledgeInstructorRequirement: acknowledgeInstructorRequirement,
     submitInstructorExperienceAttestation: submitInstructorExperienceAttestation,
+    uploadQualificationDocument: uploadQualificationDocument,
+    fetchMyQualificationDocuments: fetchMyQualificationDocuments,
+    qualificationDocumentSignedUrl: qualificationDocumentSignedUrl,
+    fetchQualificationDocumentReviewQueue: fetchQualificationDocumentReviewQueue,
+    reviewQualificationDocument: reviewQualificationDocument,
     fetchAssessmentSkillsRoster: fetchAssessmentSkillsRoster,
     fetchKnowledgeFeed: fetchKnowledgeFeed,
     fetchNclexCompletionRoster: fetchNclexCompletionRoster,
