@@ -151,6 +151,13 @@ table{width:100%;border-collapse:collapse}th,td{padding:10px 8px;border-bottom:1
           </ul>
         </div>
         <div id="it-oversight"></div>
+        <div class="card">
+          <div class="eyebrow">Instructor Qualification Review</div>
+          <h3>Private instructor documents</h3>
+          <p class="muted">Review CVs, résumés, IV-experience evidence, teaching records, licenses/certificates, and other qualification documents submitted by instructors. Verification here can satisfy a linked qualification requirement; instructor uploads never self-verify.</p>
+          <div id="qualification-review-status" class="notice" hidden></div>
+          <div id="qualification-review-list"><p class="muted">Loading instructor documents…</p></div>
+        </div>
       </div>
     </section>
   </div>
@@ -158,11 +165,11 @@ table{width:100%;border-collapse:collapse}th,td{padding:10px 8px;border-bottom:1
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/shared-content-supabase.js"></script>
-<script src="js/staff-hub-supabase.js?v=10"></script>
+<script src="js/staff-hub-supabase.js?v=20260927-docs1"></script>
 <script>
 (function(){
 'use strict';
-var state={students:[],info:[],access:[],serviceAccess:[],classes:[],one:[],certs:[],audit:[],it:null};
+var state={students:[],info:[],access:[],serviceAccess:[],classes:[],one:[],certs:[],audit:[],it:null,qualificationReviews:[]};
 function esc(v){return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
 function fmt(v){if(!v)return '';var d=new Date(v);return isNaN(d.getTime())?String(v):d.toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'})}
 function money(v){var n=Number(v||0);return n.toLocaleString('en-US',{style:'currency',currency:'USD'})}
@@ -245,6 +252,33 @@ function renderCerts(){
 function renderAudit(){
  document.getElementById('audit-body').innerHTML=state.audit.map(a=>'<tr><td>'+esc(fmt(a.at))+'</td><td>'+esc(a.actor_name||'')+'<br><span class="muted">'+esc(a.role||'')+'</span></td><td>'+esc(a.action||'')+'</td><td>'+esc(a.target_type||'')+'<br><span class="muted">'+esc(a.target_id||'')+'</span></td><td>'+esc(a.details||'')+'</td></tr>').join('')||'<tr><td colspan="5" class="muted">No audit entries available.</td></tr>';
 }
+function qualificationDocLabel(v){return v==='resume_cv'?'CV / Résumé':v==='teaching_experience'?'Teaching Experience Evidence':v==='iv_professional_experience'?'IV Professional Experience Evidence':v==='license_certificate'?'License / Certificate':'Other Qualification Document'}
+function renderQualificationReviews(){
+  var box=document.getElementById('qualification-review-list'),rows=state.qualificationReviews||[];
+  box.innerHTML=rows.length?rows.map(function(d){
+    var tone=d.review_status==='verified'?'good':d.review_status==='rejected'?'bad':'warn';
+    return '<article class="request" data-qualification-review="'+esc(d.id)+'"><div class="toolbar"><div><strong>'+esc(d.staff_name||d.staff_email||'Instructor')+'</strong><br><span class="muted">'+esc(d.staff_email||'')+' · '+esc(qualificationDocLabel(d.document_type))+' · '+esc(fmt(d.uploaded_at))+'</span></div><div class="push"><span class="tag '+tone+'">'+esc(String(d.review_status||'pending').replace(/_/g,' '))+'</span></div></div>'+
+      '<p><strong>File:</strong> '+esc(d.original_filename||'Document')+'</p>'+
+      (d.evidence_key?'<p><strong>Supports:</strong> '+esc(String(d.evidence_key).replace(/_/g,' '))+'</p>':'')+
+      (d.instructor_note?'<p><strong>Instructor note:</strong> '+esc(d.instructor_note)+'</p>':'')+
+      (d.admin_note?'<p class="muted"><strong>Admin note:</strong> '+esc(d.admin_note)+'</p>':'')+
+      '<div class="toolbar"><button type="button" class="secondary" data-view-qual-doc="'+esc(d.storage_path)+'">View Document</button><input data-qual-note placeholder="Admin note (optional)" value="'+esc(d.admin_note||'')+'" style="flex:1;min-width:220px"><button type="button" data-qual-decision="verified">Verify</button><button type="button" class="secondary" data-qual-decision="needs_more_information">Need More Info</button><button type="button" class="secondary" data-qual-decision="rejected">Reject</button></div></article>';
+  }).join(''):'<p class="muted">No instructor qualification documents have been submitted.</p>';
+
+  box.querySelectorAll('[data-view-qual-doc]').forEach(function(btn){btn.onclick=async function(){try{var url=await window.ItasaStaffHub.qualificationDocumentSignedUrl(btn.dataset.viewQualDoc);if(url)window.open(url,'_blank','noopener')}catch(e){show(document.getElementById('qualification-review-status'),e.message||String(e),'error')}}});
+  box.querySelectorAll('[data-qual-decision]').forEach(function(btn){btn.onclick=async function(){
+    var card=btn.closest('[data-qualification-review]'),note=card.querySelector('[data-qual-note]').value,decision=btn.dataset.qualDecision;
+    if(decision==='verified'&&!confirm('Verify this document as qualification evidence?'))return;
+    btn.disabled=true;
+    try{
+      var r=await window.ItasaStaffHub.reviewQualificationDocument(card.dataset.qualificationReview,decision,note);
+      if(!r||r.status!=='reviewed')throw new Error((r&&r.status)||'Document review could not be saved.');
+      show(document.getElementById('qualification-review-status'),'Instructor document review saved.','good');
+      await loadQualificationReviews();
+    }catch(e){show(document.getElementById('qualification-review-status'),e.message||String(e),'error')}
+    finally{btn.disabled=false}
+  }});
+}
 function yn(v){return v?'<span class="tag good">Configured</span>':'<span class="tag warn">Needs setup</span>'}
 function renderItOversight(){
   var box=document.getElementById('it-oversight'),d=state.it||{};
@@ -273,7 +307,8 @@ async function loadOne(){state.one=await window.ItasaStaffHub.fetchOneOnOneReque
 async function loadCerts(){state.certs=await window.ItasaStaffHub.fetchCertificates();renderCerts();metrics()}
 async function loadAudit(){state.audit=await window.ItasaStaffHub.fetchAuditLog(100);renderAudit()}
 async function loadIt(){state.it=await window.ItasaStaffHub.fetchItSystemOversight();renderItOversight()}
-async function loadAll(){var rs=document.getElementById('refresh-status');if(rs)rs.textContent='Refreshing…';try{await Promise.all([loadStudents(),loadInfo(),loadAccess(),loadOne(),loadCerts(),loadAudit(),loadIt()]);if(rs)rs.textContent='Updated '+new Date().toLocaleTimeString([], {hour:'numeric',minute:'2-digit'})}catch(e){console.error(e);if(rs)rs.textContent='Refresh failed';alert('Some operations data could not be loaded. '+(e.message||e))}}
+async function loadQualificationReviews(){var r=await window.ItasaStaffHub.fetchQualificationDocumentReviewQueue();state.qualificationReviews=(r&&r.status==='ok')?(r.documents||[]):[];renderQualificationReviews()}
+async function loadAll(){var rs=document.getElementById('refresh-status');if(rs)rs.textContent='Refreshing…';try{await Promise.all([loadStudents(),loadInfo(),loadAccess(),loadOne(),loadCerts(),loadAudit(),loadIt(),loadQualificationReviews()]);if(rs)rs.textContent='Updated '+new Date().toLocaleTimeString([], {hour:'numeric',minute:'2-digit'})}catch(e){console.error(e);if(rs)rs.textContent='Refresh failed';alert('Some operations data could not be loaded. '+(e.message||e))}}
 
 function syncSession(){var st=window.ItasaStaffHub.getCurrentStaff();if(st){document.getElementById('login-shell').hidden=true;document.getElementById('workspace-header').hidden=false;document.getElementById('staff-name').textContent=st.full_name||st.email;document.getElementById('staff-meta').textContent=st.role+' · '+st.email;if(String(st.role||'').toLowerCase()!=='administrator'){document.getElementById('workspace').hidden=true;document.getElementById('workspace-header').hidden=true;var s=document.getElementById('login-status');show(s,'Operations & IT Oversight requires administrator authorization. Use the Instructor Workspace for ordinary instructor work.','error');return}document.getElementById('workspace').hidden=false;loadAll()}else{document.getElementById('login-shell').hidden=false;document.getElementById('workspace-header').hidden=true;document.getElementById('workspace').hidden=true}}
 document.getElementById('login-form').onsubmit=async function(ev){ev.preventDefault();var b=document.getElementById('login-btn'),s=document.getElementById('login-status');b.disabled=true;b.textContent='Signing in…';hide(s);var res=await window.ItasaStaffHub.signIn(document.getElementById('staff-email').value,document.getElementById('staff-password').value);document.getElementById('staff-password').value='';b.disabled=false;b.textContent='Sign In';if(!res.ok)show(s,res.error&&res.error.message||'Sign-in failed.','error');else syncSession()};
