@@ -133,8 +133,8 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link rel="stylesheet" href="css/skills-course-reader.css?v=1">
 <script src="js/student-course-hub-content.js?v=1"></script>
-<script src="js/student-portal-supabase.js"></script>
-<script src="js/skills-course-reader.js?v=1"></script>
+<script src="js/student-portal-supabase.js?v=2"></script>
+<script src="js/skills-course-reader.js?v=2"></script>
 <script src="js/shared-content-supabase.js"></script>
 <script>
 (function(){
@@ -242,12 +242,11 @@ form.addEventListener('submit',async function(ev){
     if(st.programId!==PROGRAM){showStatus('<strong>This student account is valid, but it is not assigned to this class.</strong><br><a href="student-portal-cutover-preview.html">Return to Student Home</a>','warn');return}
     document.getElementById('student-welcome').textContent='Welcome, '+((st.first_name||'').trim()||'Student');
     renderSchedule();
-    const isSkillsReviewTest=st.programId===PROGRAM&&String(st.enrollmentStatus||'').trim().toLowerCase()==='review test';
     const results=await Promise.all([
       window.ItasaStudentPortal.getZoomAccess(email,code),
       window.ItasaStudentPortal.getLearningWorkspace(email,code),
       window.ItasaStudentPortal.getCertificates(email,code),
-      isSkillsReviewTest?window.ItasaStudentPortal.getSkillsReviewPreview(email,code):Promise.resolve(null)
+      window.ItasaStudentPortal.getSkillsReviewPreview(email,code)
     ]);
     renderAccess(results[0]);renderLearning(results[1],st,results[3]);renderCertificates(results[2]);
     await loadClassAnnouncements();
