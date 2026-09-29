@@ -134,14 +134,14 @@
 <link rel="stylesheet" href="css/skills-course-reader.css?v=1">
 <script src="js/student-course-hub-content.js?v=1"></script>
 <script src="js/student-portal-supabase.js?v=2"></script>
-<script src="js/skills-course-reader.js?v=2"></script>
+<script src="js/skills-course-reader.js?v=3"></script>
 <script src="js/shared-content-supabase.js"></script>
 <script>
 (function(){
 'use strict';
 const PROGRAM='skills';
 const form=document.getElementById('login-form'),btn=document.getElementById('login-btn'),status=document.getElementById('status'),workspace=document.getElementById('workspace');
-let classRow=null;
+let classRow=null;let skillsCourseController=null;
 function esc(v){return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
 function showStatus(html,tone){status.hidden=false;status.className='card status '+(tone||'');status.innerHTML=html}
 function fmtDate(v){if(!v)return '';const d=new Date(v);if(isNaN(d.getTime()))return '';return d.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}
@@ -191,7 +191,7 @@ function renderAccess(a){
 function renderLearning(ws,st,preview){
   const materials=document.getElementById('materials');
   if(preview&&preview.status==='ok'&&preview.curriculum&&window.ItasaSkillsCourse){
-    window.ItasaSkillsCourse.mount(materials,preview.curriculum,{studentKey:st.id||st.email||'review'});return;
+    skillsCourseController=window.ItasaSkillsCourse.mount(materials,preview.curriculum,{studentKey:st.id||st.email||'review'});return;
   }
   const enrollments=Array.isArray(ws&&ws.enrollments)?ws.enrollments:[];
   if(enrollments.length){
@@ -267,10 +267,12 @@ document.querySelectorAll('[data-readiness]').forEach(function(box){
 document.addEventListener('click',function(e){
   const card=e.target.closest('[data-open-module]');
   if(!card)return;
-  const idx=card.getAttribute('data-open-module');
+  const idx=Number(card.getAttribute('data-open-module'));
   const materials=document.getElementById('materials');
-  const openBtn=materials&&materials.querySelector('[data-action="module"][data-value="'+idx+'"]');
-  if(openBtn){openBtn.click();return}
+  if(skillsCourseController&&typeof skillsCourseController.openModule==='function'){
+    skillsCourseController.openModule(idx);
+    return;
+  }
   if(materials)materials.scrollIntoView({behavior:'smooth',block:'start'});
 });
 
