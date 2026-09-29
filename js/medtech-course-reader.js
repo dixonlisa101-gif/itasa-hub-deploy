@@ -139,7 +139,7 @@ async function submitAssessment(key){
 function renderReader(){
  const m=(data.sections||[])[moduleIndex],assessment=moduleAssessment(m),items=Array.isArray(m.items)?m.items:[];
  clampState();
- reader.innerHTML='<div class="mt-top"><button class="mt-link" data-action="home">← All Modules</button><button class="mt-link" data-action="student-home">← Student Home</button></div><div class="mt-label">Module '+(moduleIndex+1)+' of '+data.module_count+'</div><h2>'+esc(m.title)+'</h2><nav class="mt-tabs"><button class="mt-link" data-tab="lessons">Lessons</button><button class="mt-link" data-tab="assessment">Assessment</button></nav><div id="mt-content" class="mt-panel"></div>';
+ reader.innerHTML='<div class="mt-top"><button class="mt-link" data-action="home">← All Modules</button><button class="mt-link" data-action="student-home">← Student Home</button></div><div class="mt-label">Module '+(moduleIndex+1)+' of '+data.module_count+'</div><h2>'+esc(m.title)+'</h2><nav class="mt-tabs"><button type="button" class="mt-link" data-action="show-lessons" data-tab="lessons">Lessons</button><button type="button" class="mt-link" data-action="show-assessment" data-tab="assessment">Assessment</button></nav><div id="mt-content" class="mt-panel"></div>';
  reader.querySelectorAll('[data-tab]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.tab===tab?'true':'false'));
  const box=reader.querySelector('#mt-content');
  if(tab==='lessons'){
@@ -187,7 +187,8 @@ root.addEventListener('click',function(e){
  if(b.dataset.action==='module'){lessonByModule[moduleIndex]=lessonIndex;tabByModule[moduleIndex]=tab;moduleIndex=Number(b.dataset.value)||0;lessonIndex=Number(lessonByModule[moduleIndex])||0;tab=tabByModule[moduleIndex]||'lessons';clampState();show('reader');renderReader();focusReader();return}
  if(b.dataset.action==='prev-lesson'){if(lessonIndex>0){lessonIndex--;lessonByModule[moduleIndex]=lessonIndex;tab='lessons';tabByModule[moduleIndex]=tab;renderReader();focusReader()}return}
  if(b.dataset.action==='next-lesson'){const m=(data.sections||[])[moduleIndex];if(lessonIndex<(m.items||[]).length-1){lessonIndex++;lessonByModule[moduleIndex]=lessonIndex;tab='lessons';tabByModule[moduleIndex]=tab;renderReader();focusReader()}return}
- if(b.dataset.action==='assessment'){tab='assessment';tabByModule[moduleIndex]=tab;renderReader();focusReader();return}
+ if(b.dataset.action==='assessment'||b.dataset.action==='show-assessment'){tab='assessment';tabByModule[moduleIndex]=tab;renderReader();focusReader();return}
+ if(b.dataset.action==='show-lessons'){tab='lessons';tabByModule[moduleIndex]=tab;clampState();renderReader();focusReader();return}
  if(b.dataset.action==='start-assessment'){startAssessment(b.dataset.key);return}
  if(b.dataset.action==='back-to-last-lesson'){const m=(data.sections||[])[moduleIndex];lessonIndex=Math.max((m.items||[]).length-1,0);lessonByModule[moduleIndex]=lessonIndex;tab='lessons';tabByModule[moduleIndex]=tab;renderReader();focusReader();return}
  if(b.dataset.tab){tab=b.dataset.tab;tabByModule[moduleIndex]=tab;if(tab==='lessons')clampState();renderReader();focusReader();return}
