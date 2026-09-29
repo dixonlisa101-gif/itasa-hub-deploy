@@ -58,6 +58,14 @@
         { key: 'full', label: 'Pay in Full', amountText: '$599' }
       ],
       promo: null
+    },
+    medtech: {
+      standardPrice: '$149',
+      checkoutUrl: null,
+      options: [
+        { key: 'full', label: 'Pay in Full', amountText: '$149' }
+      ],
+      promo: null
     }
   };
 
@@ -130,7 +138,7 @@
         .eq('is_current', true);
       if (response.error) return;
       (response.data || []).forEach(function (row) {
-        if (['review', 'skills'].indexOf(row.program_id) === -1 ||
+        if (['review', 'skills', 'medtech'].indexOf(row.program_id) === -1 ||
             Number(row.payment_number) !== 1 ||
             row.checkout_stage !== 'registration' || row.is_current !== true ||
             !/^https:\/\/buy[.]stripe[.]com\/[A-Za-z0-9]+$/.test(row.checkout_url || '')) return;
