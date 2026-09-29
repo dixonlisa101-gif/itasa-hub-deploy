@@ -428,7 +428,7 @@
                 : (row.delivery_method||'')
         )+'</p>'+
         certificate+
-        (id==='medtech'?'<div class="notice"><strong>Coming Soon.</strong><br><span class="muted">Registration, payment, price, and class schedule will be added when ITASA opens this course.</span></div>':'<details><summary>View Class Pricing &amp; Payment Options</summary><div style="margin-top:10px">'+pricingMarkup(id,row,false)+'<div class="btnrow">'+(id==='iv'?'<span class="tag">Registration Temporarily Unavailable</span>':(classRegistrationOpen(row)?'<button class="btn" type="button" data-register-course="'+esc(id)+'">Register for This Course</button>':'<span class="tag">Registration Closed</span>'))+'</div></div></details>')+
+        (id==='medtech'?'<div class="notice"><strong>Coming Soon.</strong><br><span class="muted">Course price: $149.<br>Registration and payment will open when ITASA completes final course review and releases the class schedule.</span></div>':'<details><summary>View Class Pricing &amp; Payment Options</summary><div style="margin-top:10px">'+pricingMarkup(id,row,false)+'<div class="btnrow">'+(id==='iv'?'<span class="tag">Registration Temporarily Unavailable</span>':(classRegistrationOpen(row)?'<button class="btn" type="button" data-register-course="'+esc(id)+'">Register for This Course</button>':'<span class="tag">Registration Closed</span>'))+'</div></div></details>')+
       '</div>';
     }
 
