@@ -17,7 +17,7 @@
     label{display:block;font-weight:800;margin:.8rem 0 .35rem}input{width:100%;padding:11px 12px;border:1px solid #b9cbcd;border-radius:9px;font:inherit}.btn{display:inline-block;border:0;border-radius:10px;padding:11px 15px;font:inherit;font-weight:800;cursor:pointer;text-decoration:none;background:var(--teal);color:#fff}.btn.orange{background:var(--orange)}.btn.secondary{background:#e8f4f4;color:var(--teal-dark)}.btnrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
     .status{border-left:5px solid var(--teal)}.ok{border-left-color:#3c8b65}.warn{border-left-color:var(--orange)}.error{border-left-color:#b74848}.workspace{display:none}.workspace.active{display:block}
     .welcome-strip{display:flex;align-items:center;gap:18px;flex-wrap:wrap}.welcome-strip img{width:84px;height:84px;border-radius:50%;object-fit:contain}.schedule{display:grid;grid-template-columns:160px 1fr;gap:8px 14px}.schedule div:nth-child(odd){font-weight:800}
-    .module{border-top:1px solid var(--line);padding:14px 0}.module:first-child{border-top:0}.path{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:14px}.path-card{background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:16px}.path-card .num{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--teal);color:#fff;font-weight:900;margin-bottom:10px}.week-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.week{border:1px solid var(--line);border-radius:12px;padding:16px;background:#fff}.week strong{display:block;color:var(--teal-dark);margin-bottom:6px}.checklist label{display:flex;gap:10px;align-items:flex-start;font-weight:700;margin:.7rem 0}.checklist input{width:auto;margin-top:3px}.note{background:var(--warm);border-left:4px solid var(--orange);padding:12px 14px;border-radius:8px}.community{background:var(--warm);border-left:5px solid var(--orange)}.protected{background:#fffaf4;border-left:5px solid var(--orange)}.qa-item{border-top:1px solid var(--line);padding:14px 0}.qa-item:first-child{border-top:0}
+    .module{border-top:1px solid var(--line);padding:14px 0}.module:first-child{border-top:0}.path{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:14px}.path-card{background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:16px}.path-card .num{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--teal);color:#fff;font-weight:900;margin-bottom:10px}.week-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.week{border:1px solid var(--line);border-radius:12px;padding:16px;background:#fff;text-align:left;cursor:pointer;width:100%;font:inherit}.week:hover{box-shadow:0 4px 14px rgba(0,0,0,.08)}.week strong{display:block;color:var(--teal-dark);margin-bottom:6px}.checklist label{display:flex;gap:10px;align-items:flex-start;font-weight:700;margin:.7rem 0}.checklist input{width:auto;margin-top:3px}.note{background:var(--warm);border-left:4px solid var(--orange);padding:12px 14px;border-radius:8px}.community{background:var(--warm);border-left:5px solid var(--orange)}.protected{background:#fffaf4;border-left:5px solid var(--orange)}.qa-item{border-top:1px solid var(--line);padding:14px 0}.qa-item:first-child{border-top:0}
     footer{text-align:center;padding:24px 18px;border-top:1px solid var(--line);background:#fff;color:#60757a}[hidden]{display:none!important}
     @media(max-width:900px){.path{grid-template-columns:repeat(2,minmax(0,1fr))}.week-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:760px){.grid,.grid3,.path,.week-grid{grid-template-columns:1fr}.schedule{grid-template-columns:1fr}.brand span{display:none}}
 </style>
@@ -75,12 +75,12 @@
       <div class="eyebrow">Six-week journey</div><h2>Your course weekends</h2>
       <p class="muted">The course is scheduled across six weeks. Exact daily start/end times remain pending ITASA confirmation.</p>
       <div class="week-grid">
-        <div class="week"><strong>Weekend 1 · Module 1</strong><span class="muted">Safety, Infection Control &amp; Assessment</span></div>
-        <div class="week"><strong>Weekend 2 · Module 2</strong><span class="muted">Medication Administration &amp; Dosage Safety</span></div>
-        <div class="week"><strong>Weekend 3 · Module 3</strong><span class="muted">IV Safety, Blood Glucose &amp; Abnormal Findings</span></div>
-        <div class="week"><strong>Weekend 4 · Module 4</strong><span class="muted">Wound Care, Urinary Catheter Care &amp; Mobility Safety</span></div>
-        <div class="week"><strong>Weekend 5 · Module 5</strong><span class="muted">Oxygen, Respiratory Care &amp; Clinical Communication</span></div>
-        <div class="week"><strong>Weekend 6 · Module 6</strong><span class="muted">Prioritization, Delegation &amp; Safe Clinical Judgment</span></div>
+        <button class="week" type="button" data-open-module="0"><strong>Weekend 1 · Module 1</strong><span class="muted">Safety, Infection Control &amp; Assessment</span></button>
+        <button class="week" type="button" data-open-module="1"><strong>Weekend 2 · Module 2</strong><span class="muted">Medication Administration &amp; Dosage Safety</span></button>
+        <button class="week" type="button" data-open-module="2"><strong>Weekend 3 · Module 3</strong><span class="muted">IV Safety, Blood Glucose &amp; Abnormal Findings</span></button>
+        <button class="week" type="button" data-open-module="3"><strong>Weekend 4 · Module 4</strong><span class="muted">Wound Care, Urinary Catheter Care &amp; Mobility Safety</span></button>
+        <button class="week" type="button" data-open-module="4"><strong>Weekend 5 · Module 5</strong><span class="muted">Oxygen, Respiratory Care &amp; Clinical Communication</span></button>
+        <button class="week" type="button" data-open-module="5"><strong>Weekend 6 · Module 6</strong><span class="muted">Prioritization, Delegation &amp; Safe Clinical Judgment</span></button>
       </div>
     </section>
 
@@ -262,6 +262,16 @@ document.querySelectorAll('[data-readiness]').forEach(function(box){
     const msg=document.getElementById('readiness-message');
     msg.textContent=done===boxes.length?'You completed your readiness self-check. Bring any remaining questions to your instructor.':done+' of '+boxes.length+' preparation items checked.';
   });
+});
+
+document.addEventListener('click',function(e){
+  const card=e.target.closest('[data-open-module]');
+  if(!card)return;
+  const idx=card.getAttribute('data-open-module');
+  const materials=document.getElementById('materials');
+  const openBtn=materials&&materials.querySelector('[data-action="module"][data-value="'+idx+'"]');
+  if(openBtn){openBtn.click();return}
+  if(materials)materials.scrollIntoView({behavior:'smooth',block:'start'});
 });
 
 document.getElementById('student-signout').addEventListener('click',function(){
