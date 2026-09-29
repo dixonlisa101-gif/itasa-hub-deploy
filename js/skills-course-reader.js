@@ -89,9 +89,22 @@ root.addEventListener('click',function(e){
    reader.querySelector('#skills-qf-'+b.dataset.q).innerHTML='<div class="skills-feedback"><strong>'+(correct?'Correct':'Try again')+'</strong><p>'+esc(q.why)+'</p></div>';return
  }
 });
+function openModule(i){
+  moduleIndex=Math.max(0,Math.min(Number(i)||0,data.modules.length-1));
+  lessonIndex=Number(lessonByModule[moduleIndex])||0;
+  tab='lessons';
+  tabByModule[moduleIndex]='lessons';
+  clamp();
+  show('reader');
+  renderReader();
+  focusReader();
+}
 loadState();renderHome();
 if(currentView==='reader'){show('reader');renderReader()}
 else if(currentView==='capstone'){show('capstone');renderCapstone()}
 else show('home');
-return{destroy:function(){saveState();container.innerHTML=''}};
+return{
+  openModule:openModule,
+  destroy:function(){saveState();container.innerHTML=''}
+};
 }};
