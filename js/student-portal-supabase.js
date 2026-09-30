@@ -532,6 +532,46 @@
     }
   }
 
+  async function getRemediationRequirements(email, accessCode) {
+    var client = getClient();
+    if (!client) return { status: 'error' };
+    try {
+      var result = await client.rpc('get_my_remediation_requirements', {
+        p_email: (email || '').trim().toLowerCase(),
+        p_access_code: accessCode || ''
+      });
+      if (result.error) {
+        console.error('ITASA student portal: get_my_remediation_requirements failed', result.error);
+        return { status: 'error' };
+      }
+      return result.data || { status: 'error' };
+    } catch (err) {
+      console.error('ITASA student portal: getRemediationRequirements threw', err);
+      return { status: 'error' };
+    }
+  }
+
+  async function reserveRemediation(email, accessCode, obligationId, opportunityId) {
+    var client = getClient();
+    if (!client) return { status: 'error' };
+    try {
+      var result = await client.rpc('reserve_my_remediation', {
+        p_email: (email || '').trim().toLowerCase(),
+        p_access_code: accessCode || '',
+        p_obligation_id: obligationId,
+        p_opportunity_id: opportunityId
+      });
+      if (result.error) {
+        console.error('ITASA student portal: reserve_my_remediation failed', result.error);
+        return { status: 'error' };
+      }
+      return result.data || { status: 'error' };
+    } catch (err) {
+      console.error('ITASA student portal: reserveRemediation threw', err);
+      return { status: 'error' };
+    }
+  }
+
   async function getCertificates(email, accessCode) {
     var client = getClient();
     if (!client) {
@@ -568,6 +608,8 @@
     getNclexAttendance: getNclexAttendance,
     getNclexMakeupOpportunities: getNclexMakeupOpportunities,
     reserveNclexMakeup: reserveNclexMakeup,
+    getRemediationRequirements: getRemediationRequirements,
+    reserveRemediation: reserveRemediation,
     setSessionCredentials: setSessionCredentials,
     getSessionCredentials: getSessionCredentials,
     clearSessionCredentials: clearSessionCredentials
