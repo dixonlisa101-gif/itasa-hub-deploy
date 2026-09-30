@@ -69,7 +69,7 @@ Status key: ⬜ Not Started · 🟨 In Progress · 🟩 Built · ✅ Tested/Veri
 - 🟩 Automatically log certificate issuance/printing events
 - 🟩 Automatically log access-recovery events
 - 🟩 Admin/IT Audit Trail viewer with category/retention visibility and filters
-- ⬜ Separate 5-year training/compliance events from shorter-lived technical noise
+- 🟩 Separate 5-year training/compliance events from 180-day technical audit noise
 
 ## 6. Five-Year Retention & Purge
 - 🟩 Training/compliance audit retention set to 5 years
@@ -78,7 +78,7 @@ Status key: ⬜ Not Started · 🟨 In Progress · 🟩 Built · ✅ Tested/Veri
 - 🟩 Scheduled purge job removes expired bulky evidence files
 - 🟩 Keep lightweight purge audit record after file deletion
 - 🟩 Preserve certificate/training audit records for full 5-year period
-- ⬜ Define shorter retention schedule for routine technical/system diagnostics
+- 🟩 Routine technical/system audit records use 180-day retention with scheduled purge
 - 🟩 Admin/IT can see upcoming/processed purge activity
 
 ## 7. Student Access Recovery — No Paid SMS
