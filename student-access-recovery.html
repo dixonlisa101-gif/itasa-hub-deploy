@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Recover Student Access | ITASA Learning Center</title>
+<style>
+:root{--teal:#177982;--dark:#0d5961;--orange:#dd7b2d;--ink:#18343b;--muted:#64777c;--line:#d9e7e8;--soft:#f6fbfb;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;color:var(--ink);background:#f8fbfb}
+*{box-sizing:border-box}body{margin:0}header{background:#fff;border-bottom:1px solid var(--line)}nav{max-width:980px;margin:auto;padding:12px 18px;display:flex;align-items:center;gap:14px}.brand{font-weight:900;color:var(--dark);text-decoration:none;margin-right:auto}
+main{max-width:900px;margin:auto;padding:30px 18px 64px}.card{background:#fff;border:1px solid var(--line);border-radius:15px;padding:20px;margin:14px 0;box-shadow:0 7px 20px rgba(17,71,78,.05)}h1,h2,h3{margin:.2rem 0 .7rem}.muted{color:var(--muted)}.eyebrow{text-transform:uppercase;letter-spacing:.08em;font-size:.74rem;font-weight:900;color:var(--teal)}
+label{display:block;font-weight:800;margin:.7rem 0 .3rem}input,select{width:100%;padding:10px 11px;border:1px solid #b9cbcd;border-radius:9px;font:inherit;background:#fff}.btn,button{display:inline-block;border:0;border-radius:9px;padding:10px 13px;font:inherit;font-weight:800;cursor:pointer;background:var(--teal);color:#fff;text-decoration:none}.btn.secondary,button.secondary{background:#e9f4f4;color:var(--dark)}.btn.orange,button.orange{background:var(--orange)}.notice{padding:11px 13px;border-radius:10px;background:#eef7f7;margin:10px 0}.notice.good{background:#ecf7f0;color:#2d6b4b}.notice.warn{background:#fff7e9;color:#8e5619}.notice.error{background:#fff0f0;color:#8a3131}.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}[hidden]{display:none!important}@media(max-width:700px){.grid2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><nav><a class="brand" href="index.html">ITASA Learning Center</a><a href="student-portal-cutover-preview.html">Student Sign In</a></nav></header>
+<main>
+<section class="card">
+<div class="eyebrow">Student Access Recovery</div>
+<h1>Get back into your Learning Center.</h1>
+<p class="muted">Recovery is free. ITASA does not use paid text-message recovery. Start with your registered email. If that is unavailable, use your recovery key or the simple Admin/IT exception form.</p>
+</section>
+
+<div id="token-flow" hidden>
+  <section class="card"><div class="eyebrow">Secure Recovery Link</div><h2 id="token-title">Checking your recovery link…</h2><div id="token-status" class="notice">Please wait…</div><button id="complete-recovery" class="orange" hidden>Reissue My Access Code</button></section>
+</div>
+
+<div id="self-service">
+<section class="card">
+  <div class="eyebrow">Forgot access code</div><h2>Email me a recovery link</h2>
+  <p class="muted">Enter the email address you used for ITASA registration. If it matches an active student account, a secure 60-minute recovery link will be queued to that address.</p>
+  <label for="recover-email">Registered email</label><input id="recover-email" type="email" autocomplete="email">
+  <button id="request-recovery" class="orange" style="margin-top:10px">Send Recovery Link</button>
+  <div id="request-status" class="notice" hidden></div>
+</section>
+
+<section class="card">
+  <div class="eyebrow">Forgot which email you used?</div><h2>Show me a masked reminder</h2>
+  <div class="grid2">
+    <div><label for="hint-first">First name</label><input id="hint-first"></div>
+    <div><label for="hint-last">Last name</label><input id="hint-last"></div>
+    <div><label for="hint-phone">Phone number on file</label><input id="hint-phone" inputmode="tel"></div>
+    <div><label for="hint-program">Course</label><select id="hint-program"><option value="review">NCLEX Review</option><option value="skills">Skills Refresher</option><option value="iv">IV Insertion &amp; Venipuncture</option><option value="medtech">Medical Technician</option></select></div>
+  </div>
+  <button id="find-email" class="secondary" style="margin-top:10px">Show Email Reminder</button>
+  <div id="hint-status" class="notice" hidden></div>
+</section>
+
+<section class="card">
+  <div class="eyebrow">Recovery key</div><h2>Use my one-time recovery key</h2>
+  <p class="muted">If you saved the recovery key from your Learning Center, you can use it once to reissue access. If your email changed, enter the new email too.</p>
+  <label for="recovery-key">Recovery key</label><input id="recovery-key" autocomplete="off">
+  <label for="key-new-email">New email (only if your old email is no longer available)</label><input id="key-new-email" type="email">
+  <button id="recover-with-key" class="orange" style="margin-top:10px">Recover Access</button>
+  <div id="key-status" class="notice" hidden></div>
+</section>
+
+<section class="card">
+  <div class="eyebrow">Last resort</div><h2>Send a simple Admin/IT recovery request</h2>
+  <p class="muted">Use this only if you cannot use your registered email or recovery key. Matching information sends a small exception request to Admin/IT; Marie does not have to troubleshoot the account manually.</p>
+  <div class="grid2">
+    <div><label for="ex-first">First name</label><input id="ex-first"></div>
+    <div><label for="ex-last">Last name</label><input id="ex-last"></div>
+    <div><label for="ex-phone">Phone number on file</label><input id="ex-phone" inputmode="tel"></div>
+    <div><label for="ex-program">Course</label><select id="ex-program"><option value="review">NCLEX Review</option><option value="skills">Skills Refresher</option><option value="iv">IV Insertion &amp; Venipuncture</option><option value="medtech">Medical Technician</option></select></div>
+  </div>
+  <label for="ex-email">Email you can use now</label><input id="ex-email" type="email">
+  <button id="submit-exception" class="secondary" style="margin-top:10px">Send Recovery Request</button>
+  <div id="exception-status" class="notice" hidden></div>
+</section>
+</div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/student-portal-supabase.js?v=20260930-recovery1"></script>
+<script>
+(function(){
+'use strict';
+function esc(v){return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
+function show(id,msg,tone){var el=document.getElementById(id);el.hidden=false;el.className='notice '+(tone||'');el.innerHTML=msg}
+var params=new URLSearchParams(location.search),token=params.get('token')||'',mode=params.get('mode')||'';
+
+async function initToken(){
+  if(!token)return;
+  document.getElementById('self-service').hidden=true;
+  document.getElementById('token-flow').hidden=false;
+  if(mode==='backup'){
+    var b=await window.ItasaStudentPortal.verifyBackupEmail(token);
+    if(b&&b.status==='verified'){
+      document.getElementById('token-title').textContent='Backup email verified';
+      show('token-status','Your backup recovery email is now verified: <strong>'+esc(b.masked_backup_email||'')+'</strong>.','good');
+    }else{
+      document.getElementById('token-title').textContent='This verification link is not valid';
+      show('token-status','This backup-email verification link is invalid or expired. Sign in and request a new one.','warn');
+    }
+    return;
+  }
+  var r=await window.ItasaStudentPortal.getRecoveryTokenStatus(token);
+  if(r&&r.status==='valid'){
+    document.getElementById('token-title').textContent='Recovery link verified';
+    show('token-status','This secure recovery link is valid for <strong>'+esc(r.masked_email||'your account')+'</strong>. Reissuing access will invalidate the old access code.','good');
+    document.getElementById('complete-recovery').hidden=false;
+  }else{
+    document.getElementById('token-title').textContent='This recovery link is not valid';
+    show('token-status','The recovery link is invalid, already used, or expired. Return to Student Access Recovery and request a new one.','warn');
+  }
+}
+document.getElementById('complete-recovery').onclick=async function(){
+  var b=this;b.disabled=true;b.textContent='Reissuing…';
+  var r=await window.ItasaStudentPortal.completeAccessRecovery(token);
+  if(r&&r.status==='reissued'){
+    show('token-status','Access restored.<br><br><strong>Your new Learning Center access code:</strong><br><span style="font-size:1.25rem">'+esc(r.access_code||'')+'</span><br><br>Your previous access code is no longer valid.','good');
+    b.hidden=true;
+  }else{
+    show('token-status','The recovery link could not be completed. Request a new recovery link.','warn');b.disabled=false;b.textContent='Reissue My Access Code';
+  }
+};
+document.getElementById('request-recovery').onclick=async function(){
+  var b=this,email=document.getElementById('recover-email').value.trim();b.disabled=true;
+  await window.ItasaStudentPortal.requestAccessRecovery(email);
+  show('request-status','If that email matches an active ITASA student account, a secure recovery email has been queued.','good');
+  b.disabled=false;
+};
+document.getElementById('find-email').onclick=async function(){
+  var r=await window.ItasaStudentPortal.getMaskedRegistrationEmail(
+    document.getElementById('hint-first').value,
+    document.getElementById('hint-last').value,
+    document.getElementById('hint-phone').value,
+    document.getElementById('hint-program').value
+  );
+  show('hint-status',r&&r.status==='match'?'Email on file: <strong>'+esc(r.masked_email||'')+'</strong>':'We could not find one unique match from that information.',''+(r&&r.status==='match'?'good':'warn'));
+};
+document.getElementById('recover-with-key').onclick=async function(){
+  var b=this;b.disabled=true;
+  var r=await window.ItasaStudentPortal.recoverWithRecoveryKey(document.getElementById('recovery-key').value,document.getElementById('key-new-email').value);
+  if(r&&r.status==='reissued'){
+    show('key-status','Access restored.<br><strong>New access code:</strong> '+esc(r.access_code||'')+'<br><span class="muted">This recovery key has now been used and cannot be used again.</span>','good');
+  }else{
+    show('key-status','That recovery key could not be used. If you no longer have another recovery method, use the Admin/IT request below.','warn');
+  }
+  b.disabled=false;
+};
+document.getElementById('submit-exception').onclick=async function(){
+  var b=this;b.disabled=true;
+  await window.ItasaStudentPortal.submitRecoveryException(
+    document.getElementById('ex-first').value,
+    document.getElementById('ex-last').value,
+    document.getElementById('ex-phone').value,
+    document.getElementById('ex-program').value,
+    document.getElementById('ex-email').value
+  );
+  show('exception-status','Your request was submitted. If the information matches one ITASA student record, it will appear in the Admin/IT recovery queue.','good');
+  b.disabled=false;
+};
+initToken();
+})();
+</script>
+</body></html>
