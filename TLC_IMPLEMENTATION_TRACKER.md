@@ -67,7 +67,7 @@ Status key: ⬜ Not Started · 🟨 In Progress · 🟩 Built · ✅ Tested/Veri
 - 🟨 Automatically log make-up scheduling/completion
 - ✅ Automatically log course completion
 - 🟩 Automatically log certificate issuance/printing events
-- ⬜ Automatically log access-recovery events
+- 🟩 Automatically log access-recovery events
 - 🟨 Admin/IT Audit Trail viewer with category/retention visibility; filters still pending
 - ⬜ Separate 5-year training/compliance events from shorter-lived technical noise
 
@@ -82,17 +82,17 @@ Status key: ⬜ Not Started · 🟨 In Progress · 🟩 Built · ✅ Tested/Veri
 - 🟩 Admin/IT can see upcoming/processed purge activity
 
 ## 7. Student Access Recovery — No Paid SMS
-- 🟨 Rule: no paid SMS/texting services
-- ⬜ "Forgot access code?" self-service email recovery
-- ⬜ Time-limited recovery link
-- ⬜ Reissue new access code and invalidate old code
-- ⬜ Collect/verify backup email
-- ⬜ Issue one-time recovery key at account creation
-- ⬜ "Forgot registration email?" guided masked-email reminder
-- ⬜ Automated recovery through backup email/recovery key
-- ⬜ Create Access Recovery Exception only when self-service fails
-- ⬜ Admin/IT queue with Approve & Reissue Access / Deny / Needs Review
-- ⬜ Approved recovery updates verified email, reissues access, closes case, logs audit event
+- 🟩 Rule: no paid SMS/texting services
+- 🟩 "Forgot access code?" self-service email recovery
+- 🟩 Time-limited recovery link
+- 🟩 Reissue new access code and invalidate old code
+- 🟩 Collect/verify backup email
+- 🟩 Issue one-time recovery key from Student Home (one-time key, previous key invalidated)
+- 🟩 "Forgot registration email?" guided masked-email reminder
+- 🟩 Automated recovery through verified backup email/recovery key
+- 🟩 Create Access Recovery Exception only when self-service fails
+- 🟩 Admin/IT queue with Approve & Reissue Access / Deny / Needs Review
+- 🟩 Approved recovery updates email, reissues access, closes case, logs audit event
 
 ## 8. Instructor Simplicity
 - 🟨 Goal: Marie teaches; TLC handles routine administration
@@ -103,8 +103,8 @@ Status key: ⬜ Not Started · 🟨 In Progress · 🟩 Built · ✅ Tested/Veri
 - 🟩 Show each student's current requirement/completion status at a glance
 - ⬜ Minimize manual attendance work
 - ⬜ Minimize manual remediation scheduling
-- ⬜ Minimize manual access-recovery work
-- ⬜ Keep exceptions in small Admin/IT action queues
+- 🟩 Minimize manual access-recovery work
+- 🟩 Keep exceptions in small Admin/IT action queues
 
 ## 9. Verification Discipline
 For every feature:
@@ -122,6 +122,6 @@ For every feature:
 3. 🟨 Shared remediation scheduling engine
 4. 🟨 Two-step training completion / COC controls — built; end-to-end review-account verification pending
 5. 🟨 Five-year retention/purge automation — built and automation test passed with no due files; live evidence-file lifecycle verification pending
-6. ⬜ Free student access-recovery system
+6. 🟨 Free student access-recovery system — built; live email-delivery verification depends on the existing Resend/domain release hold
 7. ⬜ Admin/IT queues + audit viewer
 8. ⬜ Final cross-course QA and live verification
