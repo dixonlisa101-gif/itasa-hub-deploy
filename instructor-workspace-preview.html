@@ -74,11 +74,11 @@ label{display:block;font-weight:800;margin:.7rem 0 .3rem}input{width:100%;paddin
       <div class="card"><div class="eyebrow">Assessments &amp; Skills</div><h2>Student readiness &amp; skills check-offs</h2><p class="muted">Review Medical Technician Class assessment results, IV competency status, schedule skills check-offs, and record competency results.</p><div class="toolbar"><a class="btn orange" href="assessment-skills-workspace-preview.html">Open Assessments &amp; Skills</a><a class="btn secondary" target="_blank" rel="noopener" href="skills-refresher-competency-checkoff-print.html">Print Skills Refresher Competency Check-Off (PDF)</a></div></div>
       <div class="card"><div class="eyebrow">IV course · Staff review</div><h2>Review the six-module teaching draft</h2><p class="muted">Revision 7 includes the phase-card activity, simpler practice prompts, references, and separate Teaching Notes. Enrollment remains on hold.</p><a class="btn orange" href="iv-course-review-preview.html">Open IV Course Review</a></div>
       <div class="card">
-        <div class="eyebrow">Assigned Course Workspaces</div>
-        <h2>Open your assigned course work.</h2>
+        <div class="eyebrow">Course Workspaces</div>
+        <h2>Open ITASA course work.</h2>
         <div id="assigned-course-workspaces" class="grid2"></div>
       </div>
-      <div class="card">
+      <div class="card" id="nclex-completion-card">
         <div class="eyebrow">NCLEX Completion</div>
         <h2>Complete class &amp; issue Certificate of Completion</h2>
         <p class="muted">NCLEX completion requires 100% attendance at all required class sessions. The system tracks attendance and keeps completion locked until every required session has been satisfied, including approved make-ups. This is separate from NCLEX licensure or exam results.</p><p><a class="btn secondary" target="_blank" href="nclex-certificate-preview.html">Preview NCLEX Certificate Layout</a></p>
@@ -230,14 +230,24 @@ function renderKnowledgeFeed(){
 function renderAssignedCourseWorkspaces(){
   var box=document.getElementById('assigned-course-workspaces');
   var assign=state.readiness&&Array.isArray(state.readiness.assignments)?state.readiness.assignments:[];
-  var rows=assign.filter(function(a){return a.offering_key==='iv_insertion_venipuncture'||a.offering_key==='medication_technician_6_hour'});
-  box.innerHTML=rows.map(function(a){
-    var iv=a.offering_key==='iv_insertion_venipuncture';
-    return '<article class="card course"><div class="eyebrow">'+esc(a.class_name)+'</div><h3>'+esc(a.assignment_role||'Instructor')+' workspace</h3><div class="toolbar">'+
-      (iv?'<a class="btn secondary" href="iv-course-review-preview.html">Open IV Course Review</a>':'<a class="btn secondary" href="medtech-learning-space-preview.html">Review Medical Technician Class</a>')+
-      '<a class="btn secondary" href="assessment-skills-workspace-preview.html">Open Assessments &amp; Skills</a>'+
+  var courses=[
+    {program_id:'review',offering_key:'nclex_review_test_taking',name:'NCLEX Review & Test-Taking Strategies',url:'nclex-learning-space-preview.html'},
+    {program_id:'skills',offering_key:'rn_skills_refresher_120_hour',name:'Skills Refresher Class',url:'skills-learning-space-preview.html'},
+    {program_id:'iv',offering_key:'iv_insertion_venipuncture',name:'IV Insertion & Venipuncture',url:'iv-course-review-preview.html'},
+    {program_id:'medtech',offering_key:'medication_technician_6_hour',name:'Medical Technician Class',url:'medtech-learning-space-preview.html'}
+  ];
+  box.innerHTML=courses.map(function(course){
+    var a=assign.find(function(x){return x.offering_key===course.offering_key})||null;
+    var role=a?(a.assignment_role||'Instructor'):'Course workspace';
+    var needsSkills=course.program_id==='skills'||course.program_id==='iv'||course.program_id==='medtech';
+    var extra=course.program_id==='review'
+      ? '<a class="btn secondary" href="#nclex-completion-card">Open NCLEX Completion</a>'
+      : '<a class="btn secondary" href="assessment-skills-workspace-preview.html">Open Assessments &amp; Skills</a>';
+    return '<article class="card course"><div class="eyebrow">'+esc(course.name)+'</div><h3>'+esc(role)+'</h3><div class="toolbar">'+
+      '<a class="btn secondary" href="'+course.url+'">Open Course Workspace</a>'+
+      extra+
       '<button class="secondary" type="button" data-open-resources>Open Regulatory Resources</button></div></article>';
-  }).join('')||'<p class="muted">No IV or Medical Technician Class assignment is attached to this account.</p>';
+  }).join('');
   box.querySelectorAll('[data-open-resources]').forEach(function(btn){btn.onclick=function(){var tab=document.querySelector('[data-panel="resources"]');if(tab)tab.click()}});
 }
 function renderNclexCompletion(){
