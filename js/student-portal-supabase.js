@@ -599,6 +599,14 @@
     }catch(err){console.error('ITASA student portal: requestAccessRecovery failed',err);return {status:'error'}}
   }
 
+  async function requestAccessRecoveryByBackup(backupEmail) {
+    var client=getClient(); if(!client)return {status:'error'};
+    try{
+      var result=await client.rpc('request_student_access_recovery_by_backup',{p_backup_email:(backupEmail||'').trim().toLowerCase()});
+      if(result.error)throw result.error; return result.data||{status:'error'};
+    }catch(err){console.error('ITASA student portal: requestAccessRecoveryByBackup failed',err);return {status:'error'}}
+  }
+
   async function getRecoveryTokenStatus(token) {
     var client=getClient(); if(!client)return {status:'error'};
     try{
@@ -723,6 +731,7 @@
     getRemediationRequirements: getRemediationRequirements,
     getTrainingCompletionStatus: getTrainingCompletionStatus,
     requestAccessRecovery: requestAccessRecovery,
+    requestAccessRecoveryByBackup: requestAccessRecoveryByBackup,
     getRecoveryTokenStatus: getRecoveryTokenStatus,
     completeAccessRecovery: completeAccessRecovery,
     setBackupEmail: setBackupEmail,
