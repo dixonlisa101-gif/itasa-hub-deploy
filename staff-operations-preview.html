@@ -208,7 +208,7 @@ function money(v){var n=Number(v||0);return n.toLocaleString('en-US',{style:'cur
 function statusTag(v){var s=String(v||'');var cls=/paid|issued|active|attended|completed/i.test(s)?'good':/blocked|declined|error/i.test(s)?'bad':'warn';return '<span class="tag '+cls+'">'+esc(s||'—')+'</span>'}
 function show(el,msg,tone){el.hidden=false;el.className='notice '+(tone||'');el.textContent=msg}
 function hide(el){el.hidden=true;el.textContent=''}
-function programName(id){return id==='review'?'NCLEX Review & Test-Taking Strategies':id==='skills'?'Skills Refresher Class':id==='iv'?'IV Insertion & Venipuncture':id||'—'}
+function programName(id){return id==='review'?'NCLEX Review & Test-Taking Strategies':id==='skills'?'Skills Refresher Class':id==='iv'?'IV Insertion & Venipuncture':id==='medtech'?'Medical Technician Class':id||'—'}
 
 function renderBuildTrackerMarkdown(md){
   var lines=String(md||'').split(/\r?\n/),html=[],inList=false;
