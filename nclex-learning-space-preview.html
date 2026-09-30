@@ -262,7 +262,7 @@ function classCountdown(row){
       }).join('')||'<p class="muted">No required class sessions are posted yet.</p>';
     }
 
-    function renderMakeups(m,email,code){
+    function renderMakeups(m,email,code,access){
       const box=document.getElementById('makeup-requirements');
       if(!box)return;
       if(!m||m.status!=='ok'){box.innerHTML='';return}
@@ -273,7 +273,8 @@ function classCountdown(row){
         const scheduled=String(r.status||'')==='scheduled';
         let html='<div class="module" data-makeup="'+esc(r.obligation_id)+'"><strong>'+esc(r.title||'Make-up required')+'</strong>';
         if(scheduled&&r.scheduled_opportunity_id){
-          html+='<p class="muted">A make-up opportunity is reserved. Your class access will appear through the normal protected NCLEX class pathway.</p>';
+          html+='<p class="muted"><strong>Make-up opportunity reserved.</strong> Use the protected class-access link below when it is time for your make-up session.</p>'+
+            (access&&access.link?'<p><a class="btn orange" target="_blank" rel="noopener" href="'+esc(access.link)+'">Join Make-Up Class</a></p>':'<p class="muted">Class access is not available yet. ITASA will post it before the session.</p>');
         }else if(!opp.length){
           html+='<p class="muted">Next opportunity not scheduled yet. ITASA will post the next eligible session here automatically.</p>';
         }else{
@@ -296,7 +297,7 @@ function classCountdown(row){
             const r=await window.ItasaStudentPortal.reserveNclexMakeup(email,code,ob,sid);
             if(!r||r.status!=='reserved')throw new Error((r&&r.status)||'Make-up opportunity could not be reserved.');
             const refreshed=await window.ItasaStudentPortal.getNclexMakeupOpportunities(email,code);
-            renderMakeups(refreshed,email,code);
+            renderMakeups(refreshed,email,code,access);
           }catch(e){
             btn.disabled=false;btn.textContent=original;
             showStatus('<strong>Make-up reservation was not completed.</strong><br>'+esc(e.message||String(e)),'warn');
@@ -388,7 +389,7 @@ function classCountdown(row){
         renderWorkspace(results[1],st);
         renderCertificates(results[2],results[5]);
         renderAttendance(results[3]);
-        renderMakeups(results[4],email,code);
+        renderMakeups(results[4],email,code,results[0]);
         await window.ItasaStudentCourseHub.load(document.getElementById('course-hub-items'),email,code);
         await loadAnnouncements();
         document.getElementById('login-card').hidden=true;
