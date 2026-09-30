@@ -4,15 +4,15 @@ Status key: ⬜ Not Started · 🟨 In Progress · 🟩 Built · ✅ Tested/Veri
 
 ## 1. Attendance & Make-Up Engine
 - ✅ Durable open-obligation table created for attendance/make-up/remediation tracking
-- 🟨 NCLEX completion rule: 100% required class attendance
-- ⬜ Create persistent required-session records for each NCLEX class meeting
-- ⬜ Automatically record/reconcile student attendance from the approved class-access/Zoom pathway
-- ⬜ Preserve original absence; never overwrite history
-- ⬜ Create an open make-up requirement when a required NCLEX session is missed
+- ✅ NCLEX completion rule: 100% required class attendance
+- ✅ Create persistent required-session records for each NCLEX class meeting
+- 🟨 Automatically record/reconcile student attendance from the approved class-access/Zoom pathway
+- ✅ Preserve original absence; never overwrite history
+- ✅ Create an open make-up requirement when a required NCLEX session is missed
 - ⬜ Automatically match that open requirement to the next valid future session
-- ⬜ Student sees attendance history, missing requirements, and next opportunity
-- ⬜ Instructor sees course roster attendance and completion eligibility
-- ⬜ Course completion remains locked until all required attendance is satisfied
+- 🟨 Student sees attendance history, missing requirements, and next opportunity
+- ✅ Instructor sees course roster attendance and completion eligibility
+- ✅ Course completion remains locked until all required attendance is satisfied
 - ⬜ Student joins make-up class through the normal protected TLC class-access path
 - ⬜ Successful make-up closes the open attendance requirement and preserves the original absence
 
@@ -55,11 +55,12 @@ Status key: ⬜ Not Started · 🟨 In Progress · 🟩 Built · ✅ Tested/Veri
 - ⬜ Instructor sees evidence supporting pass/not-pass before completion
 
 ## 5. Audit Trail
+- 🟨 Functional validation: create a safe test event and verify it appears in Admin/IT Audit Activity
 - 🟩 public.audit_log exists
 - 🟩 RLS enabled on audit_log
 - 🟩 Staff can read audit records
 - ✅ Harden audit log to append-only for normal application roles
-- ⬜ Automatically log attendance events
+- ✅ Automatically log attendance events
 - ✅ Automatically log assessment-result changes
 - ✅ Automatically log competency-result changes
 - ⬜ Automatically log remediation creation/resolution
