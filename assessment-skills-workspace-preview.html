@@ -124,8 +124,28 @@ function completionControlHtml(r){
   }else{
     basisText='Completion requirements are being evaluated by the system.';
   }
+  var evidence=ctrl.evidence_summary||{};
   var html='<div class="notice"><strong>Training completion basis:</strong> '+esc(basisText);
   if(Number(basis.open_remediation||0)>0)html+='<br><strong>Open remediation:</strong> '+esc(basis.open_remediation);
+  html+='</div>';
+  html+='<div class="notice"><strong>Evidence on record:</strong>';
+  if(basis.basis_type==='competency'){
+    html+='<br>Completed skills validations: '+esc(evidence.completed_skills_sessions||0)+
+      '<br>Signed checklist/supporting files: '+esc(evidence.signed_evidence_files||0)+
+      (evidence.latest_validation_at?'<br>Latest validation: '+esc(fmt(evidence.latest_validation_at)):'');
+  }else if(basis.basis_type==='course_requirements'){
+    html+='<br>Assessment attempts: '+esc(evidence.assessment_attempts||0)+
+      '<br>Passed required assessments recorded: '+esc(evidence.passed_assessments||0)+
+      '<br>Completed skills validations: '+esc(evidence.completed_skills_sessions||0)+
+      '<br>Signed checklist/supporting files: '+esc(evidence.signed_evidence_files||0)+
+      (evidence.latest_validation_at?'<br>Latest validation: '+esc(fmt(evidence.latest_validation_at)):'');
+  }else{
+    html+='<br>Attended: '+esc(evidence.attended||0)+
+      ' · Missed: '+esc(evidence.missed||0)+
+      ' · Excused: '+esc(evidence.excused||0)+
+      ' · Pending: '+esc(evidence.pending||0)+
+      '<br>Open make-ups: '+esc(evidence.open_makeups||0);
+  }
   html+='</div>';
   if(ctrl.certificate_issued){
     html+='<div class="toolbar"><span class="tag good">COC Issued</span><a class="btn secondary" target="_blank" href="certificate-staff-print-preview.html?enrollment='+encodeURIComponent(r.student_enrollment_id)+'">Print / Save COC PDF</a></div>';
