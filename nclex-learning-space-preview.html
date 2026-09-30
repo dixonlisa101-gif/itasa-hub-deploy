@@ -136,6 +136,14 @@
       </div>
 
       <div class="card">
+        <div class="eyebrow">Attendance Requirement</div>
+        <h2>My Attendance</h2>
+        <p class="muted"><strong>100% attendance is required for NCLEX course completion.</strong> If you miss a required class, that requirement stays open until you attend an approved make-up opportunity.</p>
+        <div id="attendance-summary"><p class="muted">Checking your attendance record…</p></div>
+        <div id="attendance-list"></div>
+      </div>
+
+      <div class="card">
         <div class="eyebrow">Completion</div>
         <h2>Completion &amp; Certificate</h2>
         <div id="completion"><p class="muted">Checking your completion information…</p></div>
@@ -154,7 +162,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/student-course-hub-content.js?v=1"></script>
-<script src="js/student-portal-supabase.js"></script>
+<script src="js/student-portal-supabase.js?v=20260930-attendance1"></script>
   <script src="js/shared-content-supabase.js"></script>
   <script>
   (function(){
@@ -229,6 +237,29 @@ function classCountdown(row){
       }
     }
 
+
+    function renderAttendance(a){
+      const summary=document.getElementById('attendance-summary');
+      const list=document.getElementById('attendance-list');
+      if(!a||a.status!=='ok'){
+        summary.innerHTML='<p class="muted">Attendance information is temporarily unavailable.</p>';
+        list.innerHTML='';
+        return;
+      }
+      const total=Number(a.required_sessions||0),done=Number(a.satisfied_sessions||0);
+      summary.innerHTML='<p><strong>'+done+' of '+total+' required sessions satisfied</strong></p>'+
+        '<p><span class="tag '+(a.attendance_complete?'good':'warn')+'">'+(a.attendance_complete?'Attendance Complete':'Attendance In Progress')+'</span></p>';
+      const rows=Array.isArray(a.sessions)?a.sessions:[];
+      list.innerHTML=rows.map(function(s){
+        const when=s.scheduled_start?new Date(s.scheduled_start).toLocaleString('en-US',{timeZone:'America/New_York',month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'}):'';
+        const st=String(s.attendance_status||'pending');
+        const label=st==='attended'?'Attended':st==='missed'?'Missed — Make-up required':st==='excused'?'Excused — Make-up required':'Scheduled';
+        return '<div class="module"><div class="toolbar"><div><strong>'+esc(s.title||'NCLEX Class Session')+'</strong><div class="muted">'+esc(when)+'</div></div><span class="tag '+(st==='attended'?'good':(st==='missed'||st==='excused'?'warn':''))+'">'+esc(label)+'</span></div>'+
+          (s.makeup_required?'<p class="muted"><strong>Make-up required.</strong> Your next approved opportunity will appear here when ITASA schedules a matching session.</p>':'')+
+          '</div>';
+      }).join('')||'<p class="muted">No required class sessions are posted yet.</p>';
+    }
+
     function renderCertificates(certs){
       const box=document.getElementById('completion');
       const rows=Array.isArray(certs&&certs.certificates)?certs.certificates:[];
@@ -298,11 +329,13 @@ function classCountdown(row){
         const results=await Promise.all([
           window.ItasaStudentPortal.getZoomAccess(email,code),
           window.ItasaStudentPortal.getLearningWorkspace(email,code),
-          window.ItasaStudentPortal.getCertificates(email,code)
+          window.ItasaStudentPortal.getCertificates(email,code),
+          window.ItasaStudentPortal.getNclexAttendance(email,code)
         ]);
         renderAccess(results[0]);
         renderWorkspace(results[1],st);
         renderCertificates(results[2]);
+        renderAttendance(results[3]);
         await window.ItasaStudentCourseHub.load(document.getElementById('course-hub-items'),email,code);
         await loadAnnouncements();
         document.getElementById('login-card').hidden=true;
