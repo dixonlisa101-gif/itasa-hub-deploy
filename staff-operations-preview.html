@@ -65,6 +65,7 @@ table{width:100%;border-collapse:collapse}th,td{padding:10px 8px;border-bottom:1
       <button data-panel="one">Personalized Learning Requests</button>
       <button data-panel="certs">Certificates</button>
       <button data-panel="audit">Audit Activity</button>
+      <button data-panel="build">TLC Build Status</button>
       <button data-panel="it">IT &amp; System Oversight</button>
     </div>
 
@@ -129,6 +130,19 @@ table{width:100%;border-collapse:collapse}th,td{padding:10px 8px;border-bottom:1
       </div>
     </section>
 
+    <section id="panel-build" class="panel">
+      <div class="card read-only">
+        <div class="eyebrow">Read-only implementation tracker</div>
+        <h2>TLC Build &amp; Implementation Status</h2>
+        <p class="muted">This view mirrors the project implementation tracker used during development. It is read-only here so Admin/IT can see what is Not Started, In Progress, Built, Tested, or Verified Live without changing project controls.</p>
+        <div class="toolbar" style="margin-bottom:12px">
+          <button id="refresh-build-status" class="secondary" type="button">Refresh Build Status</button>
+        </div>
+        <div id="build-status" class="notice">Loading TLC implementation tracker…</div>
+        <div id="build-tracker"></div>
+      </div>
+    </section>
+
     <section id="panel-it" class="panel">
       <div class="card">
         <div class="eyebrow">ITASA IT Oversight</div>
@@ -178,7 +192,40 @@ function show(el,msg,tone){el.hidden=false;el.className='notice '+(tone||'');el.
 function hide(el){el.hidden=true;el.textContent=''}
 function programName(id){return id==='review'?'NCLEX Review & Test-Taking Strategies':id==='skills'?'Skills Refresher Class':id==='iv'?'IV Insertion & Venipuncture':id||'—'}
 
-document.querySelectorAll('.tabs button').forEach(function(b){b.onclick=function(){document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.getElementById('panel-'+b.dataset.panel).classList.add('active')}});
+function renderBuildTrackerMarkdown(md){
+  var lines=String(md||'').split(/\r?\n/),html=[],inList=false;
+  function closeList(){if(inList){html.push('</ul>');inList=false}}
+  lines.forEach(function(line){
+    if(/^# /.test(line)){closeList();html.push('<h2>'+esc(line.replace(/^# /,''))+'</h2>');return}
+    if(/^## /.test(line)){closeList();html.push('<h3 style="margin-top:20px">'+esc(line.replace(/^## /,''))+'</h3>');return}
+    if(/^\d+\. /.test(line)){if(!inList){html.push('<ul>');inList=true}html.push('<li>'+esc(line)+'</li>');return}
+    if(/^- /.test(line)){if(!inList){html.push('<ul>');inList=true}
+      var body=line.replace(/^- /,'');
+      var cls=/✅/.test(body)?'good':/🟨/.test(body)?'warn':/⏸/.test(body)?'bad':'';
+      html.push('<li>'+ (cls?'<span class="tag '+cls+'">'+esc(body.slice(0,2).trim())+'</span> ':'') +esc(body.replace(/^[⬜🟨🟩✅⏸]\s*/,''))+'</li>');return}
+    closeList();
+    if(line.trim())html.push('<p class="muted">'+esc(line)+'</p>');
+  });
+  closeList();
+  return html.join('');
+}
+async function loadBuildTracker(){
+  var status=document.getElementById('build-status'),box=document.getElementById('build-tracker');
+  if(!status||!box)return;
+  status.hidden=false;status.className='notice';status.textContent='Loading TLC implementation tracker…';
+  try{
+    var r=await fetch('TLC_IMPLEMENTATION_TRACKER.md?v=20260930-1',{cache:'no-store'});
+    if(!r.ok)throw new Error('Tracker could not be loaded.');
+    var md=await r.text();
+    box.innerHTML=renderBuildTrackerMarkdown(md);
+    status.className='notice good';status.textContent='Current tracker loaded from the TLC project.';
+  }catch(e){
+    box.innerHTML='';
+    status.className='notice error';status.textContent=e.message||'Tracker could not be loaded.';
+  }
+}
+
+document.querySelectorAll('.tabs button').forEach(function(b){b.onclick=function(){document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.getElementById('panel-'+b.dataset.panel).classList.add('active');if(b.dataset.panel==='build')loadBuildTracker()}});
 
 function renderStudents(){
   var q=(document.getElementById('student-search').value||'').toLowerCase().trim();
@@ -194,6 +241,7 @@ function renderStudents(){
   }).join('')||'<tr><td colspan="6" class="muted">No student records match this view.</td></tr>';
 }
 document.getElementById('student-search').addEventListener('input',renderStudents);
+document.getElementById('refresh-build-status').onclick=loadBuildTracker;
 
 function normInfo(r){return r.info_session_attendance||'registered'}
 function renderInfo(){
