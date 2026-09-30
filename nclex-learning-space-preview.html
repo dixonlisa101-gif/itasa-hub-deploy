@@ -163,7 +163,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/student-course-hub-content.js?v=1"></script>
-<script src="js/student-portal-supabase.js?v=20260930-attendance2"></script>
+<script src="js/student-portal-supabase.js?v=20260930-completion2"></script>
   <script src="js/shared-content-supabase.js"></script>
   <script>
   (function(){
@@ -304,11 +304,16 @@ function classCountdown(row){
       });
     }
 
-    function renderCertificates(certs){
+    function renderCertificates(certs,training){
       const box=document.getElementById('completion');
       const rows=Array.isArray(certs&&certs.certificates)?certs.certificates:[];
-      if(!rows.length){box.innerHTML='<p class="muted">No issued certificate is linked to this student yet. Completion information will remain here as the class progresses.</p>';return}
-      box.innerHTML='<ul>'+rows.map(function(c){
+      if(training&&training.status==='ok'&&training.training_complete&&!training.certificate_issued){
+        box.innerHTML='<p><strong>Training complete.</strong></p><p class="muted">Your Certificate of Completion has not been issued yet. It will appear here after the instructor completes the separate certificate-issuance step.</p>';return
+      }
+      if(!rows.length){
+        box.innerHTML='<p><strong>Training status:</strong> '+esc(training&&training.training_complete?'Complete':'In progress')+'</p><p class="muted">No Certificate of Completion has been issued yet.</p>';return
+      }
+      box.innerHTML='<p><span class="tag good">Certificate Issued</span></p><ul>'+rows.map(function(c){
         return '<li><strong>'+esc(c.certificate_title||c.certificate_number||'Certificate')+'</strong>'+
           (c.completion_date?' — '+esc(c.completion_date):'')+
           (' — <a href="certificate-print-preview.html?certificate='+encodeURIComponent(c.certificate_id)+'">View / Print Certificate</a>')+
@@ -375,11 +380,12 @@ function classCountdown(row){
           window.ItasaStudentPortal.getLearningWorkspace(email,code),
           window.ItasaStudentPortal.getCertificates(email,code),
           window.ItasaStudentPortal.getNclexAttendance(email,code),
-          window.ItasaStudentPortal.getNclexMakeupOpportunities(email,code)
+          window.ItasaStudentPortal.getNclexMakeupOpportunities(email,code),
+          window.ItasaStudentPortal.getTrainingCompletionStatus(email,code)
         ]);
         renderAccess(results[0]);
         renderWorkspace(results[1],st);
-        renderCertificates(results[2]);
+        renderCertificates(results[2],results[5]);
         renderAttendance(results[3]);
         renderMakeups(results[4],email,code);
         await window.ItasaStudentCourseHub.load(document.getElementById('course-hub-items'),email,code);
