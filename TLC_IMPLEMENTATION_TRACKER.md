@@ -72,14 +72,14 @@ Status key: ⬜ Not Started · 🟨 In Progress · 🟩 Built · ✅ Tested/Veri
 - ⬜ Separate 5-year training/compliance events from shorter-lived technical noise
 
 ## 6. Five-Year Retention & Purge
-- 🟨 Policy decision: training/compliance records retained 5 years
-- 🟨 Policy decision: signed checklists/supporting documents retained 5 years
-- ⬜ Store retention/purge date with uploaded evidence
-- ⬜ Scheduled purge job removes expired bulky evidence files
-- ⬜ Keep lightweight purge audit record after file deletion
-- ⬜ Preserve certificate/training audit records for full 5-year period
+- 🟩 Training/compliance audit retention set to 5 years
+- 🟩 Signed checklists/supporting evidence retained 5 years
+- 🟩 Store retention/purge date with uploaded evidence
+- 🟩 Scheduled purge job removes expired bulky evidence files
+- 🟩 Keep lightweight purge audit record after file deletion
+- 🟩 Preserve certificate/training audit records for full 5-year period
 - ⬜ Define shorter retention schedule for routine technical/system diagnostics
-- ⬜ Admin/IT can see upcoming/processed purge activity
+- 🟩 Admin/IT can see upcoming/processed purge activity
 
 ## 7. Student Access Recovery — No Paid SMS
 - 🟨 Rule: no paid SMS/texting services
@@ -121,7 +121,7 @@ For every feature:
 2. 🟨 NCLEX automated attendance/make-up engine — Zoom evidence feed is the remaining external dependency
 3. 🟨 Shared remediation scheduling engine
 4. 🟨 Two-step training completion / COC controls — built; end-to-end review-account verification pending
-5. ⬜ Five-year retention/purge automation
+5. 🟨 Five-year retention/purge automation — built and automation test passed with no due files; live evidence-file lifecycle verification pending
 6. ⬜ Free student access-recovery system
 7. ⬜ Admin/IT queues + audit viewer
 8. ⬜ Final cross-course QA and live verification
