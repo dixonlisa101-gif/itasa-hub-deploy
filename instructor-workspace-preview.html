@@ -244,35 +244,53 @@ function renderNclexCompletion(){
   var box=document.getElementById('nclex-completion-roster');
   var rows=Array.isArray(state.nclex)?state.nclex:[];
   box.innerHTML=rows.map(function(r){
-    var completed=String(r.enrollment_status||'').toLowerCase()==='completed';
     var normalized=String(r.normalized_enrollment_status||'').toLowerCase();
+    var completed=normalized==='completed'||String(r.enrollment_status||'').toLowerCase()==='completed';
+    var certIssued=!!r.certificate_id;
     var required=Number(r.attendance_required_sessions||0),satisfied=Number(r.attendance_satisfied_sessions||0),remaining=Number(r.attendance_remaining_sessions||0);
     var trackingActive=normalized==='active'||normalized==='completed';
-    var attendance='<div class="notice"><strong>Attendance:</strong> '+(trackingActive?(satisfied+' of '+required+' required sessions satisfied'):'Tracking begins when enrollment becomes active.')+
+    var attendance='<div class="notice"><strong>Completion basis: Attendance</strong><br>'+
+      (trackingActive?(satisfied+' of '+required+' required sessions satisfied'):'Tracking begins when enrollment becomes active.')+
       (Number(r.open_makeups||0)>0?'<br><strong>Open make-ups:</strong> '+esc(r.open_makeups):'')+
-      (trackingActive?'<br><strong>Completion gate:</strong> '+(r.attendance_complete?'Attendance complete':'Locked — '+remaining+' required session'+(remaining===1?'':'s')+' remaining'):'')+
+      (trackingActive?'<br><strong>Eligibility:</strong> '+(r.attendance_complete?'All required attendance satisfied':'Locked — '+remaining+' required session'+(remaining===1?'':'s')+' remaining'):'')+
       '</div>';
-    var action=completed
-      ? '<p><strong>Certificate:</strong> '+esc(r.certificate_number||'Issued')+'</p><a class="btn secondary" target="_blank" href="certificate-staff-print-preview.html?student='+encodeURIComponent(r.student_id)+'">Print Certificate of Completion</a>'
-      : r.attendance_complete
-        ? '<button class="orange" data-complete-nclex="'+esc(r.student_id)+'">Mark Course Complete &amp; Issue Certificate</button>'
-        : '<button class="secondary" disabled>Course Completion Locked</button>';
-    return '<article class="card course" data-nclex-student="'+esc(r.student_id)+'"><div class="toolbar"><div><h3>'+esc(r.student_name||'Student')+'</h3><div class="muted">'+esc(r.student_email||'')+'</div></div><div class="push">'+(completed?'<span class="tag good">Completed</span>':r.attendance_complete?'<span class="tag good">Attendance Complete</span>':'<span class="tag warn">Attendance In Progress</span>')+'</div></div>'+attendance+action+'</article>';
+    var action=!completed
+      ? (r.attendance_complete&&r.student_enrollment_id
+          ? '<button class="orange" data-mark-training-complete="'+esc(r.student_enrollment_id)+'">Mark Training Complete</button>'
+          : '<button class="secondary" disabled>Training Completion Locked</button>')
+      : !certIssued
+        ? '<div class="toolbar"><span class="tag good">Training Complete</span><button class="orange" data-issue-coc="'+esc(r.student_enrollment_id)+'">Issue Certificate of Completion</button></div>'
+        : '<p><strong>Certificate:</strong> '+esc(r.certificate_number||'Issued')+'</p><a class="btn secondary" target="_blank" href="certificate-staff-print-preview.html?student='+encodeURIComponent(r.student_id)+'">Print / Save COC PDF</a>';
+    return '<article class="card course" data-nclex-student="'+esc(r.student_id)+'"><div class="toolbar"><div><h3>'+esc(r.student_name||'Student')+'</h3><div class="muted">'+esc(r.student_email||'')+'</div></div><div class="push">'+(certIssued?'<span class="tag good">COC Issued</span>':completed?'<span class="tag good">Training Complete</span>':r.attendance_complete?'<span class="tag good">Eligible to Complete</span>':'<span class="tag warn">In Progress</span>')+'</div></div>'+attendance+action+'</article>';
   }).join('')||'<p class="muted">No NCLEX Review students are currently on the roster.</p>';
 
-  box.querySelectorAll('[data-complete-nclex]').forEach(function(btn){
+  box.querySelectorAll('[data-mark-training-complete]').forEach(function(btn){
     btn.onclick=async function(){
       var status=document.getElementById('nclex-completion-status');hide(status);
-      if(!confirm('Confirm that this student successfully completed the ITASA NCLEX Review & Test-Taking Strategies course?'))return;
+      if(!confirm('Confirm training completion for this NCLEX student? The Certificate of Completion will NOT be issued until the separate Issue Certificate action is selected.'))return;
       btn.disabled=true;
       try{
-        var r=await window.ItasaStaffHub.completeNclexStudent(btn.dataset.completeNclex);
+        var r=await window.ItasaStaffHub.markTrainingComplete(btn.dataset.markTrainingComplete);
         if(!r||r.status!=='completed'){
-          if(r&&r.status==='attendance_incomplete')throw new Error('Completion is locked. '+r.satisfied_sessions+' of '+r.required_sessions+' required NCLEX sessions are satisfied.');
-          if(r&&r.status==='attendance_tracking_not_active')throw new Error('Attendance tracking is not active for this student yet.');
-          throw new Error((r&&r.status)||'Completion could not be recorded.');
+          if(r&&r.status==='requirements_incomplete')throw new Error('Training completion is locked because required attendance is not fully satisfied.');
+          throw new Error((r&&r.status)||'Training completion could not be recorded.');
         }
-        show(status,'NCLEX course completion recorded and Certificate of Completion issued.','good');
+        show(status,'NCLEX training completion recorded. The Certificate of Completion can now be issued separately.','good');
+        await load();
+      }catch(e){show(status,e.message||String(e),'error')}
+      finally{btn.disabled=false}
+    };
+  });
+
+  box.querySelectorAll('[data-issue-coc]').forEach(function(btn){
+    btn.onclick=async function(){
+      var status=document.getElementById('nclex-completion-status');hide(status);
+      if(!confirm('Issue the ITASA Certificate of Completion for this student now?'))return;
+      btn.disabled=true;
+      try{
+        var r=await window.ItasaStaffHub.issueTrainingCertificate(btn.dataset.issueCoc);
+        if(!r||['issued','already_issued'].includes(r.status)===false)throw new Error((r&&r.status)||'Certificate could not be issued.');
+        show(status,'Certificate of Completion issued. The printable COC PDF is now available.','good');
         await load();
       }catch(e){show(status,e.message||String(e),'error')}
       finally{btn.disabled=false}
