@@ -66,6 +66,7 @@
         <input id="code" type="password" autocomplete="current-password" required>
         <button id="login-btn" class="btn orange" type="submit" style="margin-top:14px">Sign In</button>
       </form>
+      <p class="muted" style="margin-top:12px"><a href="student-access-recovery.html">Forgot your registered email or Learning Center access code?</a></p>
     </section>
 
     <div id="status" class="card notice" hidden></div>
@@ -115,6 +116,19 @@
       </div>
 
       <div class="card">
+        <div class="eyebrow">Access Recovery</div>
+        <h2>Set up free backup recovery</h2>
+        <p class="muted">These options help you recover your Learning Center without paid text messages and without needing Marie to troubleshoot the account.</p>
+        <label for="backup-email">Backup email</label>
+        <input id="backup-email" type="email" placeholder="A different email you can access">
+        <div class="btnrow" style="margin-top:10px">
+          <button id="verify-backup-email" class="btn secondary" type="button">Send Backup Email Verification</button>
+          <button id="generate-recovery-key" class="btn secondary" type="button">Generate One-Time Recovery Key</button>
+        </div>
+        <div id="recovery-options-status" class="notice" hidden></div>
+      </div>
+
+      <div class="card">
         <div class="eyebrow">Need Help?</div>
         <h2>ITASA student support</h2>
         <p class="muted">If your class access or Learning Center information does not look right, email ITASA directly at <a href="mailto:info@innovationtrainingnstaffing.com">info@innovationtrainingnstaffing.com</a>.</p>
@@ -125,7 +139,7 @@
   <footer>Innovation Training &amp; Staffing Agency · Empowering Nurses. Elevating Healthcare.</footer>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/student-portal-supabase.js?v=20260927-1"></script>
+  <script src="js/student-portal-supabase.js?v=20260930-recovery1"></script>
   <script src="js/shared-content-supabase.js?v=20260927-1"></script>
   <script>
   (function(){
@@ -331,6 +345,40 @@ function classCountdown(row){
     signout.addEventListener('click',function(){
       window.ItasaStudentPortal.clearSessionCredentials();
       window.location.replace('student-portal-cutover-preview.html');
+    });
+
+    document.getElementById('verify-backup-email').addEventListener('click',async function(){
+      var cached=window.ItasaStudentPortal.getSessionCredentials(),s=document.getElementById('recovery-options-status');
+      if(!cached){showStatus('<strong>Please sign in again before changing recovery options.</strong>','warn');return}
+      var backup=document.getElementById('backup-email').value.trim();
+      if(!backup){s.hidden=false;s.className='notice warn';s.textContent='Enter a backup email first.';return}
+      this.disabled=true;
+      try{
+        var r=await window.ItasaStudentPortal.setBackupEmail(cached.email,cached.accessCode,backup);
+        s.hidden=false;
+        if(r&&r.status==='verification_sent'){
+          s.className='notice good';s.textContent='Verification email queued for '+(r.masked_backup_email||'your backup email')+'.';
+        }else{
+          s.className='notice warn';s.textContent=(r&&r.status==='backup_must_be_different')?'Use a different email from your main sign-in email.':'Backup email verification could not be started.';
+        }
+      }finally{this.disabled=false}
+    });
+
+    document.getElementById('generate-recovery-key').addEventListener('click',async function(){
+      var cached=window.ItasaStudentPortal.getSessionCredentials(),s=document.getElementById('recovery-options-status');
+      if(!cached){showStatus('<strong>Please sign in again before changing recovery options.</strong>','warn');return}
+      if(!confirm('Generate a new one-time recovery key? Save it somewhere private. Any previous recovery key will stop working.'))return;
+      this.disabled=true;
+      try{
+        var r=await window.ItasaStudentPortal.issueRecoveryKey(cached.email,cached.accessCode);
+        s.hidden=false;
+        if(r&&r.status==='issued'){
+          s.className='notice good';
+          s.innerHTML='<strong>Save this recovery key now:</strong><br><span style="font-size:1.15rem">'+esc(r.recovery_key||'')+'</span><br><span class="muted">It is shown here once and can be used one time if you lose access to your email.</span>';
+        }else{
+          s.className='notice warn';s.textContent='A recovery key could not be generated.';
+        }
+      }finally{this.disabled=false}
     });
 
     var currentEventsToggle=document.getElementById('current-events-toggle');
