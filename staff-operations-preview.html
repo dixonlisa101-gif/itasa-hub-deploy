@@ -126,7 +126,7 @@ table{width:100%;border-collapse:collapse}th,td{padding:10px 8px;border-bottom:1
       <div class="card read-only">
         <div class="eyebrow">Accountability</div>
         <h2>Recent Audit Activity</h2>
-        <div style="overflow:auto"><table><thead><tr><th>When</th><th>Actor</th><th>Action</th><th>Target</th><th>Details</th></tr></thead><tbody id="audit-body"></tbody></table></div>
+        <div style="overflow:auto"><table><thead><tr><th>When</th><th>Actor</th><th>Action</th><th>Target</th><th>Category</th><th>Retention</th><th>Details</th></tr></thead><tbody id="audit-body"></tbody></table></div>
       </div>
     </section>
 
@@ -179,7 +179,7 @@ table{width:100%;border-collapse:collapse}th,td{padding:10px 8px;border-bottom:1
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/shared-content-supabase.js"></script>
-<script src="js/staff-hub-supabase.js?v=20260927-docs1"></script>
+<script src="js/staff-hub-supabase.js?v=20260930-audit2"></script>
 <script>
 (function(){
 'use strict';
@@ -298,7 +298,7 @@ function renderCerts(){
  document.getElementById('certs-body').innerHTML=state.certs.map(c=>'<tr><td><strong>'+esc(c.certificate_title||c.number||'Certificate')+'</strong><br><span class="muted">'+esc(c.number||'')+'</span></td><td>'+esc(c.student_id||'')+'</td><td>'+esc(programName(c.program_id||c.cohort_id))+'</td><td>'+statusTag(c.status)+'</td><td>'+esc(fmt(c.issued_at||c.created_at))+'</td></tr>').join('')||'<tr><td colspan="5" class="muted">No certificate records yet.</td></tr>';
 }
 function renderAudit(){
- document.getElementById('audit-body').innerHTML=state.audit.map(a=>'<tr><td>'+esc(fmt(a.at))+'</td><td>'+esc(a.actor_name||'')+'<br><span class="muted">'+esc(a.role||'')+'</span></td><td>'+esc(a.action||'')+'</td><td>'+esc(a.target_type||'')+'<br><span class="muted">'+esc(a.target_id||'')+'</span></td><td>'+esc(a.details||'')+'</td></tr>').join('')||'<tr><td colspan="5" class="muted">No audit entries available.</td></tr>';
+ document.getElementById('audit-body').innerHTML=state.audit.map(a=>'<tr><td>'+esc(fmt(a.at))+'</td><td>'+esc(a.actor_name||'ITASA System')+'<br><span class="muted">'+esc(a.role||a.source||'system')+'</span></td><td>'+esc(a.action||'')+'</td><td>'+esc(a.target_type||'')+'<br><span class="muted">'+esc(a.target_id||'')+'</span></td><td>'+esc(a.event_category||'system')+'</td><td>'+esc(a.retention_class||'technical')+(a.retain_until?'<br><span class="muted">until '+esc(fmt(a.retain_until))+'</span>':'')+'</td><td>'+esc(a.details||'')+'</td></tr>').join('')||'<tr><td colspan="7" class="muted">No audit entries available.</td></tr>';
 }
 function qualificationDocLabel(v){return v==='resume_cv'?'CV / Résumé':v==='teaching_experience'?'Teaching Experience Evidence':v==='iv_professional_experience'?'IV Professional Experience Evidence':v==='license_certificate'?'License / Certificate':'Other Qualification Document'}
 function renderQualificationReviews(){
