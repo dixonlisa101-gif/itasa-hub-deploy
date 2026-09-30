@@ -52,7 +52,7 @@ Status key: ⬜ Not Started · 🟨 In Progress · 🟩 Built · ✅ Tested/Veri
 - 🟩 Link failed competency to remediation requirement
 - 🟩 Preserve all reassessment history
 - 🟩 Student sees plain-language reason for remediation
-- ⬜ Instructor sees evidence supporting pass/not-pass before completion
+- 🟩 Instructor sees evidence supporting pass/not-pass before completion
 
 ## 5. Audit Trail
 - ✅ Functional validation: safe system-generated audit event written and Admin/IT viewer updated to display it
