@@ -473,6 +473,25 @@
    * @param {string} accessCode
    * @returns {Promise<object>} RPC response payload, or {status:'error'}
    */
+  async function getNclexAttendance(email, accessCode) {
+    var client = getClient();
+    if (!client) return { status: 'error' };
+    try {
+      var result = await client.rpc('get_my_nclex_attendance', {
+        p_email: (email || '').trim().toLowerCase(),
+        p_access_code: accessCode || ''
+      });
+      if (result.error) {
+        console.error('ITASA student portal: get_my_nclex_attendance failed', result.error);
+        return { status: 'error' };
+      }
+      return result.data || { status: 'error' };
+    } catch (err) {
+      console.error('ITASA student portal: getNclexAttendance threw', err);
+      return { status: 'error' };
+    }
+  }
+
   async function getCertificates(email, accessCode) {
     var client = getClient();
     if (!client) {
@@ -506,6 +525,7 @@
     getHubFeeds: getHubFeeds,
     getCourseHubItems: getCourseHubItems,
     getCertificates: getCertificates,
+    getNclexAttendance: getNclexAttendance,
     setSessionCredentials: setSessionCredentials,
     getSessionCredentials: getSessionCredentials,
     clearSessionCredentials: clearSessionCredentials
