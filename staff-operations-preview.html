@@ -60,6 +60,7 @@ table{width:100%;border-collapse:collapse}th,td{padding:10px 8px;border-bottom:1
 
     <div class="tabs">
       <button data-panel="students" class="active">Students</button>
+      <button data-panel="recovery">Access Recovery</button>
       <button data-panel="info">Information Session</button>
       <button data-panel="access">Class Access / Zoom</button>
       <button data-panel="one">Personalized Learning Requests</button>
@@ -78,6 +79,16 @@ table{width:100%;border-collapse:collapse}th,td{padding:10px 8px;border-bottom:1
           <input id="student-search" placeholder="Search name, email, class…" style="max-width:360px">
         </div>
         <div style="overflow:auto"><table><thead><tr><th>Student</th><th>Class</th><th>Registration</th><th>Payment</th><th>Access</th><th>Communications</th></tr></thead><tbody id="students-body"></tbody></table></div>
+      </div>
+    </section>
+
+    <section id="panel-recovery" class="panel">
+      <div class="card">
+        <div class="eyebrow">Student Access Recovery Exceptions</div>
+        <h2>Simple Admin/IT recovery queue</h2>
+        <p class="muted">Most students recover access automatically. Only students who cannot use their registered email or recovery key appear here. Review the matched student information, then choose one action.</p>
+        <div id="recovery-queue-status" class="notice" hidden></div>
+        <div id="recovery-queue"><p class="muted">Loading recovery exceptions…</p></div>
       </div>
     </section>
 
@@ -186,11 +197,11 @@ table{width:100%;border-collapse:collapse}th,td{padding:10px 8px;border-bottom:1
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/shared-content-supabase.js"></script>
-<script src="js/staff-hub-supabase.js?v=20260930-retention1"></script>
+<script src="js/staff-hub-supabase.js?v=20260930-recovery2"></script>
 <script>
 (function(){
 'use strict';
-var state={students:[],info:[],access:[],serviceAccess:[],classes:[],one:[],certs:[],audit:[],it:null,retention:null,qualificationReviews:[]};
+var state={students:[],info:[],access:[],serviceAccess:[],classes:[],one:[],certs:[],audit:[],it:null,retention:null,recoveryExceptions:[],qualificationReviews:[]};
 function esc(v){return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
 function fmt(v){if(!v)return '';var d=new Date(v);return isNaN(d.getTime())?String(v):d.toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'})}
 function money(v){var n=Number(v||0);return n.toLocaleString('en-US',{style:'currency',currency:'USD'})}
@@ -266,6 +277,39 @@ function renderStudents(){
 }
 document.getElementById('student-search').addEventListener('input',renderStudents);
 document.getElementById('refresh-build-status').onclick=loadBuildTracker;
+
+function renderRecoveryQueue(){
+  var box=document.getElementById('recovery-queue'),rows=state.recoveryExceptions||[];
+  if(!box)return;
+  box.innerHTML=rows.length?rows.map(function(r){
+    var match=r.match_summary||{};
+    return '<article class="request" data-recovery-request="'+esc(r.request_id)+'">'+
+      '<div class="toolbar"><div><strong>'+esc(r.student_name||'Student')+'</strong><br><span class="muted">'+esc(programName(r.program_id))+' · requested '+esc(fmt(r.created_at))+'</span></div><div class="push">'+statusTag(r.status||'pending_review')+'</div></div>'+
+      '<p><strong>Current email:</strong> '+esc(r.current_email_masked||'')+'<br><strong>Requested new email:</strong> '+esc(r.requested_new_email||'')+'</p>'+
+      '<p class="muted">System match: name '+(match.name_match?'matched':'not confirmed')+' · phone '+(match.phone_match?'matched':'not confirmed')+' · course '+(match.program_match?'matched':'not confirmed')+'</p>'+
+      '<label>Admin note (optional)</label><input data-recovery-note placeholder="Only add a note if needed">'+
+      '<div class="toolbar" style="margin-top:10px"><button data-recovery-decision="approve">Approve &amp; Reissue Access</button><button class="secondary" data-recovery-decision="needs_review">Needs Review</button><button class="danger" data-recovery-decision="deny">Deny</button></div>'+
+      '</article>';
+  }).join(''):'<p class="muted">No access-recovery exceptions need Admin/IT attention.</p>';
+
+  box.querySelectorAll('[data-recovery-decision]').forEach(function(btn){
+    btn.onclick=async function(){
+      var card=btn.closest('[data-recovery-request]'),id=card.dataset.recoveryRequest,note=card.querySelector('[data-recovery-note]').value,decision=btn.dataset.recoveryDecision;
+      if(decision==='approve'&&!confirm('Approve this matched recovery request, update the student email, invalidate the old access code, and issue new access?'))return;
+      if(decision==='deny'&&!confirm('Deny this recovery request?'))return;
+      btn.disabled=true;
+      try{
+        var rr=await window.ItasaStaffHub.reviewAccessRecoveryException(id,decision,note);
+        if(!rr||rr.status!==decision&&!(decision==='needs_review'&&rr.status==='needs_review'))throw new Error((rr&&rr.status)||'Recovery review could not be saved.');
+        show(document.getElementById('recovery-queue-status'),
+          decision==='approve'?'Access restored. New credentials were queued to the approved email.':decision==='deny'?'Recovery request denied.':'Request remains open for additional review.',
+          decision==='approve'?'good':decision==='deny'?'warn':'');
+        await loadRecoveryQueue();
+      }catch(e){show(document.getElementById('recovery-queue-status'),e.message||String(e),'error')}
+      finally{btn.disabled=false}
+    };
+  });
+}
 
 function normInfo(r){return r.info_session_attendance||'registered'}
 function renderInfo(){
@@ -399,6 +443,7 @@ function renderRetention(){
 function metrics(){document.getElementById('m-students').textContent=state.students.length;document.getElementById('m-info').textContent=state.info.length;document.getElementById('m-one').textContent=state.one.filter(function(r){return r.status==='Pending'}).length;var classSet=state.access.filter(function(a){return ['cohort-review-fall-2026','cohort-skills-fall-2026'].indexOf(a.cohort_id)!==-1&&a.link}).length;var serviceSet=state.serviceAccess.filter(function(a){return ['information_session','one_on_one'].indexOf(a.service_key)!==-1&&a.link}).length;document.getElementById('m-access').textContent=(classSet+serviceSet)+'/4';document.getElementById('m-certs').textContent=state.certs.length}
 
 async function loadStudents(){state.students=await window.ItasaStaffHub.fetchStudents();renderStudents();metrics()}
+async function loadRecoveryQueue(){var r=await window.ItasaStaffHub.fetchAccessRecoveryExceptions();state.recoveryExceptions=(r&&r.status==='ok')?(r.requests||[]):[];renderRecoveryQueue()}
 async function loadInfo(){state.info=await window.ItasaStaffHub.fetchInfoSessionRoster();renderInfo();metrics()}
 async function loadAccess(){var all=await Promise.all([window.ItasaStaffHub.fetchClassAccess(),window.ItasaStaffHub.fetchServiceAccess(),window.ItasaSharedContentSupabase.fetchCollection('classes')]);state.access=all[0]||[];state.serviceAccess=all[1]||[];state.classes=(all[2]&&all[2].data)||[];renderAccess();metrics();var classSet=state.access.filter(function(a){return ['cohort-review-fall-2026','cohort-skills-fall-2026'].indexOf(a.cohort_id)!==-1&&a.link}).length;var serviceSet=state.serviceAccess.filter(function(a){return ['information_session','one_on_one'].indexOf(a.service_key)!==-1&&a.link}).length;var configured=classSet+serviceSet;show(document.getElementById('access-status'),configured===4?'All four ITASA Zoom pathways are configured.':configured+' of 4 ITASA Zoom pathways are configured.',configured===4?'good':'warn')}
 async function loadOne(){state.one=await window.ItasaStaffHub.fetchOneOnOneRequests();renderOne();metrics()}
@@ -407,7 +452,7 @@ async function loadAudit(){state.audit=await window.ItasaStaffHub.fetchAuditLog(
 async function loadIt(){state.it=await window.ItasaStaffHub.fetchItSystemOversight();renderItOversight()}
 async function loadRetention(){state.retention=await window.ItasaStaffHub.fetchEvidenceRetentionOverview();renderRetention()}
 async function loadQualificationReviews(){var r=await window.ItasaStaffHub.fetchQualificationDocumentReviewQueue();state.qualificationReviews=(r&&r.status==='ok')?(r.documents||[]):[];renderQualificationReviews()}
-async function loadAll(){var rs=document.getElementById('refresh-status');if(rs)rs.textContent='Refreshing…';try{await Promise.all([loadStudents(),loadInfo(),loadAccess(),loadOne(),loadCerts(),loadAudit(),loadIt(),loadRetention(),loadQualificationReviews()]);if(rs)rs.textContent='Updated '+new Date().toLocaleTimeString([], {hour:'numeric',minute:'2-digit'})}catch(e){console.error(e);if(rs)rs.textContent='Refresh failed';alert('Some operations data could not be loaded. '+(e.message||e))}}
+async function loadAll(){var rs=document.getElementById('refresh-status');if(rs)rs.textContent='Refreshing…';try{await Promise.all([loadStudents(),loadRecoveryQueue(),loadInfo(),loadAccess(),loadOne(),loadCerts(),loadAudit(),loadIt(),loadRetention(),loadQualificationReviews()]);if(rs)rs.textContent='Updated '+new Date().toLocaleTimeString([], {hour:'numeric',minute:'2-digit'})}catch(e){console.error(e);if(rs)rs.textContent='Refresh failed';alert('Some operations data could not be loaded. '+(e.message||e))}}
 
 function syncSession(){var st=window.ItasaStaffHub.getCurrentStaff();if(st){document.getElementById('login-shell').hidden=true;document.getElementById('workspace-header').hidden=false;document.getElementById('staff-name').textContent=st.full_name||st.email;document.getElementById('staff-meta').textContent=st.role+' · '+st.email;if(String(st.role||'').toLowerCase()!=='administrator'){document.getElementById('workspace').hidden=true;document.getElementById('workspace-header').hidden=true;var s=document.getElementById('login-status');show(s,'Operations & IT Oversight requires administrator authorization. Use the Instructor Workspace for ordinary instructor work.','error');return}document.getElementById('workspace').hidden=false;loadAll()}else{document.getElementById('login-shell').hidden=false;document.getElementById('workspace-header').hidden=true;document.getElementById('workspace').hidden=true}}
 document.getElementById('login-form').onsubmit=async function(ev){ev.preventDefault();var b=document.getElementById('login-btn'),s=document.getElementById('login-status');b.disabled=true;b.textContent='Signing in…';hide(s);var res=await window.ItasaStaffHub.signIn(document.getElementById('staff-email').value,document.getElementById('staff-password').value);document.getElementById('staff-password').value='';b.disabled=false;b.textContent='Sign In';if(!res.ok)show(s,res.error&&res.error.message||'Sign-in failed.','error');else syncSession()};
