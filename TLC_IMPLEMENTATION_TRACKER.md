@@ -3,6 +3,7 @@
 Status key: ⬜ Not Started · 🟨 In Progress · 🟩 Built · ✅ Tested/Verified Live · ⏸ Blocked/Pending Decision
 
 ## 1. Attendance & Make-Up Engine
+- ✅ Durable open-obligation table created for attendance/make-up/remediation tracking
 - 🟨 NCLEX completion rule: 100% required class attendance
 - ⬜ Create persistent required-session records for each NCLEX class meeting
 - ⬜ Automatically record/reconcile student attendance from the approved class-access/Zoom pathway
@@ -57,14 +58,14 @@ Status key: ⬜ Not Started · 🟨 In Progress · 🟩 Built · ✅ Tested/Veri
 - 🟩 public.audit_log exists
 - 🟩 RLS enabled on audit_log
 - 🟩 Staff can read audit records
-- 🟨 Harden audit log to append-only for normal application roles
+- ✅ Harden audit log to append-only for normal application roles
 - ⬜ Automatically log attendance events
-- ⬜ Automatically log assessment-result changes
-- ⬜ Automatically log competency-result changes
+- ✅ Automatically log assessment-result changes
+- ✅ Automatically log competency-result changes
 - ⬜ Automatically log remediation creation/resolution
 - ⬜ Automatically log make-up scheduling/completion
-- ⬜ Automatically log course completion
-- ⬜ Automatically log certificate issuance/printing events
+- ✅ Automatically log course completion
+- 🟨 Automatically log certificate issuance/printing events
 - ⬜ Automatically log access-recovery events
 - ⬜ Admin/IT Audit Trail viewer with filters
 - ⬜ Separate 5-year training/compliance events from shorter-lived technical noise
@@ -115,8 +116,8 @@ For every feature:
 7. Only then mark ✅ Verified Live
 
 ## Current Build Order
-1. 🟨 Audit + durable requirement foundation
-2. ⬜ NCLEX automated attendance/make-up engine
+1. ✅ Audit + durable requirement foundation
+2. 🟨 NCLEX automated attendance/make-up engine
 3. ⬜ Shared remediation scheduling engine
 4. ⬜ Two-step training completion / COC controls
 5. ⬜ Five-year retention/purge automation
