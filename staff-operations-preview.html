@@ -195,14 +195,31 @@ function programName(id){return id==='review'?'NCLEX Review & Test-Taking Strate
 function renderBuildTrackerMarkdown(md){
   var lines=String(md||'').split(/\r?\n/),html=[],inList=false;
   function closeList(){if(inList){html.push('</ul>');inList=false}}
+  function statusInfo(body){
+    var statuses=[
+      {mark:'✅',label:'Verified',cls:'good'},
+      {mark:'🟩',label:'Built',cls:'good'},
+      {mark:'🟨',label:'In Progress',cls:'warn'},
+      {mark:'⏸',label:'Blocked',cls:'bad'},
+      {mark:'⬜',label:'Not Started',cls:''}
+    ];
+    for(var i=0;i<statuses.length;i++){
+      if(body.indexOf(statuses[i].mark)===0)return statuses[i];
+    }
+    return null;
+  }
   lines.forEach(function(line){
     if(/^# /.test(line)){closeList();html.push('<h2>'+esc(line.replace(/^# /,''))+'</h2>');return}
     if(/^## /.test(line)){closeList();html.push('<h3 style="margin-top:20px">'+esc(line.replace(/^## /,''))+'</h3>');return}
     if(/^\d+\. /.test(line)){if(!inList){html.push('<ul>');inList=true}html.push('<li>'+esc(line)+'</li>');return}
-    if(/^- /.test(line)){if(!inList){html.push('<ul>');inList=true}
+    if(/^- /.test(line)){
+      if(!inList){html.push('<ul>');inList=true}
       var body=line.replace(/^- /,'');
-      var cls=/✅/.test(body)?'good':/🟨/.test(body)?'warn':/⏸/.test(body)?'bad':'';
-      html.push('<li>'+ (cls?'<span class="tag '+cls+'">'+esc(body.slice(0,2).trim())+'</span> ':'') +esc(body.replace(/^[⬜🟨🟩✅⏸]\s*/,''))+'</li>');return}
+      var st=statusInfo(body),clean=body;
+      if(st)clean=body.slice(st.mark.length).trim();
+      html.push('<li>'+(st?'<span class="tag '+st.cls+'">'+esc(st.label)+'</span> ':'')+esc(clean)+'</li>');
+      return
+    }
     closeList();
     if(line.trim())html.push('<p class="muted">'+esc(line)+'</p>');
   });
@@ -214,7 +231,7 @@ async function loadBuildTracker(){
   if(!status||!box)return;
   status.hidden=false;status.className='notice';status.textContent='Loading TLC implementation tracker…';
   try{
-    var r=await fetch('TLC_IMPLEMENTATION_TRACKER.md?v=20260930-1',{cache:'no-store'});
+    var r=await fetch('TLC_IMPLEMENTATION_TRACKER.md?v=20260930-2',{cache:'no-store'});
     if(!r.ok)throw new Error('Tracker could not be loaded.');
     var md=await r.text();
     box.innerHTML=renderBuildTrackerMarkdown(md);
