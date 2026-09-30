@@ -492,6 +492,46 @@
     }
   }
 
+  async function getNclexMakeupOpportunities(email, accessCode) {
+    var client = getClient();
+    if (!client) return { status: 'error' };
+    try {
+      var result = await client.rpc('get_my_nclex_makeup_opportunities', {
+        p_email: (email || '').trim().toLowerCase(),
+        p_access_code: accessCode || ''
+      });
+      if (result.error) {
+        console.error('ITASA student portal: get_my_nclex_makeup_opportunities failed', result.error);
+        return { status: 'error' };
+      }
+      return result.data || { status: 'error' };
+    } catch (err) {
+      console.error('ITASA student portal: getNclexMakeupOpportunities threw', err);
+      return { status: 'error' };
+    }
+  }
+
+  async function reserveNclexMakeup(email, accessCode, obligationId, trainingSessionId) {
+    var client = getClient();
+    if (!client) return { status: 'error' };
+    try {
+      var result = await client.rpc('reserve_my_nclex_makeup', {
+        p_email: (email || '').trim().toLowerCase(),
+        p_access_code: accessCode || '',
+        p_obligation_id: obligationId,
+        p_training_session_id: trainingSessionId
+      });
+      if (result.error) {
+        console.error('ITASA student portal: reserve_my_nclex_makeup failed', result.error);
+        return { status: 'error' };
+      }
+      return result.data || { status: 'error' };
+    } catch (err) {
+      console.error('ITASA student portal: reserveNclexMakeup threw', err);
+      return { status: 'error' };
+    }
+  }
+
   async function getCertificates(email, accessCode) {
     var client = getClient();
     if (!client) {
@@ -526,6 +566,8 @@
     getCourseHubItems: getCourseHubItems,
     getCertificates: getCertificates,
     getNclexAttendance: getNclexAttendance,
+    getNclexMakeupOpportunities: getNclexMakeupOpportunities,
+    reserveNclexMakeup: reserveNclexMakeup,
     setSessionCredentials: setSessionCredentials,
     getSessionCredentials: getSessionCredentials,
     clearSessionCredentials: clearSessionCredentials
