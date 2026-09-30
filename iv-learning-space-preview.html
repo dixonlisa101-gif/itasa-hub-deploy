@@ -100,6 +100,12 @@
     </div>
 
     <div class="card">
+      <div class="eyebrow">Remediation &amp; Reassessment</div><h2>My Remediation</h2>
+      <p class="muted">If an IV competency is recorded as Not Yet Competent, the exact skill and reason will appear here. You can choose from ITASA-approved reassessment dates when available.</p>
+      <div id="remediation"><p class="muted">Checking for open remediation requirements…</p></div>
+    </div>
+
+    <div class="card">
       <div class="eyebrow">Completion</div><h2>Completion &amp; Certificate</h2>
       <div id="completion"><p class="muted">Checking your completion information…</p></div>
     </div>
@@ -115,7 +121,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/student-course-hub-content.js?v=1"></script>
-<script src="js/student-portal-supabase.js"></script>
+<script src="js/student-portal-supabase.js?v=20260930-remediation1"></script>
 <script src="js/assessment-skills-supabase.js?v=2"></script>
 <script src="js/iv-course-reader.js?v=7"></script>
 <script src="js/shared-content-supabase.js"></script>
@@ -271,6 +277,44 @@ function renderIvSkillsStatus(s){
   }
   box.innerHTML='<p><strong>Final competency validation is required.</strong></p>'+
     '<p class="muted">Your check-off date, time, and location will appear here after ITASA schedules your in-person skills validation.</p>';
+}
+
+function renderRemediation(data,email,code){
+  const box=document.getElementById('remediation');
+  if(!box)return;
+  if(!data||data.status!=='ok'){box.innerHTML='<p class="muted">Remediation information is temporarily unavailable.</p>';return}
+  const reqs=Array.isArray(data.requirements)?data.requirements:[];
+  if(!reqs.length){box.innerHTML='<p class="muted">No remediation is currently required.</p>';return}
+  box.innerHTML=reqs.map(function(r){
+    const failed=Array.isArray(r.failed_items)?r.failed_items:[];
+    const opp=Array.isArray(r.opportunities)?r.opportunities:[];
+    let html='<div class="module" data-remediation="'+esc(r.obligation_id)+'"><strong>'+esc(r.title||'Remediation Required')+'</strong>';
+    if(failed.length)html+='<ul>'+failed.map(function(f){return '<li><strong>'+esc(f.item_name||'Skill')+'</strong>'+(f.deficiency_reason?' — '+esc(f.deficiency_reason):'')+'</li>'}).join('')+'</ul>';
+    if(String(r.status||'')==='scheduled'){
+      html+='<p class="muted"><strong>Reassessment reserved.</strong> The requirement remains open until you successfully complete reassessment.</p>';
+    }else if(!opp.length){
+      html+='<p class="muted">No approved reassessment date is posted yet. The next available opportunity will appear here when ITASA schedules it.</p>';
+    }else{
+      html+='<p><strong>Choose Next Remediation Date</strong></p>'+opp.map(function(o){
+        const when=o.scheduled_at?new Date(o.scheduled_at).toLocaleString('en-US',{timeZone:'America/New_York',month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'}):'';
+        return '<button class="btn secondary" type="button" style="margin:6px 8px 0 0" data-reserve-remediation="'+esc(o.opportunity_id)+'">'+esc(when)+(o.location?' · '+esc(o.location):'')+'</button>';
+      }).join('');
+    }
+    return html+'</div>';
+  }).join('');
+  box.querySelectorAll('[data-reserve-remediation]').forEach(function(b){
+    b.onclick=async function(){
+      const row=b.closest('[data-remediation]'),ob=row&&row.getAttribute('data-remediation'),op=b.getAttribute('data-reserve-remediation');
+      if(!ob||!op)return;
+      b.disabled=true;const label=b.textContent;b.textContent='Reserving…';
+      try{
+        const rr=await window.ItasaStudentPortal.reserveRemediation(email,code,ob,op);
+        if(!rr||rr.status!=='reserved')throw new Error((rr&&rr.status)||'Reassessment date could not be reserved.');
+        const fresh=await window.ItasaStudentPortal.getRemediationRequirements(email,code);
+        renderRemediation(fresh,email,code);
+      }catch(e){b.disabled=false;b.textContent=label;showStatus('<strong>Reassessment was not reserved.</strong><br>'+esc(e.message||String(e)),'warn')}
+    };
+  });
 }
 
 function renderCertificates(certs){
