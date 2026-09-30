@@ -98,9 +98,9 @@ Status key: ⬜ Not Started · 🟨 In Progress · 🟩 Built · ✅ Tested/Veri
 - 🟨 Goal: Marie teaches; TLC handles routine administration
 - 🟩 Assigned Course Workspaces now show all assigned courses consistently
 - 🟩 Assessments & Skills includes IV, MT, and Skills Refresher roster workflows
-- ⬜ Show course-level student counts
-- ⬜ Group roster clearly by course
-- ⬜ Show each student's current requirement/completion status at a glance
+- 🟩 Show course-level student counts
+- 🟩 Group roster clearly by course
+- 🟩 Show each student's current requirement/completion status at a glance
 - ⬜ Minimize manual attendance work
 - ⬜ Minimize manual remediation scheduling
 - ⬜ Minimize manual access-recovery work
