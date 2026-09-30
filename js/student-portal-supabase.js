@@ -572,6 +572,25 @@
     }
   }
 
+  async function getTrainingCompletionStatus(email, accessCode) {
+    var client = getClient();
+    if (!client) return { status: 'error' };
+    try {
+      var result = await client.rpc('get_my_training_completion_status', {
+        p_email: (email || '').trim().toLowerCase(),
+        p_access_code: accessCode || ''
+      });
+      if (result.error) {
+        console.error('ITASA student portal: get_my_training_completion_status failed', result.error);
+        return { status: 'error' };
+      }
+      return result.data || { status: 'error' };
+    } catch (err) {
+      console.error('ITASA student portal: getTrainingCompletionStatus threw', err);
+      return { status: 'error' };
+    }
+  }
+
   async function getCertificates(email, accessCode) {
     var client = getClient();
     if (!client) {
@@ -609,6 +628,7 @@
     getNclexMakeupOpportunities: getNclexMakeupOpportunities,
     reserveNclexMakeup: reserveNclexMakeup,
     getRemediationRequirements: getRemediationRequirements,
+    getTrainingCompletionStatus: getTrainingCompletionStatus,
     reserveRemediation: reserveRemediation,
     setSessionCredentials: setSessionCredentials,
     getSessionCredentials: getSessionCredentials,
