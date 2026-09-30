@@ -487,6 +487,24 @@
   }
 
 
+  async function fetchAccessRecoveryExceptions() {
+    requireStaff();
+    var result=await client.rpc('get_access_recovery_exception_queue');
+    if(result.error)throw result.error;
+    return result.data||{status:'error',requests:[]};
+  }
+
+  async function reviewAccessRecoveryException(requestId,decision,note) {
+    requireStaff();
+    var result=await client.rpc('review_access_recovery_exception',{
+      p_request_id:requestId,
+      p_decision:decision,
+      p_admin_note:note||''
+    });
+    if(result.error)throw result.error;
+    return result.data||{status:'error'};
+  }
+
   async function fetchEvidenceRetentionOverview() {
     requireStaff();
     var result = await client.rpc('get_evidence_retention_overview');
@@ -542,6 +560,8 @@
     getTrainingCompletionControl: getTrainingCompletionControl,
     markTrainingComplete: markTrainingComplete,
     issueTrainingCertificate: issueTrainingCertificate,
+    fetchAccessRecoveryExceptions: fetchAccessRecoveryExceptions,
+    reviewAccessRecoveryException: reviewAccessRecoveryException,
     fetchEvidenceRetentionOverview: fetchEvidenceRetentionOverview,
     fetchItSystemOversight: fetchItSystemOversight,
     onSessionChange: onSessionChange
