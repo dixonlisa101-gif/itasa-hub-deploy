@@ -36,12 +36,12 @@ Status key: ⬜ Not Started · 🟨 In Progress · 🟩 Built · ✅ Tested/Veri
 - 🟩 Skills Refresher completion + certificate backend exists
 - 🟩 IV completion/certificate backend exists
 - 🟩 Medical Technician completion/certificate backend exists
-- ⬜ Separate "Mark Training Complete" from "Issue / Print Certificate of Completion"
-- ⬜ Completion button unlocks only after system-verified requirements are satisfied
-- ⬜ Certificate issue/print button appears only after training completion
-- ⬜ Printable COC includes instructor/validator identity and credential/signature area
-- ⬜ Show completion basis to instructor before completion action
-- ⬜ Show completion/certificate status to student
+- 🟩 Separate "Mark Training Complete" from "Issue / Print Certificate of Completion"
+- 🟩 Completion button unlocks only after system-verified requirements are satisfied
+- 🟩 Certificate issue/print button appears only after training completion
+- 🟩 Printable COC includes instructor/validator identity, credential, signature line, and date-signed line
+- 🟩 Show completion basis to instructor before completion action
+- 🟩 Show completion/certificate status to student
 
 ## 4. Evidence & Pass/Fail Validation
 - 🟩 Digital competency results exist for skills-based courses
@@ -66,7 +66,7 @@ Status key: ⬜ Not Started · 🟨 In Progress · 🟩 Built · ✅ Tested/Veri
 - 🟩 Automatically log remediation creation/resolution
 - 🟨 Automatically log make-up scheduling/completion
 - ✅ Automatically log course completion
-- 🟨 Automatically log certificate issuance/printing events
+- 🟩 Automatically log certificate issuance/printing events
 - ⬜ Automatically log access-recovery events
 - 🟨 Admin/IT Audit Trail viewer with category/retention visibility; filters still pending
 - ⬜ Separate 5-year training/compliance events from shorter-lived technical noise
@@ -120,7 +120,7 @@ For every feature:
 1. ✅ Audit + durable requirement foundation
 2. 🟨 NCLEX automated attendance/make-up engine — Zoom evidence feed is the remaining external dependency
 3. 🟨 Shared remediation scheduling engine
-4. ⬜ Two-step training completion / COC controls
+4. 🟨 Two-step training completion / COC controls — built; end-to-end review-account verification pending
 5. ⬜ Five-year retention/purge automation
 6. ⬜ Free student access-recovery system
 7. ⬜ Admin/IT queues + audit viewer
