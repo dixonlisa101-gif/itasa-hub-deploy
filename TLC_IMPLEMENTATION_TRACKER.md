@@ -6,14 +6,14 @@ Status key: ⬜ Not Started · 🟨 In Progress · 🟩 Built · ✅ Tested/Veri
 - ✅ Durable open-obligation table created for attendance/make-up/remediation tracking
 - ✅ NCLEX completion rule: 100% required class attendance
 - ✅ Create persistent required-session records for each NCLEX class meeting
-- 🟨 Automatically record/reconcile student attendance from the approved class-access/Zoom pathway
+- ⏸ Automatically record/reconcile student attendance from the approved class-access/Zoom pathway — production Zoom participation feed not yet connected to TLC backend
 - ✅ Preserve original absence; never overwrite history
 - ✅ Create an open make-up requirement when a required NCLEX session is missed
-- ⬜ Automatically match that open requirement to the next valid future session
-- 🟨 Student sees attendance history, missing requirements, and next opportunity
+- 🟩 Automatically match that open requirement to the next valid future session
+- 🟩 Student sees attendance history, missing requirements, and next opportunity
 - ✅ Instructor sees course roster attendance and completion eligibility
 - ✅ Course completion remains locked until all required attendance is satisfied
-- ⬜ Student joins make-up class through the normal protected TLC class-access path
+- 🟨 Student joins make-up class through the normal protected TLC class-access path
 - ⬜ Successful make-up closes the open attendance requirement and preserves the original absence
 
 ## 2. Skills / IV / Medical Technician Remediation Engine
@@ -118,7 +118,7 @@ For every feature:
 
 ## Current Build Order
 1. ✅ Audit + durable requirement foundation
-2. 🟨 NCLEX automated attendance/make-up engine
+2. 🟨 NCLEX automated attendance/make-up engine — Zoom evidence feed is the remaining external dependency
 3. ⬜ Shared remediation scheduling engine
 4. ⬜ Two-step training completion / COC controls
 5. ⬜ Five-year retention/purge automation
