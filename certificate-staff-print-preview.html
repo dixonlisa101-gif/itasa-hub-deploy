@@ -10,7 +10,7 @@
 @media(max-width:1100px){.cert{transform-origin:top left;transform:scale(calc((100vw - 24px)/1056));margin-left:12px;margin-bottom:calc((816px * ((100vw - 24px)/1056)) - 816px + 24px)}}
 @media print{body{background:#fff}.bar,.login,.status{display:none!important}.cert{margin:0;box-shadow:none;transform:none;width:10.5in;height:8in}@page{size:landscape letter;margin:.25in}}
 </style></head><body>
-<div class="bar"><a href="assessment-skills-workspace-preview.html">Assessments & Skills</a><button id="print-btn" hidden onclick="window.print()">Print / Save PDF</button></div>
+<div class="bar"><a href="assessment-skills-workspace-preview.html">Assessments & Skills</a><button id="print-btn" hidden>Print / Save PDF</button></div>
 <div id="login" class="login">
 <h2>Instructor Sign In</h2>
 <label>ITASA Staff Email</label><input id="email" type="email" autocomplete="username">
@@ -37,7 +37,7 @@
 <div class="provider">Provider: Innovation Training & Staffing Agency (ITASA)</div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/staff-hub-supabase.js"></script>
+<script src="js/staff-hub-supabase.js?v=20260930-completion2"></script>
 <script>
 (function(){
 'use strict';
@@ -67,6 +67,15 @@ function sync(){
   if(st){login.hidden=true;loadCertificate()}
   else{login.hidden=false;cert.hidden=true;printBtn.hidden=true}
 }
+printBtn.onclick=async function(){
+  try{
+    await window.ItasaStaffHub.client.rpc('record_certificate_print_event',{
+      p_student_enrollment_id:enrollmentId||null,
+      p_student_id:studentId||null
+    });
+  }catch(e){console.error('Certificate print audit could not be recorded.',e)}
+  window.print();
+};
 document.getElementById('signin').onclick=async function(){
   var b=this,ls=document.getElementById('login-status');b.disabled=true;ls.textContent='Signing in…';
   var r=await window.ItasaStaffHub.signIn(document.getElementById('email').value,document.getElementById('password').value);
