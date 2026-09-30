@@ -137,6 +137,14 @@ table{width:100%;border-collapse:collapse}th,td{padding:10px 8px;border-bottom:1
       <div class="card read-only">
         <div class="eyebrow">Accountability</div>
         <h2>Recent Audit Activity</h2>
+        <p class="muted">Filter the audit trail by student/instructor text, action, target, category, retention class, or date. Audit records are read-only here.</p>
+        <div class="formgrid" style="margin-bottom:12px">
+          <div><label for="audit-search">Search</label><input id="audit-search" placeholder="Student, instructor, action, target…"></div>
+          <div><label for="audit-category">Category</label><select id="audit-category"><option value="">All categories</option></select></div>
+          <div><label for="audit-retention">Retention</label><select id="audit-retention"><option value="">All retention classes</option></select></div>
+          <div><label for="audit-from">From date</label><input id="audit-from" type="date"></div>
+          <div><label for="audit-to">To date</label><input id="audit-to" type="date"></div>
+        </div>
         <div style="overflow:auto"><table><thead><tr><th>When</th><th>Actor</th><th>Action</th><th>Target</th><th>Category</th><th>Retention</th><th>Details</th></tr></thead><tbody id="audit-body"></tbody></table></div>
       </div>
     </section>
@@ -366,7 +374,24 @@ function renderCerts(){
  document.getElementById('certs-body').innerHTML=state.certs.map(c=>'<tr><td><strong>'+esc(c.certificate_title||c.number||'Certificate')+'</strong><br><span class="muted">'+esc(c.number||'')+'</span></td><td>'+esc(c.student_id||'')+'</td><td>'+esc(programName(c.program_id||c.cohort_id))+'</td><td>'+statusTag(c.status)+'</td><td>'+esc(fmt(c.issued_at||c.created_at))+'</td></tr>').join('')||'<tr><td colspan="5" class="muted">No certificate records yet.</td></tr>';
 }
 function renderAudit(){
- document.getElementById('audit-body').innerHTML=state.audit.map(a=>'<tr><td>'+esc(fmt(a.at))+'</td><td>'+esc(a.actor_name||'ITASA System')+'<br><span class="muted">'+esc(a.role||a.source||'system')+'</span></td><td>'+esc(a.action||'')+'</td><td>'+esc(a.target_type||'')+'<br><span class="muted">'+esc(a.target_id||'')+'</span></td><td>'+esc(a.event_category||'system')+'</td><td>'+esc(a.retention_class||'technical')+(a.retain_until?'<br><span class="muted">until '+esc(fmt(a.retain_until))+'</span>':'')+'</td><td>'+esc(a.details||'')+'</td></tr>').join('')||'<tr><td colspan="7" class="muted">No audit entries available.</td></tr>';
+ var search=(document.getElementById('audit-search')&&document.getElementById('audit-search').value||'').toLowerCase().trim();
+ var category=document.getElementById('audit-category')?document.getElementById('audit-category').value:'';
+ var retention=document.getElementById('audit-retention')?document.getElementById('audit-retention').value:'';
+ var from=document.getElementById('audit-from')?document.getElementById('audit-from').value:'';
+ var to=document.getElementById('audit-to')?document.getElementById('audit-to').value:'';
+ var rows=(state.audit||[]).filter(function(a){
+   if(category&&String(a.event_category||'system')!==category)return false;
+   if(retention&&String(a.retention_class||'technical')!==retention)return false;
+   var t=a.at?new Date(a.at):null;
+   if(from&&t&&!isNaN(t.getTime())&&t<new Date(from+'T00:00:00'))return false;
+   if(to&&t&&!isNaN(t.getTime())&&t>new Date(to+'T23:59:59'))return false;
+   if(search){
+     var hay=[a.actor_name,a.role,a.action,a.target_type,a.target_id,a.details,a.event_category,a.retention_class].join(' ').toLowerCase();
+     if(hay.indexOf(search)===-1)return false;
+   }
+   return true;
+ });
+ document.getElementById('audit-body').innerHTML=rows.map(a=>'<tr><td>'+esc(fmt(a.at))+'</td><td>'+esc(a.actor_name||'ITASA System')+'<br><span class="muted">'+esc(a.role||a.source||'system')+'</span></td><td>'+esc(a.action||'')+'</td><td>'+esc(a.target_type||'')+'<br><span class="muted">'+esc(a.target_id||'')+'</span></td><td>'+esc(a.event_category||'system')+'</td><td>'+esc(a.retention_class||'technical')+(a.retain_until?'<br><span class="muted">until '+esc(fmt(a.retain_until))+'</span>':'')+'</td><td>'+esc(a.details||'')+'</td></tr>').join('')||'<tr><td colspan="7" class="muted">No audit entries match these filters.</td></tr>';
 }
 function qualificationDocLabel(v){return v==='resume_cv'?'CV / Résumé':v==='teaching_experience'?'Teaching Experience Evidence':v==='iv_professional_experience'?'IV Professional Experience Evidence':v==='license_certificate'?'License / Certificate':'Other Qualification Document'}
 function renderQualificationReviews(){
@@ -448,7 +473,15 @@ async function loadInfo(){state.info=await window.ItasaStaffHub.fetchInfoSession
 async function loadAccess(){var all=await Promise.all([window.ItasaStaffHub.fetchClassAccess(),window.ItasaStaffHub.fetchServiceAccess(),window.ItasaSharedContentSupabase.fetchCollection('classes')]);state.access=all[0]||[];state.serviceAccess=all[1]||[];state.classes=(all[2]&&all[2].data)||[];renderAccess();metrics();var classSet=state.access.filter(function(a){return ['cohort-review-fall-2026','cohort-skills-fall-2026'].indexOf(a.cohort_id)!==-1&&a.link}).length;var serviceSet=state.serviceAccess.filter(function(a){return ['information_session','one_on_one'].indexOf(a.service_key)!==-1&&a.link}).length;var configured=classSet+serviceSet;show(document.getElementById('access-status'),configured===4?'All four ITASA Zoom pathways are configured.':configured+' of 4 ITASA Zoom pathways are configured.',configured===4?'good':'warn')}
 async function loadOne(){state.one=await window.ItasaStaffHub.fetchOneOnOneRequests();renderOne();metrics()}
 async function loadCerts(){state.certs=await window.ItasaStaffHub.fetchCertificates();renderCerts();metrics()}
-async function loadAudit(){state.audit=await window.ItasaStaffHub.fetchAuditLog(100);renderAudit()}
+async function loadAudit(){
+  state.audit=await window.ItasaStaffHub.fetchAuditLog(200);
+  var cats=Array.from(new Set((state.audit||[]).map(function(a){return a.event_category||'system'}))).sort();
+  var rets=Array.from(new Set((state.audit||[]).map(function(a){return a.retention_class||'technical'}))).sort();
+  var cat=document.getElementById('audit-category'),ret=document.getElementById('audit-retention');
+  if(cat){var cv=cat.value;cat.innerHTML='<option value="">All categories</option>'+cats.map(function(x){return '<option>'+esc(x)+'</option>'}).join('');cat.value=cv}
+  if(ret){var rv=ret.value;ret.innerHTML='<option value="">All retention classes</option>'+rets.map(function(x){return '<option>'+esc(x)+'</option>'}).join('');ret.value=rv}
+  renderAudit();
+}
 async function loadIt(){state.it=await window.ItasaStaffHub.fetchItSystemOversight();renderItOversight()}
 async function loadRetention(){state.retention=await window.ItasaStaffHub.fetchEvidenceRetentionOverview();renderRetention()}
 async function loadQualificationReviews(){var r=await window.ItasaStaffHub.fetchQualificationDocumentReviewQueue();state.qualificationReviews=(r&&r.status==='ok')?(r.documents||[]):[];renderQualificationReviews()}
@@ -456,6 +489,9 @@ async function loadAll(){var rs=document.getElementById('refresh-status');if(rs)
 
 function syncSession(){var st=window.ItasaStaffHub.getCurrentStaff();if(st){document.getElementById('login-shell').hidden=true;document.getElementById('workspace-header').hidden=false;document.getElementById('staff-name').textContent=st.full_name||st.email;document.getElementById('staff-meta').textContent=st.role+' · '+st.email;if(String(st.role||'').toLowerCase()!=='administrator'){document.getElementById('workspace').hidden=true;document.getElementById('workspace-header').hidden=true;var s=document.getElementById('login-status');show(s,'Operations & IT Oversight requires administrator authorization. Use the Instructor Workspace for ordinary instructor work.','error');return}document.getElementById('workspace').hidden=false;loadAll()}else{document.getElementById('login-shell').hidden=false;document.getElementById('workspace-header').hidden=true;document.getElementById('workspace').hidden=true}}
 document.getElementById('login-form').onsubmit=async function(ev){ev.preventDefault();var b=document.getElementById('login-btn'),s=document.getElementById('login-status');b.disabled=true;b.textContent='Signing in…';hide(s);var res=await window.ItasaStaffHub.signIn(document.getElementById('staff-email').value,document.getElementById('staff-password').value);document.getElementById('staff-password').value='';b.disabled=false;b.textContent='Sign In';if(!res.ok)show(s,res.error&&res.error.message||'Sign-in failed.','error');else syncSession()};
+['audit-search','audit-category','audit-retention','audit-from','audit-to'].forEach(function(id){
+  var el=document.getElementById(id);if(el)el.addEventListener(id==='audit-search'?'input':'change',renderAudit);
+});
 document.getElementById('signout-btn').onclick=async function(){await window.ItasaStaffHub.signOut();syncSession()};
 document.getElementById('refresh-all').onclick=async function(){var b=this;b.disabled=true;await loadAll();b.disabled=false};
 window.ItasaStaffHub.onSessionChange(function(s){if(s.resolved)syncSession()});
