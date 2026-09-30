@@ -33,6 +33,14 @@ label{display:block;font-weight:800;margin:.7rem 0 .3rem}input,select{width:100%
 </section>
 
 <section class="card">
+  <div class="eyebrow">Verified backup email</div><h2>Use my backup recovery email</h2>
+  <p class="muted">If you previously verified a backup email in Student Home, enter it here. The response is intentionally generic so student accounts cannot be searched from this form.</p>
+  <label for="backup-recover-email">Verified backup email</label><input id="backup-recover-email" type="email" autocomplete="email">
+  <button id="request-backup-recovery" class="secondary" style="margin-top:10px">Send Recovery Link to Backup Email</button>
+  <div id="backup-request-status" class="notice" hidden></div>
+</section>
+
+<section class="card">
   <div class="eyebrow">Forgot which email you used?</div><h2>Show me a masked reminder</h2>
   <div class="grid2">
     <div><label for="hint-first">First name</label><input id="hint-first"></div>
@@ -70,7 +78,7 @@ label{display:block;font-weight:800;margin:.7rem 0 .3rem}input,select{width:100%
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/student-portal-supabase.js?v=20260930-recovery1"></script>
+<script src="js/student-portal-supabase.js?v=20260930-recovery2"></script>
 <script>
 (function(){
 'use strict';
@@ -117,6 +125,12 @@ document.getElementById('request-recovery').onclick=async function(){
   var b=this,email=document.getElementById('recover-email').value.trim();b.disabled=true;
   await window.ItasaStudentPortal.requestAccessRecovery(email);
   show('request-status','If that email matches an active ITASA student account, a secure recovery email has been queued.','good');
+  b.disabled=false;
+};
+document.getElementById('request-backup-recovery').onclick=async function(){
+  var b=this,email=document.getElementById('backup-recover-email').value.trim();b.disabled=true;
+  await window.ItasaStudentPortal.requestAccessRecoveryByBackup(email);
+  show('backup-request-status','If that address is a verified backup email for an active ITASA student account, a secure recovery email has been queued.','good');
   b.disabled=false;
 };
 document.getElementById('find-email').onclick=async function(){
