@@ -38,7 +38,7 @@ Status key: ⬜ Not Started · 🟨 In Progress · 🟩 Built · ✅ Tested/Veri
 - 🟩 Medical Technician completion/certificate backend exists
 - 🟩 Separate "Mark Training Complete" from "Issue / Print Certificate of Completion"
 - 🟩 Completion button unlocks only after system-verified requirements are satisfied
-- 🟩 Certificate issue/print button appears only after training completion
+- 🟩 Certificate issue button appears only after training completion; Print / Save COC appears only after certificate issuance
 - 🟩 Printable COC includes instructor/validator identity, credential, signature line, and date-signed line
 - 🟩 Show completion basis to instructor before completion action
 - 🟩 Show completion/certificate status to student
