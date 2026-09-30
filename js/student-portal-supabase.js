@@ -591,6 +591,99 @@
     }
   }
 
+  async function requestAccessRecovery(email) {
+    var client=getClient(); if(!client)return {status:'error'};
+    try{
+      var result=await client.rpc('request_student_access_recovery',{p_email:(email||'').trim().toLowerCase()});
+      if(result.error)throw result.error; return result.data||{status:'error'};
+    }catch(err){console.error('ITASA student portal: requestAccessRecovery failed',err);return {status:'error'}}
+  }
+
+  async function getRecoveryTokenStatus(token) {
+    var client=getClient(); if(!client)return {status:'error'};
+    try{
+      var result=await client.rpc('get_student_recovery_token_status',{p_token:token||''});
+      if(result.error)throw result.error; return result.data||{status:'error'};
+    }catch(err){console.error('ITASA student portal: getRecoveryTokenStatus failed',err);return {status:'error'}}
+  }
+
+  async function completeAccessRecovery(token) {
+    var client=getClient(); if(!client)return {status:'error'};
+    try{
+      var result=await client.rpc('complete_student_access_recovery',{p_token:token||''});
+      if(result.error)throw result.error; return result.data||{status:'error'};
+    }catch(err){console.error('ITASA student portal: completeAccessRecovery failed',err);return {status:'error'}}
+  }
+
+  async function setBackupEmail(email,accessCode,backupEmail) {
+    var client=getClient(); if(!client)return {status:'error'};
+    try{
+      var result=await client.rpc('set_my_backup_email',{
+        p_email:(email||'').trim().toLowerCase(),
+        p_access_code:accessCode||'',
+        p_backup_email:(backupEmail||'').trim().toLowerCase()
+      });
+      if(result.error)throw result.error; return result.data||{status:'error'};
+    }catch(err){console.error('ITASA student portal: setBackupEmail failed',err);return {status:'error'}}
+  }
+
+  async function verifyBackupEmail(token) {
+    var client=getClient(); if(!client)return {status:'error'};
+    try{
+      var result=await client.rpc('verify_my_backup_email',{p_token:token||''});
+      if(result.error)throw result.error; return result.data||{status:'error'};
+    }catch(err){console.error('ITASA student portal: verifyBackupEmail failed',err);return {status:'error'}}
+  }
+
+  async function issueRecoveryKey(email,accessCode) {
+    var client=getClient(); if(!client)return {status:'error'};
+    try{
+      var result=await client.rpc('issue_my_recovery_key',{
+        p_email:(email||'').trim().toLowerCase(),
+        p_access_code:accessCode||''
+      });
+      if(result.error)throw result.error; return result.data||{status:'error'};
+    }catch(err){console.error('ITASA student portal: issueRecoveryKey failed',err);return {status:'error'}}
+  }
+
+  async function recoverWithRecoveryKey(recoveryKey,newEmail) {
+    var client=getClient(); if(!client)return {status:'error'};
+    try{
+      var result=await client.rpc('recover_access_with_recovery_key',{
+        p_recovery_key:recoveryKey||'',
+        p_new_email:(newEmail||'').trim().toLowerCase()||null
+      });
+      if(result.error)throw result.error; return result.data||{status:'error'};
+    }catch(err){console.error('ITASA student portal: recoverWithRecoveryKey failed',err);return {status:'error'}}
+  }
+
+  async function getMaskedRegistrationEmail(firstName,lastName,phone,programId) {
+    var client=getClient(); if(!client)return {status:'error'};
+    try{
+      var result=await client.rpc('get_masked_registration_email',{
+        p_first_name:firstName||'',
+        p_last_name:lastName||'',
+        p_phone:phone||'',
+        p_program_id:programId||''
+      });
+      if(result.error)throw result.error; return result.data||{status:'error'};
+    }catch(err){console.error('ITASA student portal: getMaskedRegistrationEmail failed',err);return {status:'error'}}
+  }
+
+  async function submitRecoveryException(firstName,lastName,phone,programId,newEmail) {
+    var client=getClient(); if(!client)return {status:'error'};
+    try{
+      var result=await client.rpc('submit_access_recovery_exception',{
+        p_first_name:firstName||'',
+        p_last_name:lastName||'',
+        p_phone:phone||'',
+        p_program_id:programId||'',
+        p_new_email:(newEmail||'').trim().toLowerCase()
+      });
+      if(result.error)throw result.error; return result.data||{status:'error'};
+    }catch(err){console.error('ITASA student portal: submitRecoveryException failed',err);return {status:'error'}}
+  }
+
   async function getCertificates(email, accessCode) {
     var client = getClient();
     if (!client) {
@@ -629,6 +722,15 @@
     reserveNclexMakeup: reserveNclexMakeup,
     getRemediationRequirements: getRemediationRequirements,
     getTrainingCompletionStatus: getTrainingCompletionStatus,
+    requestAccessRecovery: requestAccessRecovery,
+    getRecoveryTokenStatus: getRecoveryTokenStatus,
+    completeAccessRecovery: completeAccessRecovery,
+    setBackupEmail: setBackupEmail,
+    verifyBackupEmail: verifyBackupEmail,
+    issueRecoveryKey: issueRecoveryKey,
+    recoverWithRecoveryKey: recoverWithRecoveryKey,
+    getMaskedRegistrationEmail: getMaskedRegistrationEmail,
+    submitRecoveryException: submitRecoveryException,
     reserveRemediation: reserveRemediation,
     setSessionCredentials: setSessionCredentials,
     getSessionCredentials: getSessionCredentials,
