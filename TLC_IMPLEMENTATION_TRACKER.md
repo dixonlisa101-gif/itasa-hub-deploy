@@ -22,14 +22,14 @@ Status key: ⬜ Not Started · 🟨 In Progress · 🟩 Built · ✅ Tested/Veri
 - 🟩 Skills Refresher roster/check-off workflow exists in Assessments & Skills
 - 🟩 IV skills + knowledge-assessment gate exists
 - 🟩 Medical Technician assessment + skills-readiness gate exists
-- ⬜ Automatically create remediation requirement from failed competency/assessment evidence
-- ⬜ Student sees exact failed requirement and remediation status
-- ⬜ Add "Choose Next Remediation Date" self-service button
-- ⬜ Only show ITASA-approved valid remediation opportunities
-- ⬜ Automatically reserve selected remediation opportunity
-- ⬜ Route student to correct Zoom/in-person instructions
-- ⬜ Reassessment closes requirement only when standard is met
-- ⬜ Repeat remediation remains available until passed
+- 🟩 Automatically create remediation requirement from documented failed competency evidence
+- 🟩 Student sees exact failed requirement and remediation status
+- 🟩 Add "Choose Next Remediation Date" self-service button
+- 🟩 Only show ITASA-approved valid remediation opportunities
+- 🟩 Automatically reserve selected remediation opportunity
+- 🟨 Route student to correct Zoom/in-person instructions
+- 🟩 Reassessment closes requirement only when standard is met
+- 🟨 Repeat remediation remains available until passed
 
 ## 3. Course Completion & Certificate Controls
 - 🟩 Current NCLEX completion/certificate flow exists
@@ -48,10 +48,10 @@ Status key: ⬜ Not Started · 🟨 In Progress · 🟩 Built · ✅ Tested/Veri
 - 🟩 Assessment scores are stored for IV/MT
 - 🟩 Instructor identity/date/location are captured for skills validation
 - 🟩 Signed checklist upload exists in Assessments & Skills
-- ⬜ Require deficiency reason/evidence before remediation is created
-- ⬜ Link failed competency/assessment to remediation requirement
-- ⬜ Preserve all reassessment history
-- ⬜ Student sees plain-language reason for remediation
+- 🟩 Require deficiency reason/evidence before remediation is created
+- 🟩 Link failed competency to remediation requirement
+- 🟩 Preserve all reassessment history
+- 🟩 Student sees plain-language reason for remediation
 - ⬜ Instructor sees evidence supporting pass/not-pass before completion
 
 ## 5. Audit Trail
@@ -63,8 +63,8 @@ Status key: ⬜ Not Started · 🟨 In Progress · 🟩 Built · ✅ Tested/Veri
 - ✅ Automatically log attendance events
 - ✅ Automatically log assessment-result changes
 - ✅ Automatically log competency-result changes
-- ⬜ Automatically log remediation creation/resolution
-- ⬜ Automatically log make-up scheduling/completion
+- 🟩 Automatically log remediation creation/resolution
+- 🟨 Automatically log make-up scheduling/completion
 - ✅ Automatically log course completion
 - 🟨 Automatically log certificate issuance/printing events
 - ⬜ Automatically log access-recovery events
@@ -119,7 +119,7 @@ For every feature:
 ## Current Build Order
 1. ✅ Audit + durable requirement foundation
 2. 🟨 NCLEX automated attendance/make-up engine — Zoom evidence feed is the remaining external dependency
-3. ⬜ Shared remediation scheduling engine
+3. 🟨 Shared remediation scheduling engine
 4. ⬜ Two-step training completion / COC controls
 5. ⬜ Five-year retention/purge automation
 6. ⬜ Free student access-recovery system
