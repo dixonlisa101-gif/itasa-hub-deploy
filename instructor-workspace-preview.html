@@ -81,7 +81,7 @@ label{display:block;font-weight:800;margin:.7rem 0 .3rem}input{width:100%;paddin
       <div class="card">
         <div class="eyebrow">NCLEX Completion</div>
         <h2>Complete class &amp; issue Certificate of Completion</h2>
-        <p class="muted">For NCLEX Review, the instructor confirms course completion here. The system then issues the ITASA Certificate of Completion automatically. This is separate from NCLEX licensure or exam results.</p><p><a class="btn secondary" target="_blank" href="nclex-certificate-preview.html">Preview NCLEX Certificate Layout</a></p>
+        <p class="muted">NCLEX completion requires 100% attendance at all required class sessions. The system tracks attendance and keeps completion locked until every required session has been satisfied, including approved make-ups. This is separate from NCLEX licensure or exam results.</p><p><a class="btn secondary" target="_blank" href="nclex-certificate-preview.html">Preview NCLEX Certificate Layout</a></p>
         <p><a class="btn secondary" target="_blank" href="nclex-certificate-sample-preview.html">Preview NCLEX Certificate of Completion</a></p>
         <div id="nclex-completion-status" class="notice" hidden></div>
         <div id="nclex-completion-roster"></div>
@@ -245,9 +245,19 @@ function renderNclexCompletion(){
   var rows=Array.isArray(state.nclex)?state.nclex:[];
   box.innerHTML=rows.map(function(r){
     var completed=String(r.enrollment_status||'').toLowerCase()==='completed';
-    return '<article class="card course" data-nclex-student="'+esc(r.student_id)+'"><div class="toolbar"><div><h3>'+esc(r.student_name||'Student')+'</h3><div class="muted">'+esc(r.student_email||'')+'</div></div><div class="push">'+(completed?'<span class="tag good">Completed</span>':'<span class="tag warn">In progress</span>')+'</div></div>'+
-      (completed?'<p><strong>Certificate:</strong> '+esc(r.certificate_number||'Issued')+'</p><a class="btn secondary" target="_blank" href="certificate-staff-print-preview.html?student='+encodeURIComponent(r.student_id)+'">Print Certificate of Completion</a>':'<button class="orange" data-complete-nclex="'+esc(r.student_id)+'">Mark Course Complete &amp; Issue Certificate</button>')+
-      '</article>';
+    var normalized=String(r.normalized_enrollment_status||'').toLowerCase();
+    var required=Number(r.attendance_required_sessions||0),satisfied=Number(r.attendance_satisfied_sessions||0),remaining=Number(r.attendance_remaining_sessions||0);
+    var trackingActive=normalized==='active'||normalized==='completed';
+    var attendance='<div class="notice"><strong>Attendance:</strong> '+(trackingActive?(satisfied+' of '+required+' required sessions satisfied'):'Tracking begins when enrollment becomes active.')+
+      (Number(r.open_makeups||0)>0?'<br><strong>Open make-ups:</strong> '+esc(r.open_makeups):'')+
+      (trackingActive?'<br><strong>Completion gate:</strong> '+(r.attendance_complete?'Attendance complete':'Locked — '+remaining+' required session'+(remaining===1?'':'s')+' remaining'):'')+
+      '</div>';
+    var action=completed
+      ? '<p><strong>Certificate:</strong> '+esc(r.certificate_number||'Issued')+'</p><a class="btn secondary" target="_blank" href="certificate-staff-print-preview.html?student='+encodeURIComponent(r.student_id)+'">Print Certificate of Completion</a>'
+      : r.attendance_complete
+        ? '<button class="orange" data-complete-nclex="'+esc(r.student_id)+'">Mark Course Complete &amp; Issue Certificate</button>'
+        : '<button class="secondary" disabled>Course Completion Locked</button>';
+    return '<article class="card course" data-nclex-student="'+esc(r.student_id)+'"><div class="toolbar"><div><h3>'+esc(r.student_name||'Student')+'</h3><div class="muted">'+esc(r.student_email||'')+'</div></div><div class="push">'+(completed?'<span class="tag good">Completed</span>':r.attendance_complete?'<span class="tag good">Attendance Complete</span>':'<span class="tag warn">Attendance In Progress</span>')+'</div></div>'+attendance+action+'</article>';
   }).join('')||'<p class="muted">No NCLEX Review students are currently on the roster.</p>';
 
   box.querySelectorAll('[data-complete-nclex]').forEach(function(btn){
@@ -257,7 +267,11 @@ function renderNclexCompletion(){
       btn.disabled=true;
       try{
         var r=await window.ItasaStaffHub.completeNclexStudent(btn.dataset.completeNclex);
-        if(!r||r.status!=='completed')throw new Error((r&&r.status)||'Completion could not be recorded.');
+        if(!r||r.status!=='completed'){
+          if(r&&r.status==='attendance_incomplete')throw new Error('Completion is locked. '+r.satisfied_sessions+' of '+r.required_sessions+' required NCLEX sessions are satisfied.');
+          if(r&&r.status==='attendance_tracking_not_active')throw new Error('Attendance tracking is not active for this student yet.');
+          throw new Error((r&&r.status)||'Completion could not be recorded.');
+        }
         show(status,'NCLEX course completion recorded and Certificate of Completion issued.','good');
         await load();
       }catch(e){show(status,e.message||String(e),'error')}
