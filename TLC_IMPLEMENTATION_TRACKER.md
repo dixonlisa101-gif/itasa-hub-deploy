@@ -13,11 +13,11 @@ Status key: ⬜ Not Started · 🟨 In Progress · 🟩 Built · ✅ Tested/Veri
 - 🟩 Student sees attendance history, missing requirements, and next opportunity
 - ✅ Instructor sees course roster attendance and completion eligibility
 - ✅ Course completion remains locked until all required attendance is satisfied
-- 🟨 Student joins make-up class through the normal protected TLC class-access path
-- ⬜ Successful make-up closes the open attendance requirement and preserves the original absence
+- 🟩 Student joins make-up class through the normal protected TLC class-access path
+- 🟩 Successful make-up closes the open attendance requirement and preserves the original absence (completion depends on attendance evidence feed)
 
 ## 2. Skills / IV / Medical Technician Remediation Engine
-- 🟨 Shared rule: unfinished requirements remain open until satisfied
+- 🟩 Shared rule: unfinished requirements remain open until satisfied
 - 🟩 Skills Refresher 16-item competency checklist exists
 - 🟩 Skills Refresher roster/check-off workflow exists in Assessments & Skills
 - 🟩 IV skills + knowledge-assessment gate exists
@@ -27,9 +27,9 @@ Status key: ⬜ Not Started · 🟨 In Progress · 🟩 Built · ✅ Tested/Veri
 - 🟩 Add "Choose Next Remediation Date" self-service button
 - 🟩 Only show ITASA-approved valid remediation opportunities
 - 🟩 Automatically reserve selected remediation opportunity
-- 🟨 Route student to correct Zoom/in-person instructions
+- 🟩 Route student to approved remediation date, delivery mode, location/access note, and instructions
 - 🟩 Reassessment closes requirement only when standard is met
-- 🟨 Repeat remediation remains available until passed
+- 🟩 Repeat remediation remains available until passed
 
 ## 3. Course Completion & Certificate Controls
 - 🟩 Current NCLEX completion/certificate flow exists
@@ -119,7 +119,7 @@ For every feature:
 ## Current Build Order
 1. ✅ Audit + durable requirement foundation
 2. 🟨 NCLEX automated attendance/make-up engine — Zoom evidence feed is the remaining external dependency
-3. 🟨 Shared remediation scheduling engine
+3. 🟩 Shared remediation scheduling engine — built; end-to-end review-account verification pending
 4. 🟨 Two-step training completion / COC controls — built; end-to-end review-account verification pending
 5. 🟨 Five-year retention/purge automation — built and automation test passed with no due files; live evidence-file lifecycle verification pending
 6. 🟨 Free student access-recovery system — built; live email-delivery verification depends on the existing Resend/domain release hold
