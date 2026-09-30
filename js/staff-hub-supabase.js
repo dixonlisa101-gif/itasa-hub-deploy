@@ -331,7 +331,7 @@
     var n = Math.max(1, Math.min(Number(limit) || 50, 200));
     var result = await client
       .from('audit_log')
-      .select('id,actor_name,role,action,target_type,target_id,details,at')
+      .select('id,actor_name,role,action,target_type,target_id,details,at,event_category,retention_class,retain_until,source')
       .order('at', { ascending: false })
       .limit(n);
     if (result.error) throw result.error;
