@@ -228,7 +228,13 @@ function renderRemediation(data,email,code){
       html+='<ul>'+failed.map(function(f){return '<li><strong>'+esc(f.item_name||'Skill')+'</strong>'+(f.deficiency_reason?' — '+esc(f.deficiency_reason):'')+'</li>'}).join('')+'</ul>';
     }
     if(String(r.status||'')==='scheduled'){
-      html+='<p class="muted"><strong>Reassessment reserved.</strong> Your date and location are stored with this requirement and will remain here until reassessment is completed.</p>';
+      const meta=r.metadata||{},when=meta.scheduled_at?new Date(meta.scheduled_at).toLocaleString('en-US',{timeZone:'America/New_York',month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'}):'';
+      html+='<p><strong>Reassessment reserved.</strong></p>'+
+        (when?'<p class="muted"><strong>Date:</strong> '+esc(when)+'</p>':'')+
+        (meta.delivery_mode?'<p class="muted"><strong>Delivery:</strong> '+esc(String(meta.delivery_mode).replace(/_/g,' '))+'</p>':'')+
+        (meta.location?'<p class="muted"><strong>Location / access:</strong> '+esc(meta.location)+'</p>':'')+
+        (meta.instructions?'<p class="muted"><strong>Instructions:</strong> '+esc(meta.instructions)+'</p>':'')+
+        '<p class="muted">This requirement remains open until reassessment is successfully completed.</p>';
     }else if(!opp.length){
       html+='<p class="muted">No approved reassessment date is posted yet. The next available opportunity will appear here when ITASA schedules it.</p>';
     }else{
