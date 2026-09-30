@@ -68,7 +68,7 @@ Status key: ⬜ Not Started · 🟨 In Progress · 🟩 Built · ✅ Tested/Veri
 - ✅ Automatically log course completion
 - 🟩 Automatically log certificate issuance/printing events
 - 🟩 Automatically log access-recovery events
-- 🟨 Admin/IT Audit Trail viewer with category/retention visibility; filters still pending
+- 🟩 Admin/IT Audit Trail viewer with category/retention visibility and filters
 - ⬜ Separate 5-year training/compliance events from shorter-lived technical noise
 
 ## 6. Five-Year Retention & Purge
@@ -96,13 +96,13 @@ Status key: ⬜ Not Started · 🟨 In Progress · 🟩 Built · ✅ Tested/Veri
 
 ## 8. Instructor Simplicity
 - 🟨 Goal: Marie teaches; TLC handles routine administration
-- 🟩 Assigned Course Workspaces now show all assigned courses consistently
+- 🟩 Course Workspaces now show all four ITASA courses consistently
 - 🟩 Assessments & Skills includes IV, MT, and Skills Refresher roster workflows
 - 🟩 Show course-level student counts
 - 🟩 Group roster clearly by course
 - 🟩 Show each student's current requirement/completion status at a glance
 - ⬜ Minimize manual attendance work
-- ⬜ Minimize manual remediation scheduling
+- 🟩 Minimize manual remediation scheduling
 - 🟩 Minimize manual access-recovery work
 - 🟩 Keep exceptions in small Admin/IT action queues
 
@@ -123,5 +123,5 @@ For every feature:
 4. 🟨 Two-step training completion / COC controls — built; end-to-end review-account verification pending
 5. 🟨 Five-year retention/purge automation — built and automation test passed with no due files; live evidence-file lifecycle verification pending
 6. 🟨 Free student access-recovery system — built; live email-delivery verification depends on the existing Resend/domain release hold
-7. ⬜ Admin/IT queues + audit viewer
+7. 🟨 Admin/IT queues + audit viewer — recovery queue and audit filters built; remaining exception/QA work pending
 8. ⬜ Final cross-course QA and live verification
