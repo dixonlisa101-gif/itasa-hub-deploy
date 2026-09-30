@@ -35,6 +35,15 @@ window.ItasaAssessmentSkillsStaff={
       p_validation_location:location||'',
       p_signature_name:signature||''
     });
+  },
+  getCompletionControl:function(enrollmentId){
+    return rpc('get_training_completion_control',{p_student_enrollment_id:enrollmentId});
+  },
+  markTrainingComplete:function(enrollmentId){
+    return rpc('mark_training_complete',{p_student_enrollment_id:enrollmentId});
+  },
+  issueTrainingCertificate:function(enrollmentId){
+    return rpc('issue_training_certificate',{p_student_enrollment_id:enrollmentId});
   }
 };
 })();
