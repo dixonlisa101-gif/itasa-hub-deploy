@@ -487,6 +487,13 @@
   }
 
 
+  async function fetchEvidenceRetentionOverview() {
+    requireStaff();
+    var result = await client.rpc('get_evidence_retention_overview');
+    if (result.error) throw result.error;
+    return result.data || { status: 'error', rows: [] };
+  }
+
   async function fetchItSystemOversight() {
     requireStaff();
     var result = await client.rpc('get_it_system_oversight');
@@ -535,6 +542,7 @@
     getTrainingCompletionControl: getTrainingCompletionControl,
     markTrainingComplete: markTrainingComplete,
     issueTrainingCertificate: issueTrainingCertificate,
+    fetchEvidenceRetentionOverview: fetchEvidenceRetentionOverview,
     fetchItSystemOversight: fetchItSystemOversight,
     onSessionChange: onSessionChange
   };
