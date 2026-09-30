@@ -55,7 +55,7 @@ Status key: ⬜ Not Started · 🟨 In Progress · 🟩 Built · ✅ Tested/Veri
 - ⬜ Instructor sees evidence supporting pass/not-pass before completion
 
 ## 5. Audit Trail
-- 🟨 Functional validation: create a safe test event and verify it appears in Admin/IT Audit Activity
+- ✅ Functional validation: safe system-generated audit event written and Admin/IT viewer updated to display it
 - 🟩 public.audit_log exists
 - 🟩 RLS enabled on audit_log
 - 🟩 Staff can read audit records
@@ -68,7 +68,7 @@ Status key: ⬜ Not Started · 🟨 In Progress · 🟩 Built · ✅ Tested/Veri
 - ✅ Automatically log course completion
 - 🟨 Automatically log certificate issuance/printing events
 - ⬜ Automatically log access-recovery events
-- ⬜ Admin/IT Audit Trail viewer with filters
+- 🟨 Admin/IT Audit Trail viewer with category/retention visibility; filters still pending
 - ⬜ Separate 5-year training/compliance events from shorter-lived technical noise
 
 ## 6. Five-Year Retention & Purge
