@@ -42,7 +42,7 @@ footer{text-align:center;padding:24px 18px;border-top:1px solid var(--line);back
 <footer>Innovation Training & Staffing Agency · Empowering Nurses. Elevating Healthcare.</footer>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/student-course-hub-content.js?v=1"></script>
-<script src="js/student-portal-supabase.js?v=20260930-remediation1"></script>
+<script src="js/student-portal-supabase.js?v=20260930-completion2"></script>
 <script src="js/assessment-skills-supabase.js?v=2"></script>
 <script src="js/medtech-course-reader.js?v=6"></script>
 <script>
@@ -75,10 +75,13 @@ function renderRemediation(data,email,code){
    catch(e){b.disabled=false;b.textContent=label;showStatus('<strong>Reassessment was not reserved.</strong><br>'+esc(e.message||String(e)),'warn')}
  };});
 }
-function renderCertificates(certs){
+function renderCertificates(certs,training){
  const box=document.getElementById('completion'),rows=Array.isArray(certs&&certs.certificates)?certs.certificates:[];
- if(!rows.length){box.innerHTML='<p class="muted">No certificate has been issued yet. Your Certificate of Completion will appear here automatically after all course requirements and the required in-person skills validation are successfully completed.</p>';return}
- box.innerHTML='<ul>'+rows.map(function(c){return '<li><strong>'+esc(c.certificate_title||c.certificate_number||'Certificate of Completion')+'</strong>'+(c.completion_date?' — '+esc(c.completion_date):'')+' — <a href="certificate-print-preview.html?certificate='+encodeURIComponent(c.certificate_id)+'">View / Print Certificate</a></li>'}).join('')+'</ul>';
+ if(training&&training.status==='ok'&&training.training_complete&&!training.certificate_issued){
+   box.innerHTML='<p><strong>Training complete.</strong></p><p class="muted">Your Certificate of Completion has not been issued yet. It will appear here after the instructor completes the separate certificate-issuance step.</p>';return
+ }
+ if(!rows.length){box.innerHTML='<p><strong>Training status:</strong> '+esc(training&&training.training_complete?'Complete':'In progress')+'</p><p class="muted">No Certificate of Completion has been issued yet.</p>';return}
+ box.innerHTML='<p><span class="tag good">Certificate Issued</span></p><ul>'+rows.map(function(c){return '<li><strong>'+esc(c.certificate_title||c.certificate_number||'Certificate of Completion')+'</strong>'+(c.completion_date?' — '+esc(c.completion_date):'')+' — <a href="certificate-print-preview.html?certificate='+encodeURIComponent(c.certificate_id)+'">View / Print Certificate</a></li>'}).join('')+'</ul>';
 }
 form.addEventListener('submit',async function(ev){
  ev.preventDefault();workspace.classList.remove('active');
@@ -102,6 +105,7 @@ form.addEventListener('submit',async function(ev){
    const assessmentStatus=await window.ItasaAssessmentSkills.getStatus(email,code);
    const certificates=await window.ItasaStudentPortal.getCertificates(email,code);
    const remediation=await window.ItasaStudentPortal.getRemediationRequirements(email,code);
+   const training=await window.ItasaStudentPortal.getTrainingCompletionStatus(email,code);
    const reviewMode=String(st.enrollmentStatus||'').trim().toLowerCase()==='review test';
    window.ItasaMedtechCourse.mount(document.getElementById('course-box'),preview,{
      studentKey:st.id||email,
@@ -118,7 +122,7 @@ form.addEventListener('submit',async function(ev){
          : window.ItasaAssessmentSkills.submitCourseAssessment(email,code,key,answers);
      }
    });
-   renderCertificates(certificates);
+   renderCertificates(certificates,training);
    renderRemediation(remediation,email,code);
    await window.ItasaStudentCourseHub.load(document.getElementById('course-hub-items'),email,code);
    document.getElementById('login-card').hidden=true;document.getElementById('student-signout').hidden=false;workspace.classList.add('active');showStatus('<strong>Welcome to your Medical Technician Class Virtual Learning Space.</strong>','ok');document.getElementById('code').value='';workspace.scrollIntoView({behavior:'smooth',block:'start'});
