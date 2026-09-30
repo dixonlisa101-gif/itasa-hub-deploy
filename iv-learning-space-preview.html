@@ -121,7 +121,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/student-course-hub-content.js?v=1"></script>
-<script src="js/student-portal-supabase.js?v=20260930-remediation1"></script>
+<script src="js/student-portal-supabase.js?v=20260930-completion2"></script>
 <script src="js/assessment-skills-supabase.js?v=2"></script>
 <script src="js/iv-course-reader.js?v=7"></script>
 <script src="js/shared-content-supabase.js"></script>
@@ -317,11 +317,16 @@ function renderRemediation(data,email,code){
   });
 }
 
-function renderCertificates(certs){
+function renderCertificates(certs,training){
   const box=document.getElementById('completion');
   const rows=Array.isArray(certs&&certs.certificates)?certs.certificates:[];
-  if(!rows.length){box.innerHTML='<p class="muted">No certificate has been issued yet. Completion information will remain here as your class progresses.</p>';return}
-  box.innerHTML='<ul>'+rows.map(function(c){return '<li><strong>'+esc(c.certificate_title||c.certificate_number||'Certificate')+'</strong>'+(c.completion_date?' — '+esc(c.completion_date):'')+(' — <a href="certificate-print-preview.html?certificate='+encodeURIComponent(c.certificate_id)+'">View / Print Certificate</a>')+'</li>'}).join('')+'</ul>';
+  if(training&&training.status==='ok'&&training.training_complete&&!training.certificate_issued){
+    box.innerHTML='<p><strong>Training complete.</strong></p><p class="muted">Your Certificate of Completion has not been issued yet. It will appear here after the instructor completes the separate certificate-issuance step.</p>';return
+  }
+  if(!rows.length){
+    box.innerHTML='<p><strong>Training status:</strong> '+esc(training&&training.training_complete?'Complete':'In progress')+'</p><p class="muted">No Certificate of Completion has been issued yet.</p>';return
+  }
+  box.innerHTML='<p><span class="tag good">Certificate Issued</span></p><ul>'+rows.map(function(c){return '<li><strong>'+esc(c.certificate_title||c.certificate_number||'Certificate')+'</strong>'+(c.completion_date?' — '+esc(c.completion_date):'')+(' — <a href="certificate-print-preview.html?certificate='+encodeURIComponent(c.certificate_id)+'">View / Print Certificate</a>')+'</li>'}).join('')+'</ul>';
 }
 async function loadIvQa(){
     try{
@@ -361,9 +366,11 @@ form.addEventListener('submit',async function(ev){
       window.ItasaStudentPortal.getLearningWorkspace(email,code),
       window.ItasaStudentPortal.getCertificates(email,code),
       isIvReviewTest?window.ItasaStudentPortal.getIvReviewPreview(email,code):Promise.resolve(null),
-      window.ItasaAssessmentSkills.getStatus(email,code)
+      window.ItasaAssessmentSkills.getStatus(email,code),
+      window.ItasaStudentPortal.getRemediationRequirements(email,code),
+      window.ItasaStudentPortal.getTrainingCompletionStatus(email,code)
     ]);
-    renderLearning(results[1],st,results[3]);renderCertificates(results[2]);renderIvAssessment(results[4]);renderIvSkillsStatus(results[4]);
+    renderLearning(results[1],st,results[3]);renderCertificates(results[2],results[6]);renderIvAssessment(results[4]);renderIvSkillsStatus(results[4]);renderRemediation(results[5],email,code);
     await loadIvQa();
     document.getElementById('login-card').hidden=true;document.getElementById('student-signout').hidden=false;workspace.classList.add('active');showStatus('<strong>Welcome to your IV Learning Space.</strong>','ok');document.getElementById('code').value='';workspace.scrollIntoView({behavior:'smooth',block:'start'});
   }catch(err){console.error(err);showStatus('<strong>Unable to open this learning space right now.</strong> No student records were changed.','error')}
