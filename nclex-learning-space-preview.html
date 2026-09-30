@@ -141,6 +141,7 @@
         <p class="muted"><strong>100% attendance is required for NCLEX course completion.</strong> If you miss a required class, that requirement stays open until you attend an approved make-up opportunity.</p>
         <div id="attendance-summary"><p class="muted">Checking your attendance record…</p></div>
         <div id="attendance-list"></div>
+        <div id="makeup-requirements" style="margin-top:14px"></div>
       </div>
 
       <div class="card">
@@ -162,7 +163,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/student-course-hub-content.js?v=1"></script>
-<script src="js/student-portal-supabase.js?v=20260930-attendance1"></script>
+<script src="js/student-portal-supabase.js?v=20260930-attendance2"></script>
   <script src="js/shared-content-supabase.js"></script>
   <script>
   (function(){
@@ -260,6 +261,49 @@ function classCountdown(row){
       }).join('')||'<p class="muted">No required class sessions are posted yet.</p>';
     }
 
+    function renderMakeups(m,email,code){
+      const box=document.getElementById('makeup-requirements');
+      if(!box)return;
+      if(!m||m.status!=='ok'){box.innerHTML='';return}
+      const reqs=Array.isArray(m.requirements)?m.requirements:[];
+      if(!reqs.length){box.innerHTML='';return}
+      box.innerHTML='<h3>Make-Up Requirements</h3>'+reqs.map(function(r){
+        const opp=Array.isArray(r.opportunities)?r.opportunities:[];
+        const scheduled=String(r.status||'')==='scheduled';
+        let html='<div class="module" data-makeup="'+esc(r.obligation_id)+'"><strong>'+esc(r.title||'Make-up required')+'</strong>';
+        if(scheduled&&r.scheduled_opportunity_id){
+          html+='<p class="muted">A make-up opportunity is reserved. Your class access will appear through the normal protected NCLEX class pathway.</p>';
+        }else if(!opp.length){
+          html+='<p class="muted">Next opportunity not scheduled yet. ITASA will post the next eligible session here automatically.</p>';
+        }else{
+          html+='<p class="muted">Choose the next approved opportunity that works for you.</p>';
+          html+=opp.map(function(o){
+            const when=o.scheduled_start?new Date(o.scheduled_start).toLocaleString('en-US',{timeZone:'America/New_York',month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'}):'';
+            return '<button class="btn secondary" style="margin:6px 8px 0 0" data-reserve-makeup="'+esc(o.training_session_id)+'">'+esc(when)+' · '+esc(o.class_name||'NCLEX Review')+'</button>';
+          }).join('');
+        }
+        return html+'</div>';
+      }).join('');
+
+      box.querySelectorAll('[data-reserve-makeup]').forEach(function(btn){
+        btn.onclick=async function(){
+          const row=btn.closest('[data-makeup]'),ob=row&&row.getAttribute('data-makeup'),sid=btn.getAttribute('data-reserve-makeup');
+          if(!ob||!sid)return;
+          btn.disabled=true;
+          const original=btn.textContent;btn.textContent='Reserving…';
+          try{
+            const r=await window.ItasaStudentPortal.reserveNclexMakeup(email,code,ob,sid);
+            if(!r||r.status!=='reserved')throw new Error((r&&r.status)||'Make-up opportunity could not be reserved.');
+            const refreshed=await window.ItasaStudentPortal.getNclexMakeupOpportunities(email,code);
+            renderMakeups(refreshed,email,code);
+          }catch(e){
+            btn.disabled=false;btn.textContent=original;
+            showStatus('<strong>Make-up reservation was not completed.</strong><br>'+esc(e.message||String(e)),'warn');
+          }
+        };
+      });
+    }
+
     function renderCertificates(certs){
       const box=document.getElementById('completion');
       const rows=Array.isArray(certs&&certs.certificates)?certs.certificates:[];
@@ -330,12 +374,14 @@ function classCountdown(row){
           window.ItasaStudentPortal.getZoomAccess(email,code),
           window.ItasaStudentPortal.getLearningWorkspace(email,code),
           window.ItasaStudentPortal.getCertificates(email,code),
-          window.ItasaStudentPortal.getNclexAttendance(email,code)
+          window.ItasaStudentPortal.getNclexAttendance(email,code),
+          window.ItasaStudentPortal.getNclexMakeupOpportunities(email,code)
         ]);
         renderAccess(results[0]);
         renderWorkspace(results[1],st);
         renderCertificates(results[2]);
         renderAttendance(results[3]);
+        renderMakeups(results[4],email,code);
         await window.ItasaStudentCourseHub.load(document.getElementById('course-hub-items'),email,code);
         await loadAnnouncements();
         document.getElementById('login-card').hidden=true;
