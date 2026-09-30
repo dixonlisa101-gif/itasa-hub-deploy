@@ -459,10 +459,28 @@
     return result.data || { status: 'error', rows: [] };
   }
 
-  async function completeNclexStudent(studentId) {
+  async function getTrainingCompletionControl(enrollmentId) {
     requireOperator();
-    var result = await client.rpc('complete_nclex_student_and_issue_certificate', {
-      p_student_id: studentId
+    var result = await client.rpc('get_training_completion_control', {
+      p_student_enrollment_id: enrollmentId
+    });
+    if (result.error) throw result.error;
+    return result.data || { status: 'error' };
+  }
+
+  async function markTrainingComplete(enrollmentId) {
+    requireOperator();
+    var result = await client.rpc('mark_training_complete', {
+      p_student_enrollment_id: enrollmentId
+    });
+    if (result.error) throw result.error;
+    return result.data || { status: 'error' };
+  }
+
+  async function issueTrainingCertificate(enrollmentId) {
+    requireOperator();
+    var result = await client.rpc('issue_training_certificate', {
+      p_student_enrollment_id: enrollmentId
     });
     if (result.error) throw result.error;
     return result.data || { status: 'error' };
@@ -514,7 +532,9 @@
     fetchAssessmentSkillsRoster: fetchAssessmentSkillsRoster,
     fetchKnowledgeFeed: fetchKnowledgeFeed,
     fetchNclexCompletionRoster: fetchNclexCompletionRoster,
-    completeNclexStudent: completeNclexStudent,
+    getTrainingCompletionControl: getTrainingCompletionControl,
+    markTrainingComplete: markTrainingComplete,
+    issueTrainingCertificate: issueTrainingCertificate,
     fetchItSystemOversight: fetchItSystemOversight,
     onSessionChange: onSessionChange
   };
