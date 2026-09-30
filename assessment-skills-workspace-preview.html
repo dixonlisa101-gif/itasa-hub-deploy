@@ -41,18 +41,67 @@ label{display:block;font-weight:800;margin:.7rem 0 .3rem}input,select,textarea{w
 <div id="roster"></div>
 </div>
 <div id="session-detail" class="card" hidden></div>
+
+<div class="card">
+  <div class="eyebrow">Remediation Scheduling</div>
+  <h2>Approved Remediation Opportunities</h2>
+  <p class="muted">Create approved reassessment dates here. Students with an open remediation requirement will only see dates for their own course.</p>
+  <div id="remediation-admin-status" class="notice" hidden></div>
+  <div class="grid2">
+    <div>
+      <label for="rem-course">Course</label>
+      <select id="rem-course">
+        <option value="rn_skills_refresher_120_hour">Skills Refresher Class</option>
+        <option value="iv_insertion_venipuncture">IV Insertion &amp; Venipuncture</option>
+        <option value="medication_technician_6_hour">Medical Technician Class</option>
+      </select>
+    </div>
+    <div>
+      <label for="rem-validator">Instructor / Validator</label>
+      <select id="rem-validator"></select>
+    </div>
+    <div>
+      <label for="rem-start">Start date &amp; time</label>
+      <input id="rem-start" type="datetime-local">
+    </div>
+    <div>
+      <label for="rem-end">End date &amp; time</label>
+      <input id="rem-end" type="datetime-local">
+    </div>
+    <div>
+      <label for="rem-location">Location / access note</label>
+      <input id="rem-location" placeholder="Example: ITASA skills lab">
+    </div>
+    <div>
+      <label for="rem-mode">Delivery</label>
+      <select id="rem-mode"><option value="in_person">In person</option><option value="zoom">Zoom</option><option value="other">Other</option></select>
+    </div>
+    <div>
+      <label for="rem-capacity">Capacity (optional)</label>
+      <input id="rem-capacity" type="number" min="1" placeholder="Leave blank for no set limit">
+    </div>
+    <div>
+      <label for="rem-title">Title</label>
+      <input id="rem-title" value="Remediation / Reassessment">
+    </div>
+  </div>
+  <label for="rem-instructions">Student instructions (optional)</label>
+  <textarea id="rem-instructions" placeholder="Preparation or arrival instructions"></textarea>
+  <button id="create-remediation-opportunity" class="orange" type="button" style="margin-top:10px">Add Remediation Date</button>
+  <div id="remediation-opportunities-list" style="margin-top:16px"></div>
+</div>
 </section>
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/staff-hub-supabase.js?v=6"></script>
 <script src="js/assessment-skills-staff.js?v=4"></script>
-<script src="js/skills-scheduling-v2.js?v=2"></script>
+<script src="js/skills-scheduling-v2.js?v=20260930-remediation1"></script>
 <script src="js/skills-evidence.js"></script>
 <script>
 (function(){
 'use strict';
-var state={rows:[]};
+var state={rows:[],remediationStaff:[],remediationOpportunities:[]};
 function esc(v){return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
 function show(el,msg,tone){el.hidden=false;el.className='notice '+(tone||'');el.textContent=msg}
 function hide(el){el.hidden=true;el.textContent=''}
@@ -193,11 +242,42 @@ async function openSession(id){
  }catch(e){card.innerHTML='<div class="notice error">'+esc(e.message||String(e))+'</div>'}
 }
 
+function renderRemediationManagement(){
+  var validator=document.getElementById('rem-validator');
+  validator.innerHTML=(state.remediationStaff||[]).map(function(s){
+    return '<option value="'+esc(s.staff_id)+'">'+esc(s.full_name||s.email)+' · '+esc(s.role||'')+'</option>';
+  }).join('')||'<option value="">No active staff available</option>';
+
+  var box=document.getElementById('remediation-opportunities-list');
+  var rows=Array.isArray(state.remediationOpportunities)?state.remediationOpportunities:[];
+  box.innerHTML=rows.length?rows.map(function(o){
+    return '<article class="card course"><div class="toolbar"><div><div class="eyebrow">'+esc(o.course_name||o.offering_key)+'</div><h3>'+esc(o.title||'Remediation / Reassessment')+'</h3></div><div class="push">'+tag(o.status||'open',o.status==='open'?'good':'warn')+'</div></div>'+
+      '<p><strong>'+esc(fmt(o.scheduled_at))+'</strong>'+(o.scheduled_end_at?' – '+esc(fmt(o.scheduled_end_at)):'')+'<br>'+
+      '<span class="muted">'+esc(o.validator_name||'')+(o.location?' · '+esc(o.location):'')+(o.delivery_mode?' · '+esc(o.delivery_mode.replace(/_/g,' ')):'')+'</span></p>'+
+      '<p class="muted">Reserved: '+esc(o.reserved_count||0)+(o.capacity?' of '+esc(o.capacity):'')+'</p></article>';
+  }).join(''):'<p class="muted">No remediation opportunities have been posted yet.</p>';
+}
+
+async function loadRemediationManagement(){
+  try{
+    var all=await Promise.all([
+      window.ItasaSkillsScheduleV2.getRemediationStaffOptions(),
+      window.ItasaSkillsScheduleV2.getRemediationOpportunities()
+    ]);
+    state.remediationStaff=all[0]&&all[0].status==='ok'?(all[0].staff||[]):[];
+    state.remediationOpportunities=all[1]&&all[1].status==='ok'?(all[1].opportunities||[]):[];
+    renderRemediationManagement();
+  }catch(e){
+    show(document.getElementById('remediation-admin-status'),e.message||'Remediation scheduling could not be loaded.','error');
+  }
+}
+
 async function load(){
  try{
    var r=await window.ItasaAssessmentSkillsStaff.fetchRoster();
    state.rows=r&&r.status==='ok'?(r.rows||[]):[];
    renderRoster();
+   await loadRemediationManagement();
  }catch(e){show(document.getElementById('page-status'),e.message||'Assessment and skills data could not be loaded.','error')}
 }
 
@@ -215,6 +295,33 @@ document.getElementById('login-form').onsubmit=async function(ev){
  var r=await window.ItasaStaffHub.signIn(document.getElementById('staff-email').value,document.getElementById('staff-password').value);
  document.getElementById('staff-password').value='';b.disabled=false;b.textContent='Sign In';
  if(!r.ok)show(s,r.error&&r.error.message||'Sign-in failed.','error');else sync();
+};
+document.getElementById('create-remediation-opportunity').onclick=async function(){
+  var b=this,s=document.getElementById('remediation-admin-status');
+  hide(s);
+  var start=document.getElementById('rem-start').value,end=document.getElementById('rem-end').value;
+  if(!start||!end){show(s,'Choose the remediation start and end time first.','error');return}
+  var validator=document.getElementById('rem-validator').value;
+  if(!validator){show(s,'Choose an instructor / validator.','error');return}
+  b.disabled=true;
+  try{
+    var cap=document.getElementById('rem-capacity').value;
+    var r=await window.ItasaSkillsScheduleV2.createRemediationOpportunity({
+      offeringKey:document.getElementById('rem-course').value,
+      validatorStaffId:validator,
+      title:document.getElementById('rem-title').value||'Remediation / Reassessment',
+      startAt:new Date(start).toISOString(),
+      endAt:new Date(end).toISOString(),
+      location:document.getElementById('rem-location').value,
+      deliveryMode:document.getElementById('rem-mode').value,
+      capacity:cap?Number(cap):null,
+      instructions:document.getElementById('rem-instructions').value
+    });
+    if(!r||r.status!=='created')throw new Error((r&&r.status)||'Remediation date could not be created.');
+    show(s,'Approved remediation date added. Eligible students will see it automatically.','good');
+    await loadRemediationManagement();
+  }catch(e){show(s,e.message||String(e),'error')}
+  finally{b.disabled=false}
 };
 document.getElementById('refresh').onclick=load;
 document.getElementById('signout').onclick=async function(){await window.ItasaStaffHub.signOut();sync()};
