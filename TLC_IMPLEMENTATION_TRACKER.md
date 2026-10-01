@@ -93,6 +93,8 @@ Status key: ⬜ Not Started · 🟨 In Progress · 🟩 Built · ✅ Tested/Veri
 - 🟩 Create Access Recovery Exception only when self-service fails
 - 🟩 Admin/IT queue with Approve & Reissue Access / Deny / Needs Review
 - 🟩 Approved recovery updates email, reissues access, closes case, logs audit event
+- 🟩 Automated sender corrected to the connected ITASA mailbox identity: lisa@innovationtrainingandstaffingagency.com
+- ⏸ Live recovery-email verification pending Resend verification/authorization of innovationtrainingandstaffingagency.com
 
 ## 8. Instructor Simplicity
 - 🟨 Goal: Marie teaches; TLC handles routine administration
@@ -122,6 +124,6 @@ For every feature:
 3. 🟩 Shared remediation scheduling engine — built; end-to-end review-account verification pending
 4. 🟨 Two-step training completion / COC controls — built; end-to-end review-account verification pending
 5. 🟨 Five-year retention/purge automation — built and automation test passed with no due files; live evidence-file lifecycle verification pending
-6. 🟨 Free student access-recovery system — built; live email-delivery verification depends on the existing Resend/domain release hold
+6. 🟨 Free student access-recovery system — built; sender-domain mismatch corrected; live delivery remains blocked until Resend verifies/authorizes innovationtrainingandstaffingagency.com and a controlled delivery test passes
 7. 🟨 Admin/IT queues + audit viewer — recovery queue and audit filters built; remaining exception/QA work pending
 8. ⬜ Final cross-course QA and live verification
