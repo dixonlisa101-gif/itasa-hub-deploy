@@ -213,7 +213,7 @@ function knowledgeItemHtml(item){
 function renderKnowledgeFeed(){
   var updates=Array.isArray(state.knowledge)?state.knowledge:[];
   document.getElementById('instructor-updates-feed').innerHTML=
-    (updates.length?updates.slice(0,20).map(knowledgeItemHtml).join(''):'<p class="muted">No current clinical/professional updates are available.</p>')+
+    (updates.length?updates.map(knowledgeItemHtml).join(''):'<p class="muted">No current clinical/professional updates are available.</p>')+
     '<p class="knowledge-meta">Current updates are separate from the course regulatory library and refresh from ITASA knowledge sources.</p>';
 
   var assign=state.readiness&&Array.isArray(state.readiness.assignments)?state.readiness.assignments:[];
@@ -602,7 +602,7 @@ async function load(){
       window.ItasaStaffHub.fetchStudents(),
       window.ItasaSharedContentSupabase.fetchCollection('classes'),
       window.ItasaStaffHub.fetchClassAccess(),
-      window.ItasaStaffHub.fetchKnowledgeFeed('updates',null,30),
+      window.ItasaStaffHub.fetchKnowledgeFeed('updates',null,300),
       window.ItasaStaffHub.fetchNclexCompletionRoster(),
       window.ItasaStaffHub.fetchOneOnOneRequests(),
       window.ItasaStaffHub.fetchAssessmentSkillsRoster(),
