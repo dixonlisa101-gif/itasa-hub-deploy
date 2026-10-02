@@ -109,6 +109,8 @@ Status key: ⬜ Not Started · 🟨 In Progress · 🟩 Built · ✅ Tested/Veri
 - 🟩 Keep exceptions in small Admin/IT action queues
 - ✅ Clinical & Professional Updates feed now loads the full eligible current set instead of silently capping at 20; Florida authority-source ingestion type mismatch corrected and fresh collection verified
 - ✅ Student Current Events now requests up to 50 course-relevant items, filters out static regulatory/library references, and retains true safety/professional/legislative/evidence updates
+- ✅ Student Current Events uses a 30-day visibility window while retaining older records in TLC history/resources
+- ✅ AHCA Health Quality Assurance archive is parsed into individual dated alerts for students; archive-container wall-of-text is suppressed
 - ✅ Web-monitor deduplication hardened: one current record per monitored official page; prior duplicate snapshots archived, not deleted
 - ✅ Stale AHCA regulatory PDF links replaced with current Florida Administrative Code rule pages for 59A-36.008 and 59A-36.011
 
