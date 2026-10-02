@@ -351,7 +351,7 @@
     };
 
     function pricingMarkup(id,row,forForm){
-      if(id==='iv')return '<div class="notice"><strong>Registration and payment are temporarily unavailable for this course.</strong><br><span class="muted">Course information remains available while ITASA completes required approvals.</span></div>';
+      if(id==='iv')return '<div class="notice"><strong>Registration and payment are temporarily unavailable for this course.</strong><br><span class="muted">Please check back for updates.</span></div>';
       var hub=window.ItasaPublicHubVNext;
       var cfg=hub.paymentConfig[id];
       if(!cfg)return '<p class="muted">Pricing is not available.</p>';
@@ -428,7 +428,7 @@
                 : (row.delivery_method||'')
         )+'</p>'+
         certificate+
-        '<details><summary>View Class Pricing &amp; Payment Options</summary><div style="margin-top:10px">'+pricingMarkup(id,row,false)+'<div class="btnrow">'+(id==='iv'?'<span class="tag">Registration Temporarily Unavailable</span>':(classRegistrationOpen(row)?'<button class="btn" type="button" data-register-course="'+esc(id)+'">Register for This Course</button>':'<span class="tag">Registration Closed</span>'))+'</div></div></details>'+
+        '<details><summary>View Class Pricing &amp; Payment Options</summary><div style="margin-top:10px">'+pricingMarkup(id,row,false)+'<div class="btnrow">'+(id==='iv'?'':(classRegistrationOpen(row)?'<button class="btn" type="button" data-register-course="'+esc(id)+'">Register for This Course</button>':'<span class="tag">Registration Closed</span>'))+'</div></div></details>'+
       '</div>';
     }
 
