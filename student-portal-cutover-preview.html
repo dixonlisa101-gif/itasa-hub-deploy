@@ -204,7 +204,7 @@ function classCountdown(row){
       }).join('');
     }
     async function loadStudentFeedsDirect(email,code){
-      var feed=await window.ItasaStudentPortal.getHubFeeds(email,code,10);
+      var feed=await window.ItasaStudentPortal.getHubFeeds(email,code,50);
       if(feed&&feed.status==='ok')return feed;
       try{
         var c=window.__itasaStudentPortalClient;
@@ -212,7 +212,7 @@ function classCountdown(row){
           var r=await c.rpc('get_my_student_hub_feeds',{
             p_email:(email||'').trim().toLowerCase(),
             p_access_code:(code||'').trim(),
-            p_limit:10
+            p_limit:50
           });
           if(!r.error&&r.data)return r.data;
         }
@@ -225,7 +225,7 @@ function classCountdown(row){
         events.innerHTML='<p class="muted">Current healthcare updates are temporarily unavailable.</p>';
         return;
       }
-      var eventItems=Array.isArray(feed.current_events)?feed.current_events:[];
+      var eventItems=(Array.isArray(feed.current_events)?feed.current_events:[]).filter(function(item){return ['safety_alert','professional_update','policy_legislative_development','peer_reviewed_evidence'].indexOf(item.information_type)!==-1;});
       var count=document.getElementById('current-events-count');
       if(count)count.textContent=eventItems.length?'('+eventItems.length+')':'';
       events.innerHTML=renderFeedItems(eventItems,'events')+
