@@ -108,6 +108,9 @@ Status key: ⬜ Not Started · 🟨 In Progress · 🟩 Built · ✅ Tested/Veri
 - 🟩 Minimize manual access-recovery work
 - 🟩 Keep exceptions in small Admin/IT action queues
 - ✅ Clinical & Professional Updates feed now loads the full eligible current set instead of silently capping at 20; Florida authority-source ingestion type mismatch corrected and fresh collection verified
+- ✅ Student Current Events now requests up to 50 course-relevant items, filters out static regulatory/library references, and retains true safety/professional/legislative/evidence updates
+- ✅ Web-monitor deduplication hardened: one current record per monitored official page; prior duplicate snapshots archived, not deleted
+- ✅ Stale AHCA regulatory PDF links replaced with current Florida Administrative Code rule pages for 59A-36.008 and 59A-36.011
 
 ## 9. Verification Discipline
 For every feature:
