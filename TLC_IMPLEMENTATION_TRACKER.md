@@ -107,6 +107,7 @@ Status key: ⬜ Not Started · 🟨 In Progress · 🟩 Built · ✅ Tested/Veri
 - 🟩 Minimize manual remediation scheduling
 - 🟩 Minimize manual access-recovery work
 - 🟩 Keep exceptions in small Admin/IT action queues
+- ✅ Clinical & Professional Updates feed now loads the full eligible current set instead of silently capping at 20; Florida authority-source ingestion type mismatch corrected and fresh collection verified
 
 ## 9. Verification Discipline
 For every feature:
