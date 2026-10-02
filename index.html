@@ -123,7 +123,7 @@
         <div class="card">
           <div class="eyebrow">Your next step starts here</div>
           <h2>Your place to learn, prepare, and keep moving forward</h2>
-          <p class="lead">ITASA uses the Learning Center to keep each student's next step clear. NCLEX Review and Skills Refresher use scheduled Zoom instruction. IV Insertion &amp; Venipuncture and Medication Technician Class use their assigned learning and in-person competency pathways rather than a Zoom classroom.</p>
+          <p class="lead">ITASA uses the Learning Center to keep each student's next step clear. NCLEX Review and Skills Refresher use scheduled Zoom instruction. IV Insertion &amp; Venipuncture and Medication Technician Class use their assigned online learning and required in-person competency pathways.</p>
           <ul class="welcome-list">
             <li>Use your Learning Center for the access, materials, assignments, testing, and preparation that belong to your class</li>
             <li>Complete required in-person skills check-offs when your class includes them</li>
@@ -251,7 +251,7 @@
     <section id="register">
       <div class="eyebrow">Direct Registration</div>
       <h2>Register for an ITASA Course</h2>
-      <p class="lead">Select one course, review its class pricing and payment options, then complete your registration. Registration remains open through the first day of class, subject to availability.</p>
+      <p class="lead">Select one course, review its class pricing and payment options, then complete your registration. For courses currently open for registration, registration remains available through the first day of class, subject to availability.</p>
 
       <div class="card form-card">
         <form id="registration-form">
@@ -286,7 +286,7 @@
 
             <div class="full disclaimer">
               <h3>ITASA Learning Center Disclaimer</h3>
-              <p>ITASA Learning Center courses, including the NCLEX Review Course, Skills Refresher Course, and IV Insertion &amp; Venipuncture Course, are provided for educational and training purposes only.</p>
+              <p>ITASA Learning Center courses, including the NCLEX Review Course, Skills Refresher Course, IV Insertion &amp; Venipuncture Course, and Medication Technician Class, are provided for educational and training purposes only.</p>
               <p>Completion of an ITASA class does not guarantee NCLEX success, nursing licensure, employment, satisfaction of any remediation or re-entry requirements imposed by a licensing authority, or authorization to practice nursing or perform clinical procedures.</p>
               <p>Skills training does not replace state licensing requirements, clinical experience, employer orientation, or work-specific competency validation.</p>
               <p>Students are responsible for ensuring that the education and training they receive meet applicable state laws, Board of Nursing requirements, employer policies, and professional scope-of-practice standards.</p>
@@ -422,7 +422,7 @@
           id==='review'
             ? 'Live online instruction via Zoom'
             : (id==='skills'||id==='iv')
-              ? 'Zoom-based instruction + required in-person skills check-off. Location details are provided after registration and payment confirmation. Arrive on time for the in-person phase.'
+              ? (id==='skills' ? 'Zoom-based instruction + required in-person skills check-off. Location details are provided after registration and payment confirmation. Arrive on time for the in-person phase.' : 'Online learning + required in-person skills check-off. Location details are provided after registration and payment confirmation. Arrive on time for the in-person phase.')
               : id==='medtech'
                 ? 'Online learning with required in-person physical and verbal skills validation.'
                 : (row.delivery_method||'')
