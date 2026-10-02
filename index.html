@@ -297,7 +297,7 @@
             <div class="full policy"><h3>ITASA Payment Policy</h3><p><strong>All payments are final and non-refundable.</strong></p></div>
             <div class="full"><label class="ack"><input type="checkbox" name="payment_policy_ack" required><span>I acknowledge and agree to the ITASA Payment Policy above.</span></label></div>
 
-            <div class="full"><label class="ack"><input type="checkbox" name="first_day_full_payment_ack" required><span>I understand that if I register on the first day of class, I must pay the full class price at registration.</span></label></div>
+            <div class="full" id="first-day-payment-ack"><label class="ack"><input type="checkbox" name="first_day_full_payment_ack"><span>I understand that if I register on the first day of a scheduled class, I must pay the full class price at registration.</span></label></div>
           </div>
 
           <button class="btn" type="submit" style="margin-top:16px">Complete Registration</button>
@@ -452,7 +452,15 @@
       paymentBox.innerHTML=pricingMarkup(id,row,true);
       pricingDetails.open=true;
     }
-    regCourse.addEventListener('change',refreshPayments);
+    function refreshFirstDayAck(){
+      var wrap=document.getElementById('first-day-payment-ack');
+      var input=wrap&&wrap.querySelector('input[name="first_day_full_payment_ack"]');
+      var scheduled=regCourse.value && regCourse.value!=='medtech';
+      if(wrap)wrap.hidden=!scheduled;
+      if(input){input.required=!!scheduled;if(!scheduled)input.checked=false}
+    }
+    regCourse.addEventListener('change',function(){refreshPayments();refreshFirstDayAck()});
+    refreshFirstDayAck();
 
     document.querySelectorAll('[data-interest]').forEach(function(a){
       a.addEventListener('click',function(){document.getElementById('info-interest').value=a.dataset.interest||'general'});
