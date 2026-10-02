@@ -133,3 +133,5 @@ For every feature:
 6. 🟨 Free student access-recovery system — built; sender-domain mismatch corrected; live delivery remains blocked until Resend verifies/authorizes innovationtrainingandstaffingagency.com and a controlled delivery test passes
 7. 🟨 Admin/IT queues + audit viewer — recovery queue and audit filters built; remaining exception/QA work pending
 8. ⬜ Final cross-course QA and live verification
+
+- 🟨 Remediation positive-path QA: core workflow is built and negative-state verified. Full rollback test is currently blocked by valid Med Tech production prerequisites: online didactic completion and validator clearance. Do not bypass these controls; complete QA with a properly cleared disposable test instructor/enrollment.
