@@ -388,7 +388,7 @@
       return [obj.year,obj.month,obj.day].join('-');
     }
     function classCountdown(row){
-      if(!row||!row.start_date)return 'Class start date will be announced by ITASA.';
+      if(!row||!row.start_date)return row&&row.program_id==='medtech' ? 'Self-paced online learning · in-person skills validation scheduled after online completion' : 'Class start date will be announced by ITASA.';
       var today=easternDateKey(new Date()),start=easternDateKey(row.start_date);
       if(!today||!start)return '';
       var a=new Date(today+'T12:00:00Z'),b=new Date(start+'T12:00:00Z');
@@ -417,7 +417,7 @@
         '<h3>'+esc(title)+'</h3>'+
         '<p><span class="tag">'+esc(id==='iv'?'Registration temporarily unavailable':classCountdown(row))+'</span></p>'+
         '<p>'+esc(purpose[id]||'')+'</p>'+
-        '<p class="muted">'+esc(id==='medtech'?String(row.notes||'').replace('Class start date will be announced by ITASA.','').trim():(row.notes||''))+'</p>'+
+        '<p class="muted">'+esc(id==='medtech'?(String(row.notes||'').replace('Class start date will be announced by ITASA.','').trim()||'Registration is open. Complete the online requirements at your own pace. Your required in-person skills validation will be scheduled after the online requirements are complete.'):(row.notes||''))+'</p>'+
         '<p class="muted"><strong>Format:</strong> '+esc(
           id==='review'
             ? 'Live online instruction via Zoom'
@@ -435,7 +435,7 @@
     async function loadClasses(){
       try{
         classes=await window.ItasaPublicHubVNext.getClasses();
-        if(!classes.some(function(c){return c.program_id==='medtech'}))classes.push({program_id:'medtech',name:'Medication Technician Class',registration_status:'open',start_date:null,notes:'Registration is open.'});
+        if(!classes.some(function(c){return c.program_id==='medtech'}))classes.push({program_id:'medtech',name:'Medication Technician Class',registration_status:'open',start_date:null,notes:'Registration is open. Complete the online requirements at your own pace. Your required in-person skills validation will be scheduled after the online requirements are complete.'});
         courseGrid.innerHTML=classes.map(courseCard).join('');
         courseGrid.querySelectorAll('[data-register-course]').forEach(function(b){b.onclick=function(){regCourse.value=b.dataset.registerCourse;refreshPayments();location.hash='#register'}});
         courseGrid.querySelectorAll('[data-info-course]').forEach(function(b){b.onclick=function(){document.getElementById('info-interest').value=b.dataset.infoCourse;location.hash='#information-session'}});
