@@ -123,7 +123,7 @@
         <div class="card">
           <div class="eyebrow">Your next step starts here</div>
           <h2>Your place to learn, prepare, and keep moving forward</h2>
-          <p class="lead">ITASA uses the Learning Center to keep each student's next step clear. NCLEX Review and Skills Refresher use scheduled Zoom instruction. IV Insertion &amp; Venipuncture and Medical Technician Class use their assigned learning and in-person competency pathways rather than a Zoom classroom.</p>
+          <p class="lead">ITASA uses the Learning Center to keep each student's next step clear. NCLEX Review and Skills Refresher use scheduled Zoom instruction. IV Insertion &amp; Venipuncture and Medication Technician Class use their assigned learning and in-person competency pathways rather than a Zoom classroom.</p>
           <ul class="welcome-list">
             <li>Use your Learning Center for the access, materials, assignments, testing, and preparation that belong to your class</li>
             <li>Complete required in-person skills check-offs when your class includes them</li>
@@ -181,7 +181,7 @@
       <p class="lead">Review the class that fits your goals. Pricing remains closed until you choose to view it.</p>
       <div class="card soft" style="margin:14px 0 20px">
         <div class="eyebrow">How ITASA classes are delivered</div>
-        <p><strong>Online learning is delivered through Zoom.</strong> Some classes also include a required in-person skills check-off or hands-on competency phase.</p>
+        <p><strong>ITASA class delivery depends on the course.</strong> NCLEX Review and Skills Refresher use scheduled Zoom instruction. IV Insertion &amp; Venipuncture and Medication Technician use their assigned online learning and required in-person competency pathways.</p>
         <p class="muted" style="margin-bottom:0">When an in-person skills phase is required, the location is provided only after registration and payment confirmation. <strong>Students are expected to arrive on time.</strong></p>
       </div>
       <div id="course-grid" class="course-grid">
@@ -234,8 +234,8 @@
                 <option value="general">Not sure yet</option>
                 <option value="review">NCLEX Review & Test-Taking Strategies</option>
                 <option value="skills">Skills Refresher Class</option>
-                <option value="iv" disabled>IV Insertion & Venipuncture — Registration temporarily unavailable</option>
-                <option value="medication_technician">Medical Technician Class</option>
+                <option value="iv">IV Insertion & Venipuncture</option>
+                <option value="medication_technician">Medication Technician Class</option>
               </select>
             </div>
             <div class="full"><label for="info-notes">What would you like to learn more about?</label><textarea id="info-notes" name="support_notes"></textarea></div>
@@ -268,7 +268,7 @@
                 <option value="review">NCLEX Review & Test-Taking Strategies</option>
                 <option value="skills">Skills Refresher Class</option>
                 <option value="iv">IV Insertion & Venipuncture</option>
-                <option value="medtech">Medical Technician Class</option>
+                <option value="medtech">Medication Technician Class</option>
               </select>
             </div>
 
@@ -286,7 +286,7 @@
 
             <div class="full disclaimer">
               <h3>ITASA Learning Center Disclaimer</h3>
-              <p>ITASA Learning Center courses, including the NCLEX Review Course, Skills Refresher Course, and IV Insertion &amp; Venipuncture Certification Course, are provided for educational and training purposes only.</p>
+              <p>ITASA Learning Center courses, including the NCLEX Review Course, Skills Refresher Course, and IV Insertion &amp; Venipuncture Course, are provided for educational and training purposes only.</p>
               <p>Completion of an ITASA class does not guarantee NCLEX success, nursing licensure, employment, satisfaction of any remediation or re-entry requirements imposed by a licensing authority, or authorization to practice nursing or perform clinical procedures.</p>
               <p>Skills training does not replace state licensing requirements, clinical experience, employer orientation, or work-specific competency validation.</p>
               <p>Students are responsible for ensuring that the education and training they receive meet applicable state laws, Board of Nursing requirements, employer policies, and professional scope-of-practice standards.</p>
@@ -393,7 +393,7 @@
       if(!today||!start)return '';
       var a=new Date(today+'T12:00:00Z'),b=new Date(start+'T12:00:00Z');
       var days=Math.round((b-a)/86400000);
-      var open=String(row.registration_status||'').toLowerCase()==='open';
+      var open=String(row.registration_status||'').toLowerCase()==='open' && row.program_id!=='iv';
       if(days>1)return (open?'Registration open · ':'')+days+' days until class begins';
       if(days===1)return (open?'Registration open · ':'')+'Class begins tomorrow';
       if(days===0)return 'First day of class today'+(open?' · Registration open today, subject to availability':'');
@@ -409,13 +409,13 @@
 
     function courseCard(row){
       var id=row.program_id;
-      var title=id==='review'?'NCLEX Review & Test-Taking Strategies':id==='skills'?'Skills Refresher Class':id==='iv'?'IV Insertion & Venipuncture':'Medical Technician Class';
+      var title=id==='review'?'NCLEX Review & Test-Taking Strategies':id==='skills'?'Skills Refresher Class':id==='iv'?'IV Insertion & Venipuncture':'Medication Technician Class';
       var certificate=id==='skills'||id==='iv'||id==='medtech'
         ?'<p class="muted">Certificate of Completion provided upon successful completion of course requirements. CEU/CNE approval is not currently being advertised.</p>':'';
       return '<div class="card course-card">'+
-        '<span class="tag">'+esc(row.registration_status||'')+'</span>'+
+        '<span class="tag">'+esc(id==='iv'?'temporarily unavailable':(row.registration_status||''))+'</span>'+
         '<h3>'+esc(title)+'</h3>'+
-        '<p><span class="tag">'+esc(classCountdown(row))+'</span></p>'+
+        '<p><span class="tag">'+esc(id==='iv'?'Registration temporarily unavailable':classCountdown(row))+'</span></p>'+
         '<p>'+esc(purpose[id]||'')+'</p>'+
         '<p class="muted">'+esc(row.notes||'')+'</p>'+
         '<p class="muted"><strong>Format:</strong> '+esc(
@@ -435,7 +435,7 @@
     async function loadClasses(){
       try{
         classes=await window.ItasaPublicHubVNext.getClasses();
-        if(!classes.some(function(c){return c.program_id==='medtech'}))classes.push({program_id:'medtech',name:'Medical Technician Class',registration_status:'open',start_date:null,notes:'Registration is open. Class start date will be announced by ITASA.'});
+        if(!classes.some(function(c){return c.program_id==='medtech'}))classes.push({program_id:'medtech',name:'Medication Technician Class',registration_status:'open',start_date:null,notes:'Registration is open. Class start date will be announced by ITASA.'});
         courseGrid.innerHTML=classes.map(courseCard).join('');
         courseGrid.querySelectorAll('[data-register-course]').forEach(function(b){b.onclick=function(){regCourse.value=b.dataset.registerCourse;refreshPayments();location.hash='#register'}});
         courseGrid.querySelectorAll('[data-info-course]').forEach(function(b){b.onclick=function(){document.getElementById('info-interest').value=b.dataset.infoCourse;location.hash='#information-session'}});
