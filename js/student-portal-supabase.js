@@ -424,7 +424,7 @@
       var result = await client.rpc('get_my_student_hub_feeds', {
         p_email: (email || '').trim().toLowerCase(),
         p_access_code: (accessCode || '').trim(),
-        p_limit: Number(limit || 10)
+        p_limit: Number(limit || 50)
       });
       if (result.error) {
         console.error('ITASA student portal: get_my_student_hub_feeds failed', result.error);
