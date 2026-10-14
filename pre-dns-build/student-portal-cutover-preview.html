@@ -520,13 +520,13 @@ function classCountdown(row){
         var requestLink=document.getElementById('personalized-request-link');
         if(requestLink){
           var fromMap={review:'nclex',skills:'skills',iv:'iv',medtech:'medtech'};
-          var fromKey=fromMap[st.program_id]||'';
+          var fromKey=fromMap[st.programId]||'';
           requestLink.href='one-on-one-request-preview.html'+(fromKey?'?from='+encodeURIComponent(fromKey):'');
         }
         await classesReady;
         renderSpace(st);
         const feed=await loadStudentFeedsDirect(email,code);
-        renderStudentFeeds(feed,st.program_id);
+        renderStudentFeeds(feed,st.programId);
         const hubItems=await window.ItasaStudentPortal.getCourseHubItems(email,code);
         renderCourseHubItems(hubItems);
         loginCard.hidden=true;
