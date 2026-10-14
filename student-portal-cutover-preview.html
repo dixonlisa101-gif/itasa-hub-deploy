@@ -222,14 +222,31 @@ function classCountdown(row){
     function isStudentReadyCurrentEvent(item){
       if(!item||['safety_alert','professional_update','policy_legislative_development','peer_reviewed_evidence'].indexOf(item.information_type)===-1)return false;
       var title=String(item.title||'').trim();
-      var body=String(item.body||item.summary||'').replace(/\\s+/g,' ').trim();
-      var url=String(item.resource_url||item.url||'').toLowerCase();
+      var body=String(item.body||item.summary||'').replace(/\s+/g,' ').trim();
+      var url=String(item.resource_url||item.url||'').trim().toLowerCase();
+      var titleLower=title.toLowerCase();
       var combined=(title+' '+body).toLowerCase();
-      var genericTitle=/^(home|homepage|welcome|practitioner legislative updates)(\\s*-|$)/i.test(title);
-      var navigationLeak=/skip to content|county health departments|file a complaint|verify a license|status of application|processing times|how you know|official websites use \\.gov|\\$refs\\.|selected\\.scrollintoview/i.test(combined);
-      var knownIndexPage=url.indexOf('/licensing-regulations/medical-quality-assurance/2024-legislation/')!==-1||/floridasnursing\\.gov\\/?$/.test(url);
-      var unusablyLong=body.length>1400;
-      return !!title&&!!body&&!genericTitle&&!navigationLeak&&!knownIndexPage&&!unusablyLong;
+      var blockedTitle=
+        titleLower==='practitioner legislative updates - florida department of health' ||
+        titleLower==='homepage - florida board of nursing' ||
+        titleLower==='florida board of nursing' ||
+        titleLower==='homepage';
+      var blockedUrl=
+        url==='https://floridasnursing.gov/' ||
+        url==='https://floridasnursing.gov' ||
+        url.indexOf('floridahealth.gov/licensing-regulations/medical-quality-assurance/2024-legislation')!==-1;
+      var navigationLeak=
+        combined.indexOf('skip to content')!==-1 ||
+        combined.indexOf('county health departments')!==-1 ||
+        combined.indexOf('file a complaint')!==-1 ||
+        combined.indexOf('verify a license')!==-1 ||
+        combined.indexOf('status of application')!==-1 ||
+        combined.indexOf('processing times')!==-1 ||
+        combined.indexOf('official websites use .gov')!==-1 ||
+        combined.indexOf('$refs.')!==-1 ||
+        combined.indexOf('selected.scrollintoview')!==-1;
+      var unusablyLong=body.length>1200;
+      return !!title&&!!body&&!blockedTitle&&!blockedUrl&&!navigationLeak&&!unusablyLong;
     }
     function renderStudentFeeds(feed){
       var events=document.getElementById('hub-events-feed');
