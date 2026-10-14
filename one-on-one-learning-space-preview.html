@@ -35,6 +35,27 @@ var KEY='sb_publishable_yXPEpK3gC5p91PH8-tmJgw_BuM8Y5Zv';
 var client=window.supabase.createClient(URL,KEY,{auth:{persistSession:false,autoRefreshToken:false}});
 function esc(v){return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
 function showStatus(msg){var s=document.getElementById('login-status');s.hidden=false;s.textContent=msg}
+function openReviewSpace(){
+  document.getElementById('login-card').hidden=true;
+  document.getElementById('space').hidden=false;
+  document.getElementById('student-name').textContent='Review Preview — Approved Personalized Learning Session';
+  document.getElementById('summary').innerHTML=
+    '<div class="notice" style="margin-bottom:14px"><strong>REVIEW ONLY.</strong> This preview does not create an appointment, collect payment, or grant Zoom access.</div>'+
+    '<p><strong>Status:</strong> <span class="status">Approved — awaiting payment</span></p>'+
+    '<div class="grid2">'+
+    '<div><strong>Confirmed appointment</strong><br>October 20, 2026 · 2:00 PM ET</div>'+
+    '<div><strong>Session length</strong><br>1 hour</div>'+
+    '<div><strong>Session amount</strong><br>$100</div>'+
+    '<div><strong>Support requested</strong><br>Medication calculations, prioritization, and test-taking strategies</div>'+
+    '</div>';
+  var pay=document.getElementById('payment-card');
+  pay.hidden=false;
+  pay.innerHTML='<div class="eyebrow">Payment</div><h2>Your payment step</h2><p>Your appointment has been confirmed. Complete the required payment before session access is released.</p><button class="btn orange" type="button" disabled>Secure Payment — Review Only</button>';
+  var access=document.getElementById('access-card');
+  access.hidden=false;
+  access.innerHTML='<div class="eyebrow">Session Access</div><h2>Zoom access</h2><p class="muted">Zoom access remains protected until the confirmed appointment and required payment conditions are satisfied. No live meeting credentials are exposed in review mode.</p>';
+  var s=document.getElementById('login-status'); if(s)s.hidden=true;
+}
 async function openSpace(){
  var email=document.getElementById('email').value.trim().toLowerCase(),code=document.getElementById('code').value.trim(),btn=document.getElementById('signin');
  btn.disabled=true;showStatus('Checking your 1:1 access…');
@@ -64,6 +85,8 @@ async function openSpace(){
  finally{btn.disabled=false}
 }
 document.getElementById('signin').onclick=openSpace;
+var params=new URLSearchParams(window.location.search);
+if(params.get('review')==='1')openReviewSpace();
 })();
 </script>
 </body></html>
