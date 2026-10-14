@@ -411,7 +411,7 @@
       var id=row.program_id;
       var title=id==='review'?'NCLEX Review & Test-Taking Strategies':id==='skills'?'Skills Refresher Class':id==='iv'?'IV Insertion & Venipuncture':'Medication Technician Class';
       var certificate=id==='skills'||id==='iv'||id==='medtech'
-        ?'<p class="muted">Certificate of Completion provided upon successful completion of course requirements. CEU/CNE approval is not currently being advertised.</p>':'';
+        ?'<p class="muted">Certificate of Completion provided upon successful completion of course requirements.</p>':'';
       return '<div class="card course-card">'+
         '<span class="tag">'+esc(id==='iv'?'temporarily unavailable':(row.registration_status||''))+'</span>'+
         '<h3>'+esc(title)+'</h3>'+
