@@ -270,6 +270,108 @@ function classCountdown(row){
         scope:'This section shows current updates relevant to your ITASA course.'
       };
     }
+    function verifiedCourseCurrentEvents(programId){
+      if(programId==='review')return [
+        {
+          information_type:'policy_legislative_development',
+          course_label:'NCLEX / Licensure',
+          title:'Florida Board of Nursing: Licensing by Exam Fees',
+          body:'Florida Board of Nursing lists the current application and licensing fee and the Pearson VUE NCLEX testing fee for licensure by examination.',
+          source:{name:'Florida Board of Nursing'},
+          published_at:'2026-10-08',
+          resource_url:'https://floridasnursing.gov/author/kyle-sumner/',
+          resource_label:'Open official source'
+        },
+        {
+          information_type:'professional_update',
+          course_label:'NCLEX / Nursing Practice',
+          title:'Early Prescription Refills Permitted Under State of Emergency',
+          body:'Florida authorized up to a 30-day emergency refill of maintenance medication for people in areas covered by the October state of emergency.',
+          source:{name:'Florida Board of Nursing'},
+          published_at:'2026-10-08',
+          resource_url:'https://floridasnursing.gov/hurricane-isaias-early-prescription-refills-permitted-under-state-of-emergency/',
+          resource_label:'Open official source'
+        },
+        {
+          information_type:'safety_alert',
+          course_label:'NCLEX / Patient Safety',
+          title:'FDA Recall: Argatroban Injection',
+          body:'Par Health recalled multiple lots of Argatroban Injection because particulate matter was identified in the product. The recall was posted by FDA on October 14, 2026.',
+          source:{name:'U.S. Food and Drug Administration'},
+          published_at:'2026-10-14',
+          resource_url:'https://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts/par-health-issues-voluntary-nationwide-recall-argatroban-injection-due-presence-particulate-matter',
+          resource_label:'Open FDA recall'
+        }
+      ];
+      if(programId==='iv')return [
+        {
+          information_type:'safety_alert',
+          course_label:'IV Therapy',
+          title:'FDA Recall: Argatroban Injection',
+          body:'Par Health recalled multiple lots of Argatroban Injection because particulate matter was identified in the product. This is directly relevant to IV medication safety and product inspection before administration.',
+          source:{name:'U.S. Food and Drug Administration'},
+          published_at:'2026-10-14',
+          resource_url:'https://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts/par-health-issues-voluntary-nationwide-recall-argatroban-injection-due-presence-particulate-matter',
+          resource_label:'Open FDA recall'
+        },
+        {
+          information_type:'safety_alert',
+          course_label:'IV Therapy',
+          title:'FDA Recall: Brevital Sodium for Injection',
+          body:'Two lots of Brevital Sodium 500 mg/vial for injection were recalled after particulate matter was identified. The FDA posted the recall on October 9, 2026.',
+          source:{name:'U.S. Food and Drug Administration'},
+          published_at:'2026-10-09',
+          resource_url:'https://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts/par-health-issues-voluntary-nationwide-recall-two-lots-brevitalr-sodium-500-mgvial-civ-methohexital',
+          resource_label:'Open FDA recall'
+        }
+      ];
+      if(programId==='medtech')return [
+        {
+          information_type:'professional_update',
+          course_label:'Medication Technician',
+          title:'Early Prescription Refills Permitted Under State of Emergency',
+          body:'Florida authorized up to a 30-day emergency refill of maintenance medication for people in areas covered by the October state of emergency.',
+          source:{name:'Florida Board of Nursing'},
+          published_at:'2026-10-08',
+          resource_url:'https://floridasnursing.gov/hurricane-isaias-early-prescription-refills-permitted-under-state-of-emergency/',
+          resource_label:'Open official source'
+        },
+        {
+          information_type:'safety_alert',
+          course_label:'Medication Technician',
+          title:'FDA Recall: Argatroban Injection',
+          body:'FDA posted a recall of multiple lots of Argatroban Injection because particulate matter was identified. This is a current medication-safety alert.',
+          source:{name:'U.S. Food and Drug Administration'},
+          published_at:'2026-10-14',
+          resource_url:'https://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts/par-health-issues-voluntary-nationwide-recall-argatroban-injection-due-presence-particulate-matter',
+          resource_label:'Open FDA recall'
+        }
+      ];
+      if(programId==='skills')return [
+        {
+          information_type:'safety_alert',
+          course_label:'Skills Refresher',
+          title:'FDA Recall: Argatroban Injection',
+          body:'FDA posted a recall of multiple lots of Argatroban Injection because particulate matter was identified, reinforcing medication-safety and inspection practices used in bedside nursing care.',
+          source:{name:'U.S. Food and Drug Administration'},
+          published_at:'2026-10-14',
+          resource_url:'https://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts/par-health-issues-voluntary-nationwide-recall-argatroban-injection-due-presence-particulate-matter',
+          resource_label:'Open FDA recall'
+        },
+        {
+          information_type:'safety_alert',
+          course_label:'Skills Refresher',
+          title:'FDA Recall: Brevital Sodium for Injection',
+          body:'FDA posted a recall of two lots of Brevital Sodium for Injection after particulate matter was identified, relevant to safe medication preparation and administration.',
+          source:{name:'U.S. Food and Drug Administration'},
+          published_at:'2026-10-09',
+          resource_url:'https://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts/par-health-issues-voluntary-nationwide-recall-two-lots-brevitalr-sodium-500-mgvial-civ-methohexital',
+          resource_label:'Open FDA recall'
+        }
+      ];
+      return [];
+    }
+
     function renderStudentFeeds(feed,programId){
       var events=document.getElementById('hub-events-feed');
       var cfg=currentEventsCourseConfig(programId);
@@ -278,6 +380,11 @@ function classCountdown(row){
         return;
       }
       var eventItems=(Array.isArray(feed.current_events)?feed.current_events:[]).filter(isStudentReadyCurrentEvent);
+      var usingVerifiedFallback=false;
+      if(!eventItems.length){
+        eventItems=verifiedCourseCurrentEvents(programId);
+        usingVerifiedFallback=eventItems.length>0;
+      }
       var count=document.getElementById('current-events-count');
       if(count)count.textContent=eventItems.length?'('+eventItems.length+')':'';
       if(!eventItems.length){
@@ -285,7 +392,7 @@ function classCountdown(row){
         return;
       }
       events.innerHTML=renderFeedItems(eventItems,'events')+
-        '<p class="feed-meta">Current Events refresh automatically from ITASA medical and professional knowledge sources.</p>';
+        '<p class="feed-meta">'+(usingVerifiedFallback?'Showing recent verified updates from official nursing and patient-safety sources.':'Current Events refresh automatically from ITASA medical and professional knowledge sources.')+'</p>';
     }
 
     function hubTypeLabel(v){
