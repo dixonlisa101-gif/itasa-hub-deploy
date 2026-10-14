@@ -248,8 +248,31 @@ function classCountdown(row){
       var unusablyLong=body.length>1200;
       return !!title&&!!body&&!blockedTitle&&!blockedUrl&&!navigationLeak&&!unusablyLong;
     }
-    function renderStudentFeeds(feed){
+    function currentEventsCourseConfig(programId){
+      if(programId==='review')return {
+        empty:'No NCLEX-specific healthcare or nursing updates are posted right now.',
+        scope:'This section shows updates relevant to NCLEX preparation, nursing practice, patient safety, licensure, and NCLEX test-plan changes.'
+      };
+      if(programId==='skills')return {
+        empty:'No Skills Refresher-specific updates are posted right now.',
+        scope:'This section shows updates relevant to clinical nursing skills, patient safety, competency practice, and standards that affect bedside nursing care.'
+      };
+      if(programId==='iv')return {
+        empty:'No IV Therapy-specific updates are posted right now.',
+        scope:'This section only shows updates directly related to IV therapy, venipuncture, infusion practice, vascular access, or Florida nursing rules affecting IV practice.'
+      };
+      if(programId==='medtech')return {
+        empty:'No Medication Technician-specific updates are posted right now.',
+        scope:'This section shows updates relevant to medication assistance, medication safety, adverse reactions, permitted dosage forms, and Florida rules affecting medication assistance.'
+      };
+      return {
+        empty:'No course-specific healthcare or professional updates are posted right now.',
+        scope:'This section shows current updates relevant to your ITASA course.'
+      };
+    }
+    function renderStudentFeeds(feed,programId){
       var events=document.getElementById('hub-events-feed');
+      var cfg=currentEventsCourseConfig(programId);
       if(!feed||feed.status!=='ok'){
         events.innerHTML='<p class="muted">Current healthcare updates are temporarily unavailable.</p>';
         return;
@@ -258,7 +281,7 @@ function classCountdown(row){
       var count=document.getElementById('current-events-count');
       if(count)count.textContent=eventItems.length?'('+eventItems.length+')':'';
       if(!eventItems.length){
-        events.innerHTML='<p class="muted">No IV Therapy-specific updates are posted right now.</p><p class="feed-meta">This section only shows updates directly related to IV therapy, venipuncture, infusion practice, vascular access, or Florida nursing rules affecting IV practice.</p>';
+        events.innerHTML='<p class="muted">'+esc(cfg.empty)+'</p><p class="feed-meta">'+esc(cfg.scope)+'</p>';
         return;
       }
       events.innerHTML=renderFeedItems(eventItems,'events')+
@@ -350,7 +373,7 @@ function classCountdown(row){
         await classesReady;
         renderSpace(st);
         const feed=await loadStudentFeedsDirect(email,code);
-        renderStudentFeeds(feed);
+        renderStudentFeeds(feed,st.program_id);
         const hubItems=await window.ItasaStudentPortal.getCourseHubItems(email,code);
         renderCourseHubItems(hubItems);
         loginCard.hidden=true;
