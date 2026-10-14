@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>IV Insertion & Venipuncture | ITASA Learning Center</title>
+  <style>
+    :root{--teal:#177982;--teal-dark:#0d5961;--orange:#dd7b2d;--ink:#18343b;--muted:#63767b;--line:#d9e7e8;--soft:#f5fafa;--warm:#fff6ec;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;color:var(--ink);background:#f8fbfb}
+    *{box-sizing:border-box}body{margin:0}a{color:var(--teal-dark)}
+    .preview{background:#3b2d23;color:#fff;padding:9px 16px;text-align:center;font-weight:800}
+    header{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10}
+    nav{max-width:1100px;margin:auto;padding:12px 18px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+    .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--teal-dark);font-weight:900;margin-right:auto}.brand img{width:52px;height:52px;border-radius:50%;object-fit:contain}.brand small{display:block;color:var(--orange);font-size:.72rem;text-transform:uppercase;letter-spacing:.08em}
+    main{max-width:1100px;margin:auto;padding:30px 18px 64px}.hero{background:linear-gradient(135deg,#eaf7f6,#fff5e8);border:1px solid var(--line);border-left:6px solid var(--orange);border-radius:20px;padding:28px;margin-bottom:18px}
+    .eyebrow{font-size:.76rem;font-weight:900;text-transform:uppercase;letter-spacing:.09em;color:var(--teal)}h1{font-size:clamp(2rem,5vw,3.2rem);line-height:1.05;margin:.35rem 0 .8rem}h2,h3{margin:.2rem 0 .65rem}
+    .lead{font-size:1.08rem;color:#4e666c}.muted{color:var(--muted)}.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px;margin:16px 0;box-shadow:0 7px 20px rgba(17,71,78,.05)}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.quick{min-height:150px}.quick.orange{border-top:4px solid var(--orange)}
+    label{display:block;font-weight:800;margin:.8rem 0 .35rem}input{width:100%;padding:11px 12px;border:1px solid #b9cbcd;border-radius:9px;font:inherit}.btn{display:inline-block;border:0;border-radius:10px;padding:11px 15px;font:inherit;font-weight:800;cursor:pointer;text-decoration:none;background:var(--teal);color:#fff}.btn.orange{background:var(--orange)}.btn.secondary{background:#e8f4f4;color:var(--teal-dark)}.btnrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+    .status{border-left:5px solid var(--teal)}.ok{border-left-color:#3c8b65}.warn{border-left-color:var(--orange)}.error{border-left-color:#b74848}.workspace{display:none}.workspace.active{display:block}
+    .welcome-strip{display:flex;align-items:center;gap:18px;flex-wrap:wrap}.welcome-strip img{width:84px;height:84px;border-radius:50%;object-fit:contain}.schedule{display:grid;grid-template-columns:160px 1fr;gap:8px 14px}.schedule div:nth-child(odd){font-weight:800}
+    .module{border-top:1px solid var(--line);padding:14px 0}.module:first-child{border-top:0}.community{background:var(--warm);border-left:5px solid var(--orange)}.protected{background:#fffaf4;border-left:5px solid var(--orange)}.qa-item{border-top:1px solid var(--line);padding:14px 0}.qa-item:first-child{border-top:0}
+    .learning-path{counter-reset:lesson;list-style:none;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}.learning-path li{background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:16px}.learning-path li::before{counter-increment:lesson;content:counter(lesson);display:block;color:var(--teal);font-weight:900;margin-bottom:8px}.learning-path h3{font-size:1rem}.learning-path p{font-size:.92rem;line-height:1.5;margin-bottom:0}.draft-label{display:inline-block;background:var(--warm);color:#814313;border:1px solid #e9c49f;border-radius:6px;padding:4px 8px;font-size:.8rem;font-weight:800}.lesson-section{border:1px solid var(--line);border-radius:10px;padding:14px;margin:12px 0}.lesson-section summary,.review-questions summary{cursor:pointer;font-weight:800;color:var(--teal-dark);padding:6px 0}.lesson-item{border-top:1px solid var(--line);padding:14px 0}.lesson-item p{white-space:pre-line;overflow-wrap:anywhere;line-height:1.6}.lesson-type{font-size:.78rem;text-transform:uppercase;letter-spacing:.05em;color:var(--teal);font-weight:800}.review-questions{margin:16px 0}.learning-links a{margin-right:18px;display:inline-block;padding:8px 0}a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid var(--orange);outline-offset:4px}
+    @media(max-width:900px){.learning-path{grid-template-columns:1fr}.learning-path li{padding:14px}}
+    footer{text-align:center;padding:24px 18px;border-top:1px solid var(--line);background:#fff;color:#60757a}[hidden]{display:none!important}
+    @media(max-width:760px){.grid,.grid3{grid-template-columns:1fr}.schedule{grid-template-columns:1fr}.brand span{display:none}}
+</style>
+<link rel="stylesheet" href="css/iv-course-reader.css?v=7">
+</head>
+<body>
+<div class="preview">IV LEARNING SPACE — Design preview. Lessons are in development; enrollment remains on hold.</div>
+<header><nav>
+  <a class="brand" href="index.html"><img src="assets/itasa-circular-brand-logo.png" alt="ITASA logo"><span>ITASA<small>Learning Center</small></span></a>
+  <a href="student-portal-cutover-preview.html">Student Home</a>
+  <a href="index.html">Learning Center Home</a>
+  <button id="student-signout" class="btn secondary" type="button" hidden>Sign Out</button>
+</nav></header>
+<main>
+  <section class="hero">
+    <div class="eyebrow">IV Insertion & Venipuncture</div>
+    <h1>Your IV Learning Space</h1>
+    <p class="lead">Learn the concepts, observe instructor demonstrations, practice with guidance, and prepare to demonstrate your skills. Your class access, approved materials, and completion information belong here.</p>
+  </section>
+
+  <section id="login-card" class="card">
+    <h2>Enter your learning space</h2>
+    <p class="muted">Sign in here only if you opened this learning space directly. If you entered through Student Sign In, your validated session will carry you here automatically.</p>
+    <form id="login-form">
+      <label for="email">Student email</label><input id="email" type="email" autocomplete="username" required>
+      <label for="code">Learning Center access code</label><input id="code" type="password" autocomplete="current-password" required>
+      <button id="login-btn" class="btn orange" type="submit" style="margin-top:14px">Enter IV Learning Space</button>
+    </form>
+    <p class="muted" style="margin-top:10px"><a href="student-access-recovery.html">Forgot your registered email or access code?</a></p>
+  </section>
+
+  <div id="status" class="card status" hidden></div>
+
+  <section id="workspace" class="workspace">
+    <div class="card welcome-strip">
+      <img src="assets/itasa-circular-brand-logo.png" alt="ITASA logo">
+      <div><div class="eyebrow">Welcome back</div><h2 id="student-welcome">IV Student</h2><p class="muted">Your IV class includes two Friday sessions with theory and hands-on skills, followed by final competency validation in the second class.</p></div>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow">Class Schedule</div><h2>November 20 & November 27, 2026</h2>
+      <div id="schedule-box" class="schedule"><div>Loading</div><div>Current class information…</div></div>
+    </div>
+
+    <section class="card" aria-labelledby="learning-path-title">
+      <div class="eyebrow">Start here</div><h2 id="learning-path-title">How each lesson will teach you</h2>
+      <span class="draft-label">Lesson design preview</span>
+      <p class="muted">The six-module teaching draft is in staff review. Lessons and activities will appear here after ITASA approves their release.</p>
+      <ol class="learning-path">
+        <li><h3>Learn</h3><p>Begin with a clear learning goal and a short explanation of the topic, with examples and the reasons behind each decision.</p></li>
+        <li><h3>Walk through</h3><p>Read a short practice situation and notice the decisions that matter.</p></li>
+        <li><h3>Practice</h3><p>Work through a guided scenario or an instructor-supervised activity using the lesson's approved materials.</p></li>
+        <li><h3>Explain</h3><p>Describe your reasoning, receive feedback, and revisit anything that needs more practice.</p></li>
+        <li><h3>Demonstrate</h3><p>Use the instructor's checklist during supervised skills practice and competency validation.</p></li>
+      </ol>
+      <p class="muted">Review questions will support the lessons. Opening materials or reading answers does not record attendance, demonstrate a skill, or complete the course.</p>
+      <div class="learning-links"><a href="#lesson-materials">Approved learning materials</a><a href="#iv-assessment">Final Knowledge Assessment</a><a href="#hands-on-learning">Hands-on preparation</a><a href="#review-questions">Review questions</a></div>
+    </section>
+
+    <section id="lesson-materials" class="card" aria-labelledby="materials-title">
+      <div class="eyebrow">Learn with your instructor</div><h2 id="materials-title">Lessons &amp; learning materials</h2>
+      <div id="materials" aria-live="polite"><p class="muted">Checking for approved materials assigned to your IV course…</p></div><div id="course-hub-items" style="margin-top:14px"></div>
+    </section>
+
+    <section id="iv-assessment" class="card protected" aria-labelledby="iv-assessment-title">
+      <div class="eyebrow">Required Testing</div>
+      <h2 id="iv-assessment-title">IV Final Knowledge Assessment</h2>
+      <p class="muted">Complete the final knowledge assessment after reviewing the six IV modules. A score of <strong>80% or higher</strong> is required before final competency validation.</p>
+      <div id="iv-assessment-box"><p class="muted">Checking your assessment status…</p></div>
+    </section>
+
+    <div class="grid">
+      <div id="hands-on-learning" class="card protected"><div class="eyebrow">Hands-On Skills</div><h2>Practice with your instructor</h2>
+        <p class="muted">Each IV class includes 4 hours of theory and 4 hours of hands-on skills. Final competency validation is included in the second class.</p>
+        <p class="muted">The protected physical skills location is provided only to registered students after payment confirmation. Please arrive on time for required in-person sessions.</p>
+        <div id="iv-competency"><p class="muted">Your competency checklist and instructor instructions will appear here when ITASA posts them.</p></div>
+      </div>
+      <div id="review-questions" class="card"><div class="eyebrow">After the lesson</div><h2>Review &amp; prepare</h2><p class="muted">Use these questions to review what you learned and prepare for your in-person IV skills session. Bring any questions or areas you want clarified to your instructor on skills/check-off day.</p><details class="review-questions"><summary>Open IV review questions</summary><div id="iv-qa"><p class="muted">Loading IV-specific Q&amp;A…</p></div></details></div>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow">Remediation &amp; Reassessment</div><h2>My Remediation</h2>
+      <p class="muted">If an IV competency is recorded as Not Yet Competent, the exact skill and reason will appear here. You can choose from ITASA-approved reassessment dates when available.</p>
+      <div id="remediation"><p class="muted">Checking for open remediation requirements…</p></div>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow">Completion</div><h2>Completion &amp; Certificate</h2>
+      <div id="completion"><p class="muted">Checking your completion information…</p></div>
+    </div>
+
+    <div class="card community">
+      <div class="eyebrow">ITASA Community</div><h2>Stay connected between class sessions.</h2>
+      <p class="muted">Your Learning Center is your student learning home. Follow ITASA on Facebook for encouragement, educational content, announcements, and community updates.</p>
+      <a class="btn secondary" target="_blank" rel="noopener" href="https://www.facebook.com/profile.php?id=61557528076740">Follow ITASA on Facebook</a>
+    </div>
+  </section>
+</main>
+<footer>Innovation Training &amp; Staffing Agency · Empowering Nurses. Elevating Healthcare.</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/student-course-hub-content.js?v=1"></script>
+<script src="js/student-portal-supabase.js?v=20260930-completion2"></script>
+<script src="js/assessment-skills-supabase.js?v=2"></script>
+<script src="js/iv-course-reader.js?v=7"></script>
+<script src="js/shared-content-supabase.js"></script>
+<script>
+(function(){
+'use strict';
+const PROGRAM='iv';
+const form=document.getElementById('login-form'),btn=document.getElementById('login-btn'),status=document.getElementById('status'),workspace=document.getElementById('workspace');
+let classRow=null,currentEmail='',currentCode='',ivAssessmentData=null,ivAssessmentAnswers={},ivAssessmentResult=null,ivLessonsAvailable=false;
+function esc(v){return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
+function showStatus(html,tone){status.hidden=false;status.className='card status '+(tone||'');status.innerHTML=html}
+function fmtDate(v){if(!v)return '';const d=new Date(v);if(isNaN(d.getTime()))return '';return d.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}
+function easternDateKey(value){
+  const d=value?new Date(value):new Date(); if(isNaN(d.getTime()))return '';
+  const parts=new Intl.DateTimeFormat('en-CA',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(d),obj={};
+  parts.forEach(function(p){if(p.type!=='literal')obj[p.type]=p.value});return obj.year+'-'+obj.month+'-'+obj.day;
+}
+function classCountdown(row){
+  if(!row||!row.start_date)return 'ITASA will confirm your class start date.';
+  const today=easternDateKey(new Date()),start=easternDateKey(row.start_date);
+  const a=new Date(today+'T12:00:00Z'),b=new Date(start+'T12:00:00Z'),days=Math.round((b-a)/86400000);
+  if(days>1)return days+' days until the first day of class';
+  if(days===1)return 'Class begins tomorrow';
+  if(days===0)return 'First day of class is today';
+  return 'Class is in progress';
+}
+
+async function loadClass(){
+  try{
+    if(!window.ItasaSharedContentSupabase)return;
+    const r=await window.ItasaSharedContentSupabase.fetchCollection('classes');
+    classRow=((r&&r.data)||[]).find(function(x){return x.program_id===PROGRAM})||null;
+  }catch(e){console.error(e)}
+}
+loadClass();
+
+function renderSchedule(){
+  const box=document.getElementById('schedule-box');
+  if(!classRow){box.innerHTML='<div>Schedule</div><div>ITASA will confirm your class schedule.</div>';return}
+  box.innerHTML='<div>Class status</div><div><strong>'+esc(classCountdown(classRow))+'</strong></div>'+ '<div>Start</div><div>'+esc(classRow.start_date?fmtDate(classRow.start_date):'ITASA will confirm your class start date')+'</div>'+
+    '<div>Schedule</div><div>'+esc(classRow.meeting_time_label||'ITASA will confirm exact class times')+'</div>'+
+    '<div>Format</div><div>'+esc(classRow.delivery_method||'')+'</div>'+
+    '<div>Class details</div><div>'+esc(classRow.notes||'')+'</div>';
+}
+
+function renderAccess(a){
+  const box=document.getElementById('class-access');
+  if(!a){box.innerHTML='<p class="muted">ITASA has not posted secure class-access details for this student yet.</p>';return}
+  let html='';
+  if(a.classTime)html+='<p><strong>Class time:</strong><br>'+esc(a.classTime)+'</p>';
+  if(a.note)html+='<p class="muted">'+esc(a.note)+'</p>';
+  if(a.link)html+='<a class="btn orange" target="_blank" rel="noopener" href="'+esc(a.link)+'">Join Class on Zoom</a>';
+  else html+='<p class="muted">The class join link is not available yet.</p>';
+  box.innerHTML=html;
+}
+function renderLearning(ws,st,preview){
+  const materials=document.getElementById('materials');
+  ivLessonsAvailable=false;
+  if(preview&&preview.status==='ok'&&preview.curriculum&&window.ItasaIvCourse){
+    ivLessonsAvailable=true;window.ItasaIvCourse.mount(materials,preview.curriculum,{review:false,teachingNotes:false,rememberLocation:true,studentKey:st.id||st.email||'review'});return;
+  }
+  // Use only protected RPC responses; draft preview is limited server-side to the IV REVIEW TEST account.
+  if(!ws||ws.status!=='ok'){
+    materials.innerHTML='<p class="muted">We could not load your learning materials. Please return to Student Home and try again.</p>';return;
+  }
+  const enrollments=Array.isArray(ws.enrollments)?ws.enrollments:[];
+  const course=enrollments.find(function(e){return e&&e.offering&&e.offering.offering_key==='iv_insertion_venipuncture'});
+  const sections=Array.isArray(course&&course.sections)?course.sections:[];
+  const interactive=sections.flatMap(function(s){return Array.isArray(s.items)?s.items:[]}).find(function(item){return item.content&&item.content.schema_version==='itasa_iv_interactive_v1'});
+  if(interactive&&window.ItasaIvCourse){
+    ivLessonsAvailable=true;window.ItasaIvCourse.mount(materials,interactive.content.curriculum,{teachingNotes:false,rememberLocation:true,studentKey:st.id||st.email||'student'});return;
+  }
+  if(!sections.length){
+    materials.innerHTML='<p><strong>No approved IV lessons are available to this account yet.</strong></p><p class="muted">The six-module course is in staff review. Approved lessons will appear here when ITASA releases them.</p>';return;
+  }
+  ivLessonsAvailable=true;
+  const labels={learning:'Lesson',overview:'Course overview',orientation:'Preparation',access:'Class access',notice:'Course information',schedule:'Schedule',skills:'Supervised practice',competency:'Instructor validation',requirement:'Completion requirement',progress:'Completion information',certificate:'Certificate information'};
+  materials.innerHTML=sections.map(function(s){
+    const items=Array.isArray(s.items)?s.items:[];
+    return '<details class="lesson-section"><summary>'+esc(s.title||'Learning section')+'</summary>'+(s.description?'<p class="muted">'+esc(s.description)+'</p>':'')+(items.length?items.map(function(item){
+      return '<article class="lesson-item"><div class="lesson-type">'+esc(labels[item.item_type]||'Learning material')+'</div><h3>'+esc(item.title||'Assigned material')+'</h3>'+(item.description?'<p>'+esc(item.description)+'</p>':'<p class="muted">Your instructor will provide the teaching material for this item.</p>')+'</article>';
+    }).join(''):'<p class="muted">No approved items have been posted in this section yet.</p>')+'</details>';
+  }).join('');
+}
+function assessmentProgress(s){
+  const rows=s&&Array.isArray(s.assessments)?s.assessments:[];
+  return rows.find(function(x){return x.assessment_key==='iv_final_knowledge_assessment'})||null;
+}
+function renderIvAssessment(s){
+  const box=document.getElementById('iv-assessment-box');
+  if(!box)return;
+  const p=assessmentProgress(s);
+  let html='';
+  if(p&&p.passed)html+='<div class="notice good"><strong>Passed</strong><br>Best score: '+esc(p.best_score)+'%</div>';
+  else if(p&&p.attempts_used)html+='<div class="notice warn"><strong>Not yet passed</strong><br>Best score: '+esc(p.best_score)+'% · 80% required</div>';
+  if(ivAssessmentResult&&ivAssessmentResult.status==='graded'){
+    html+='<div class="notice '+(ivAssessmentResult.passed?'good':'warn')+'"><strong>'+(ivAssessmentResult.passed?'Passed':'Review and try again')+'</strong><br>Score: '+esc(ivAssessmentResult.score)+'% · '+esc(ivAssessmentResult.correct_count)+' of '+esc(ivAssessmentResult.question_count)+' correct</div>';
+  }
+  if(!ivLessonsAvailable){
+    html+='<div class="notice warn"><strong>Assessment locked</strong><br>The IV Final Knowledge Assessment becomes available after the approved six-module IV program is released to your Learning Space.</div>';
+    box.innerHTML=html;return;
+  }
+  if(!ivAssessmentData){
+    html+='<button id="start-iv-assessment" class="btn orange" type="button">'+(p&&p.passed?'Open Assessment':'Start Assessment')+'</button>';
+    box.innerHTML=html;
+    document.getElementById('start-iv-assessment').onclick=loadIvAssessment;
+    return;
+  }
+  if(ivAssessmentData.status!=='ok'){
+    box.innerHTML=html+'<div class="notice warn">The assessment is not available right now.</div>';return;
+  }
+  const qs=Array.isArray(ivAssessmentData.questions)?ivAssessmentData.questions:[];
+  html+='<form id="iv-assessment-form">'+qs.map(function(q,i){
+    const selected=ivAssessmentAnswers[q.question_key];
+    return '<fieldset style="border:1px solid var(--line);border-radius:12px;padding:14px;margin:14px 0"><legend><strong>'+(i+1)+'. '+esc(q.prompt)+'</strong></legend>'+
+      (Array.isArray(q.options)?q.options:[]).map(function(o){
+        return '<label style="display:flex;gap:9px;align-items:flex-start;font-weight:500;border:1px solid var(--line);border-radius:9px;padding:10px;margin:8px 0"><input style="width:auto;margin-top:3px" type="radio" name="iv-'+esc(q.question_key)+'" data-iv-question="'+esc(q.question_key)+'" value="'+esc(o.key)+'" '+(selected===o.key?'checked':'')+'> <span>'+esc(o.text)+'</span></label>';
+      }).join('')+'</fieldset>';
+  }).join('')+'<button class="btn orange" type="submit">Submit Assessment</button></form>';
+  box.innerHTML=html;
+  box.querySelectorAll('[data-iv-question]').forEach(function(el){el.onchange=function(){ivAssessmentAnswers[el.dataset.ivQuestion]=el.value}});
+  document.getElementById('iv-assessment-form').onsubmit=submitIvAssessment;
+}
+async function loadIvAssessment(){
+  const box=document.getElementById('iv-assessment-box');
+  box.innerHTML='<p class="muted">Opening secure assessment…</p>';
+  ivAssessmentData=await window.ItasaAssessmentSkills.getIvAssessment(currentEmail,currentCode,'iv_final_knowledge_assessment');
+  renderIvAssessment(await window.ItasaAssessmentSkills.getStatus(currentEmail,currentCode));
+}
+async function submitIvAssessment(ev){
+  ev.preventDefault();
+  const qs=Array.isArray(ivAssessmentData&&ivAssessmentData.questions)?ivAssessmentData.questions:[];
+  if(qs.some(function(q){return !ivAssessmentAnswers[q.question_key]})){showStatus('<strong>Please answer every assessment question before submitting.</strong>','warn');return}
+  const submit=document.querySelector('#iv-assessment-form button[type="submit"]');if(submit){submit.disabled=true;submit.textContent='Submitting…'}
+  ivAssessmentResult=await window.ItasaAssessmentSkills.submitIvAssessment(currentEmail,currentCode,'iv_final_knowledge_assessment',ivAssessmentAnswers);
+  ivAssessmentData=null;ivAssessmentAnswers={};
+  const newStatus=await window.ItasaAssessmentSkills.getStatus(currentEmail,currentCode);
+  renderIvAssessment(newStatus);renderIvSkillsStatus(newStatus);
+}
+function renderIvSkillsStatus(s){
+  const box=document.getElementById('iv-competency');
+  if(!box)return;
+  if(!s||s.status!=='ok'){
+    box.innerHTML='<p class="muted">Your competency schedule will appear here when ITASA posts it.</p>';return;
+  }
+  const session=s.skills_session;
+  if(session){
+    box.innerHTML='<p><strong>Final competency check-off:</strong> '+esc(String(session.status||'scheduled').replace(/_/g,' '))+'</p>'+
+      (session.scheduled_at?'<p><strong>Scheduled:</strong> '+esc(new Date(session.scheduled_at).toLocaleString('en-US',{month:'long',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'}))+'</p>':'')+
+      (session.location?'<p><strong>Location:</strong> '+esc(session.location)+'</p>':'')+
+      (session.validator_name?'<p><strong>Instructor:</strong> '+esc(session.validator_name)+'</p>':'');
+    return;
+  }
+  box.innerHTML='<p><strong>Final competency validation is required.</strong></p>'+
+    '<p class="muted">Your check-off date, time, and location will appear here after ITASA schedules your in-person skills validation.</p>';
+}
+
+function renderRemediation(data,email,code){
+  const box=document.getElementById('remediation');
+  if(!box)return;
+  if(!data||data.status!=='ok'){box.innerHTML='<p class="muted">Remediation information is temporarily unavailable.</p>';return}
+  const reqs=Array.isArray(data.requirements)?data.requirements:[];
+  if(!reqs.length){box.innerHTML='<p class="muted">No remediation is currently required.</p>';return}
+  box.innerHTML=reqs.map(function(r){
+    const failed=Array.isArray(r.failed_items)?r.failed_items:[];
+    const opp=Array.isArray(r.opportunities)?r.opportunities:[];
+    let html='<div class="module" data-remediation="'+esc(r.obligation_id)+'"><strong>'+esc(r.title||'Remediation Required')+'</strong>';
+    if(failed.length)html+='<ul>'+failed.map(function(f){return '<li><strong>'+esc(f.item_name||'Skill')+'</strong>'+(f.deficiency_reason?' — '+esc(f.deficiency_reason):'')+'</li>'}).join('')+'</ul>';
+    if(String(r.status||'')==='scheduled'){
+      const meta=r.metadata||{},when=meta.scheduled_at?new Date(meta.scheduled_at).toLocaleString('en-US',{timeZone:'America/New_York',month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'}):'';
+      html+='<p><strong>Reassessment reserved.</strong></p>'+
+        (when?'<p class="muted"><strong>Date:</strong> '+esc(when)+'</p>':'')+
+        (meta.delivery_mode?'<p class="muted"><strong>Delivery:</strong> '+esc(String(meta.delivery_mode).replace(/_/g,' '))+'</p>':'')+
+        (meta.location?'<p class="muted"><strong>Location / access:</strong> '+esc(meta.location)+'</p>':'')+
+        (meta.instructions?'<p class="muted"><strong>Instructions:</strong> '+esc(meta.instructions)+'</p>':'')+
+        '<p class="muted">This requirement remains open until you successfully complete reassessment.</p>';
+    }else if(!opp.length){
+      html+='<p class="muted">No approved reassessment date is posted yet. The next available opportunity will appear here when ITASA schedules it.</p>';
+    }else{
+      html+='<p><strong>Choose Next Remediation Date</strong></p>'+opp.map(function(o){
+        const when=o.scheduled_at?new Date(o.scheduled_at).toLocaleString('en-US',{timeZone:'America/New_York',month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'}):'';
+        return '<button class="btn secondary" type="button" style="margin:6px 8px 0 0" data-reserve-remediation="'+esc(o.opportunity_id)+'">'+esc(when)+(o.location?' · '+esc(o.location):'')+'</button>';
+      }).join('');
+    }
+    return html+'</div>';
+  }).join('');
+  box.querySelectorAll('[data-reserve-remediation]').forEach(function(b){
+    b.onclick=async function(){
+      const row=b.closest('[data-remediation]'),ob=row&&row.getAttribute('data-remediation'),op=b.getAttribute('data-reserve-remediation');
+      if(!ob||!op)return;
+      b.disabled=true;const label=b.textContent;b.textContent='Reserving…';
+      try{
+        const rr=await window.ItasaStudentPortal.reserveRemediation(email,code,ob,op);
+        if(!rr||rr.status!=='reserved')throw new Error((rr&&rr.status)||'Reassessment date could not be reserved.');
+        const fresh=await window.ItasaStudentPortal.getRemediationRequirements(email,code);
+        renderRemediation(fresh,email,code);
+      }catch(e){b.disabled=false;b.textContent=label;showStatus('<strong>Reassessment was not reserved.</strong><br>'+esc(e.message||String(e)),'warn')}
+    };
+  });
+}
+
+function renderCertificates(certs,training){
+  const box=document.getElementById('completion');
+  const rows=Array.isArray(certs&&certs.certificates)?certs.certificates:[];
+  if(training&&training.status==='ok'&&training.training_complete&&!training.certificate_issued){
+    box.innerHTML='<p><strong>Training complete.</strong></p><p class="muted">Your Certificate of Completion has not been issued yet. It will appear here after the instructor completes the separate certificate-issuance step.</p>';return
+  }
+  if(!rows.length){
+    box.innerHTML='<p><strong>Training status:</strong> '+esc(training&&training.training_complete?'Complete':'In progress')+'</p><p class="muted">No Certificate of Completion has been issued yet.</p>';return
+  }
+  box.innerHTML='<p><span class="tag good">Certificate Issued</span></p><ul>'+rows.map(function(c){return '<li><strong>'+esc(c.certificate_title||c.certificate_number||'Certificate')+'</strong>'+(c.completion_date?' — '+esc(c.completion_date):'')+(' — <a href="certificate-print-preview.html?certificate='+encodeURIComponent(c.certificate_id)+'">View / Print Certificate</a>')+'</li>'}).join('')+'</ul>';
+}
+async function loadIvQa(){
+    try{
+      if(!window.ItasaSharedContentSupabase)return;
+      const data=await window.ItasaSharedContentSupabase.fetchAll();
+      const qa=Array.isArray(data.iv_qa)?data.iv_qa:[];
+      const byQuestion=new Map();
+      qa.forEach(function(q){
+        const question=String(q&&q.question||'').trim(); if(!question)return;
+        const key=question.toLowerCase(),answer=String(q&&q.answer||'').trim(),prev=byQuestion.get(key);
+        if(!prev||answer.length>String(prev.answer||'').length)byQuestion.set(key,q);
+      });
+      const rows=Array.from(byQuestion.values());
+      document.getElementById('iv-qa').innerHTML=rows.length?rows.map(function(q){return '<div class="qa-item"><strong>'+esc(q.question||q.title||'IV Q&A')+'</strong><p class="muted">'+esc(q.answer||'')+'</p></div>'}).join(''):'<p class="muted">No IV Q&A is posted yet.</p>';
+    }catch(e){document.getElementById('iv-qa').innerHTML='<p class="muted">IV Q&A is temporarily unavailable.</p>'}
+  }
+
+form.addEventListener('submit',async function(ev){
+  ev.preventDefault();workspace.classList.remove('active');
+  const email=document.getElementById('email').value.trim().toLowerCase(),code=document.getElementById('code').value.trim();
+  btn.disabled=true;btn.textContent='Checking access…';showStatus('<strong>Checking your secure ITASA student access…</strong>','');
+  try{
+    const login=await window.ItasaStudentPortal.login(email,code,[]);
+    if(login.status!=='ok'||!login.student){
+      const m={pending_review:'Your Learning Center access is still pending review.',invalid_code:'The access code was not accepted.',not_found:'No matching student access was found.',invalid_credentials:'The email/access-code pair was not accepted.'};
+      showStatus('<strong>Access not opened.</strong><br>'+esc(m[login.status]||'ITASA could not validate this access right now.'),'warn');return;
+    }
+    const st=login.student;
+    currentEmail=email;currentCode=code;
+    window.ItasaStudentPortal.setSessionCredentials(email,code);
+    if(st.programId!==PROGRAM){showStatus('<strong>This student account is valid, but it is not assigned to this class.</strong><br><a href="student-portal-cutover-preview.html">Return to Student Home</a>','warn');return}
+    document.getElementById('student-welcome').textContent='Welcome, '+((st.first_name||'').trim()||'Student');
+    renderSchedule();
+    const isIvReviewTest=st.programId===PROGRAM&&String(st.enrollmentStatus||'').trim().toLowerCase()==='review test';
+    const results=await Promise.all([
+      window.ItasaStudentPortal.getZoomAccess(email,code),
+      window.ItasaStudentPortal.getLearningWorkspace(email,code),
+      window.ItasaStudentPortal.getCertificates(email,code),
+      isIvReviewTest?window.ItasaStudentPortal.getIvReviewPreview(email,code):Promise.resolve(null),
+      window.ItasaAssessmentSkills.getStatus(email,code),
+      window.ItasaStudentPortal.getRemediationRequirements(email,code),
+      window.ItasaStudentPortal.getTrainingCompletionStatus(email,code)
+    ]);
+    renderLearning(results[1],st,results[3]);renderCertificates(results[2],results[6]);renderIvAssessment(results[4]);renderIvSkillsStatus(results[4]);renderRemediation(results[5],email,code);
+    await loadIvQa();
+    document.getElementById('login-card').hidden=true;document.getElementById('student-signout').hidden=false;workspace.classList.add('active');showStatus('<strong>Welcome to your IV Learning Space.</strong>','ok');document.getElementById('code').value='';workspace.scrollIntoView({behavior:'smooth',block:'start'});
+  }catch(err){console.error(err);showStatus('<strong>Unable to open this learning space right now.</strong> No student records were changed.','error')}
+  finally{btn.disabled=false;btn.textContent='Enter IV Learning Space'}
+});
+document.getElementById('student-signout').addEventListener('click',function(){
+  window.ItasaStudentPortal.clearSessionCredentials();
+  window.location.href='student-portal-cutover-preview.html';
+});
+const cached=window.ItasaStudentPortal.getSessionCredentials();
+if(cached){
+  document.getElementById('email').value=cached.email;
+  document.getElementById('code').value=cached.accessCode;
+  setTimeout(function(){form.requestSubmit();},0);
+}
+})();
+</script>
+</body></html>
+

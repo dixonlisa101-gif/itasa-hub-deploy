@@ -1,0 +1,682 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Instructor Workspace | ITASA Learning Center</title>
+<style>
+:root{--teal:#177982;--dark:#0d5961;--orange:#dd7b2d;--ink:#18343b;--muted:#64777c;--line:#d9e7e8;--soft:#f6fbfb;--warm:#fff7ec;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;color:var(--ink);background:#f8fbfb}
+*{box-sizing:border-box}body{margin:0}a{color:var(--dark)}.preview{background:#382e28;color:#fff;text-align:center;padding:10px 16px;font-weight:800}
+header{background:#fff;border-bottom:1px solid var(--line)}nav{max-width:1200px;margin:auto;padding:12px 18px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:900;color:var(--dark);margin-right:auto}.brand img{width:52px;height:52px;border-radius:50%;object-fit:contain}.brand small{display:block;color:var(--orange);font-size:.72rem;text-transform:uppercase;letter-spacing:.08em}
+main{max-width:1200px;margin:auto;padding:28px 18px 64px}.card{background:#fff;border:1px solid var(--line);border-radius:15px;padding:18px;margin:14px 0;box-shadow:0 7px 20px rgba(17,71,78,.05)}h1,h2,h3{margin:.2rem 0 .7rem}.muted{color:var(--muted)}.eyebrow{text-transform:uppercase;letter-spacing:.08em;font-size:.74rem;font-weight:900;color:var(--teal)}
+label{display:block;font-weight:800;margin:.7rem 0 .3rem}input{width:100%;padding:10px 11px;border:1px solid #b9cbcd;border-radius:9px;font:inherit}.btn,button{display:inline-block;border:0;border-radius:9px;padding:10px 13px;font:inherit;font-weight:800;cursor:pointer;background:var(--teal);color:#fff;text-decoration:none}.btn.secondary,button.secondary{background:#e9f4f4;color:var(--dark)}.btn.orange{background:var(--orange)}button[disabled]{opacity:.5}
+.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.push{margin-left:auto}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}.tabs button{background:#eaf4f4;color:var(--dark)}.tabs button.active{background:var(--teal);color:#fff}.panel{display:none}.panel.active{display:block}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.course{border-top:5px solid var(--orange)}.metric{font-size:1.7rem;font-weight:900}.tag{display:inline-block;border-radius:999px;padding:4px 8px;background:#edf5f5;font-size:.78rem;font-weight:800}.tag.good{background:#e8f6ed;color:#2d6b4b}.tag.warn{background:#fff1dc;color:#8e5619}.tag.bad{background:#fae9e9;color:#8a3131}
+.resource{border-left:4px solid #91aeb1}.readiness{border-left:4px solid var(--orange)}.one-grid{display:grid;grid-template-columns:minmax(180px,1fr) minmax(180px,1fr) minmax(240px,1.25fr);gap:18px;align-items:start}.attestation{border:1px solid var(--line);border-left:5px solid var(--orange);border-radius:12px;padding:14px;margin:12px 0;background:#fff}.attestation.done{border-left-color:#3c8b65;background:#f4fbf7}.attestation p{line-height:1.5}.attestation-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px}.knowledge-item{border-left:4px solid var(--teal);padding:12px 14px;margin:10px 0;background:#fff;border-radius:10px}.knowledge-meta{font-size:.82rem;color:var(--muted)}.notice{padding:11px 13px;border-radius:10px;background:#eef7f7;margin:10px 0}.notice.error{background:#fff0f0;color:#8a3131}.notice.good{background:#ecf7f0;color:#2b6447}
+[hidden]{display:none!important}@media(max-width:900px){.grid{grid-template-columns:1fr 1fr}}@media(max-width:760px){.one-grid{grid-template-columns:1fr}}@media(max-width:650px){.grid,.grid2{grid-template-columns:1fr}.brand span{display:none}.push{margin-left:0}}
+</style>
+</head>
+<body>
+<div class="preview">PREVIEW ONLY — ITASA Instructor Workspace vNext.</div>
+<header><nav><a class="brand" href="index.html"><img src="assets/itasa-circular-brand-logo.png" alt="ITASA logo"><span>ITASA<small>Instructor Workspace</small></span></a><a href="index.html">Learning Center Home</a></nav></header>
+<main>
+  <div class="card">
+    <div class="eyebrow">Instructor Workspace</div><h1>Welcome to your ITASA work space.</h1>
+    <p class="muted">Manage your classes, teaching resources, readiness, and student-facing work from one protected staff entry point.</p><div class="notice"><strong>Instructor course authority:</strong> Assignment alone does not establish clearance. IV Insertion &amp; Venipuncture and Medical Technician Class instructors must maintain verified professional credentials, satisfy the course-specific qualification requirements, complete required ITASA acknowledgments, and understand and apply the Florida laws, rules, scope boundaries, and course requirements governing the assigned class. Final competency validation remains restricted until the assignment is cleared.</div>
+    <div id="login-shell"><form id="login-form" style="max-width:520px"><label for="staff-email">ITASA Staff Email</label><input id="staff-email" type="email" autocomplete="username" required><label for="staff-password">Password</label><input id="staff-password" type="password" autocomplete="current-password" required><button id="login-btn" type="submit" style="margin-top:14px">Sign In</button></form>
+    <div class="card" style="margin-top:16px;background:#f8fbfb">
+      <div class="eyebrow">Review Account</div>
+      <p class="muted">Need a password for the dedicated Test Instructor account?</p>
+      <button id="send-review-reset" class="secondary" type="button">Send Test Instructor Password Reset</button>
+      <div id="reset-status" class="notice" hidden></div>
+    </div>
+    <div id="password-reset-shell" class="card" hidden>
+      <div class="eyebrow">Set Review Password</div>
+      <h3>Create the Test Instructor password</h3>
+      <label for="new-review-password">New password</label>
+      <input id="new-review-password" type="password" autocomplete="new-password" placeholder="Use a strong review password">
+      <button id="save-review-password" type="button" style="margin-top:10px">Save New Password</button>
+      <div id="password-reset-status" class="notice" hidden></div>
+    </div>
+    <div id="login-status" class="notice" hidden></div></div>
+    <div id="workspace-header" hidden><div class="toolbar"><div><strong id="staff-name"></strong><div id="staff-meta" class="muted"></div></div><span id="refresh-status" class="muted push"></span><button id="refresh" class="secondary">Refresh Workspace</button><button id="signout" class="secondary">Sign Out</button></div></div>
+  </div>
+
+  <div id="workspace" hidden>
+    <div class="tabs">
+      <button data-panel="work" class="active">My Work</button>
+      <button data-panel="courses">My Courses</button>
+      <button data-panel="hub-content">Student Hub Content</button>
+      <button data-panel="resources">Resources</button>
+      <button data-panel="updates">Clinical &amp; Professional Updates</button>
+      <button data-panel="readiness">My Readiness</button>
+      <button id="ops-tab" data-panel="ops">Operations &amp; IT Oversight</button>
+    </div>
+
+    <section id="panel-work" class="panel active">
+      <div class="grid">
+        <div class="card"><div class="eyebrow">Students</div><div id="work-students" class="metric">—</div><p class="muted">Student records visible to your authorized staff account.</p></div>
+        <div class="card"><div class="eyebrow">Active Classes</div><div id="work-classes" class="metric">—</div><p class="muted">Current class offerings in the Learning Center.</p></div>
+        <div class="card"><div class="eyebrow">Class Access</div><div id="work-access" class="metric">—</div><p class="muted">Class-access records currently posted.</p></div>
+      </div>
+      <div class="card"><div class="eyebrow">Teaching Work</div><h2>What needs your attention</h2><div id="attention"></div><div class="toolbar" style="margin-top:12px"><a class="btn secondary" href="assessment-skills-workspace-preview.html?v=2">Open Assessments & Skills</a><a class="btn secondary" href="#one-on-one-attention">Review Personalized Learning Requests</a></div></div>
+      <div class="card">
+        <div class="eyebrow">ITASA Personalized Learning Session (1:1)</div>
+        <h2>Pending session requests</h2>
+        <p class="muted">New student requests appear here. Confirm a date/time and choose <strong>Approve &amp; Notify Student</strong>; the system creates the student's 1:1 access code and queues the confirmation email automatically.</p>
+        <div id="one-on-one-attention"></div>
+      </div>
+    </section>
+
+    <section id="panel-courses" class="panel">
+      <div class="card"><div class="eyebrow">Assessments &amp; Skills</div><h2>Student readiness &amp; skills check-offs</h2><p class="muted">Review Medical Technician Class assessment results, IV competency status, schedule skills check-offs, and record competency results.</p><div class="toolbar"><a class="btn orange" href="assessment-skills-workspace-preview.html">Open Assessments &amp; Skills</a><a class="btn secondary" target="_blank" rel="noopener" href="skills-refresher-competency-checkoff-print.html">Print Skills Refresher Competency Check-Off (PDF)</a></div></div>
+      <div class="card"><div class="eyebrow">IV course · Staff review</div><h2>Review the six-module teaching draft</h2><p class="muted">Revision 7 includes the phase-card activity, simpler practice prompts, references, and separate Teaching Notes. Enrollment remains on hold.</p><a class="btn orange" href="iv-course-review-preview.html">Open IV Course Review</a></div>
+      <div class="card">
+        <div class="eyebrow">Course Workspaces</div>
+        <h2>Open ITASA course work.</h2>
+        <div id="assigned-course-workspaces" class="grid2"></div>
+      </div>
+      <div class="card" id="nclex-completion-card">
+        <div class="eyebrow">NCLEX Completion</div>
+        <h2>Complete class &amp; issue Certificate of Completion</h2>
+        <p class="muted">NCLEX completion requires 100% attendance at all required class sessions. The system tracks attendance and keeps completion locked until every required session has been satisfied, including approved make-ups. This is separate from NCLEX licensure or exam results.</p><p><a class="btn secondary" target="_blank" href="nclex-certificate-preview.html">Preview NCLEX Certificate Layout</a></p>
+        <p><a class="btn secondary" target="_blank" href="nclex-certificate-sample-preview.html">Preview NCLEX Certificate of Completion</a></p>
+        <div id="nclex-completion-status" class="notice" hidden></div>
+        <div id="nclex-completion-roster"></div>
+      </div>
+      <div class="card"><div class="eyebrow">My Courses</div><h2>Class status, registration &amp; seat availability</h2><p class="muted">Countdowns change automatically as calendar days pass. Seat counts recalculate from the current student roster each time the workspace refreshes.</p><div id="course-grid" class="grid"></div></div>
+    </section>
+
+    <section id="panel-hub-content" class="panel">
+      <div class="card">
+        <div class="eyebrow">Student Hub Publishing</div>
+        <h2>Manage what students see in their Learning Center</h2>
+        <p class="muted">Publish course announcements, assignments, workbook instructions, class materials/resources, and instructor communications. Items appear only to students in the selected class.</p>
+        <div id="hub-content-status" class="notice" hidden></div>
+        <div class="grid2">
+          <div>
+            <label for="hub-program">Class</label>
+            <select id="hub-program">
+              <option value="review">NCLEX Review &amp; Test-Taking Strategies</option>
+              <option value="skills">Skills Refresher Class</option>
+              <option value="iv">IV Insertion &amp; Venipuncture</option>
+              <option value="medtech">Medical Technician Class</option>
+            </select>
+          </div>
+          <div>
+            <label for="hub-type">Content type</label>
+            <select id="hub-type">
+              <option value="announcement">Announcement</option>
+              <option value="assignment">Assignment</option>
+              <option value="workbook_instruction">Workbook Instruction</option>
+              <option value="material">Course Material</option>
+              <option value="resource">Course Resource</option>
+              <option value="instructor_message">Instructor Communication</option>
+            </select>
+          </div>
+        </div>
+        <input id="hub-id" type="hidden">
+        <label for="hub-title">Title</label>
+        <input id="hub-title" placeholder="Example: Week 1 workbook pages" required>
+        <label for="hub-body">Instructions / message</label>
+        <textarea id="hub-body" style="width:100%;min-height:110px;padding:10px;border:1px solid #b9cbcd;border-radius:9px" placeholder="What does the student need to know or do?"></textarea>
+        <div class="grid2">
+          <div><label for="hub-url">Resource link (optional)</label><input id="hub-url" type="url" placeholder="https://..."></div>
+          <div><label for="hub-due">Due date/time (optional)</label><input id="hub-due" type="datetime-local"></div>
+        </div>
+        <label style="display:flex;gap:8px;align-items:center"><input id="hub-visible" type="checkbox" style="width:auto" checked> Visible to students</label>
+        <div class="toolbar" style="margin-top:10px">
+          <button id="hub-save" class="orange" type="button">Publish to Student Hub</button>
+          <button id="hub-clear" class="secondary" type="button">Clear Form</button>
+          <button id="hub-refresh" class="secondary" type="button">Refresh Class Content</button><a id="hub-preview" class="btn secondary" target="_blank" href="student-portal-cutover-preview.html">Preview Student Home</a>
+        </div>
+      </div>
+      <div class="card">
+        <div class="eyebrow">Published Course Content</div>
+        <h2>Current student-facing items</h2>
+        <div id="hub-content-list"><p class="muted">Choose a class to load its Hub content.</p></div>
+      </div>
+    </section>
+
+    <section id="panel-resources" class="panel">
+      <div class="card resource">
+        <div class="eyebrow">Instructor Regulatory &amp; Course Resource Center</div>
+        <h2>Florida rules, scope, safety &amp; course authority</h2>
+        <p class="muted">This section is not a current-events feed. It follows the instructor's active course assignments and surfaces the Florida nursing rules, OSHA workplace-safety requirements, continuing-education references, AHCA medication-assistance rules, and course-specific regulatory guidance used to support that assignment.</p>
+        <div id="instructor-resource-feed"><p class="muted">Loading instructor resources…</p></div>
+      </div>
+    </section>
+
+    <section id="panel-updates" class="panel">
+      <div class="card">
+        <div class="eyebrow">Clinical &amp; Professional Updates</div>
+        <h2>Current Clinical &amp; Professional Updates</h2>
+        <p class="muted">This feed refreshes automatically from ITASA's active medical and professional knowledge sources. Source links remain available so instructors can review the original material.</p>
+        <div id="instructor-updates-feed"><p class="muted">Loading current updates…</p></div>
+      </div>
+    </section>
+
+    <section id="panel-readiness" class="panel">
+      <div class="card readiness">
+        <div class="eyebrow">My Readiness</div>
+        <h2>Instructor qualification, course authority &amp; Florida-regulation acknowledgment</h2>
+        <div id="readiness-disclaimer" class="notice"></div>
+        <div id="readiness-acknowledgments"></div>
+        <div id="readiness-experience"></div>
+        <div id="readiness-documents"></div>
+        <div id="readiness-credentials"></div>
+        <div id="readiness-assignments"></div>
+      </div>
+    </section>
+
+    <section id="panel-ops" class="panel">
+      <div class="card"><div class="eyebrow">Operations &amp; IT Oversight</div><h2>ITASA administrative and system oversight</h2><p class="muted">The protected operations workspace includes registration/payment visibility, email-delivery state, Information Session roster, the four Zoom-access pathways, 1:1 requests, certificates, audit activity, and IT/system-health checks. Administrator authorization is required to open the data.</p><a class="btn orange" href="staff-operations-preview.html?v=3">Open Operations &amp; IT Oversight</a></div>
+    </section>
+  </div>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/shared-content-supabase.js"></script>
+<script src="js/staff-hub-supabase.js?v=20260930-completion3"></script>
+<script>
+(function(){
+'use strict';
+var state={students:[],classes:[],access:[],knowledge:[],courseLibraries:{},nclex:[],one:[],skills:[],readiness:null,qualificationDocuments:[]};
+function esc(v){return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
+function show(el,msg,tone){el.hidden=false;el.className='notice '+(tone||'');el.textContent=msg}
+function hide(el){el.hidden=true;el.textContent=''}
+function fmtDate(v){if(!v)return '';var d=new Date(v);return isNaN(d.getTime())?String(v):d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}
+function programName(id){return id==='review'?'NCLEX Review & Test-Taking Strategies':id==='skills'?'Skills Refresher Class':id==='iv'?'IV Insertion & Venipuncture':id==='medtech'?'Medical Technician Class':id||'ITASA Class'}
+function studentView(id){return id==='review'?'nclex-learning-space-preview.html':id==='skills'?'skills-learning-space-preview.html':id==='iv'?'iv-learning-space-preview.html':id==='medtech'?'medtech-learning-space-preview.html':'student-portal-cutover-preview.html'}
+function easternKey(value){
+  var d=value?new Date(value):new Date(); if(isNaN(d.getTime()))return '';
+  var ps=new Intl.DateTimeFormat('en-CA',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(d),o={};ps.forEach(p=>{if(p.type!=='literal')o[p.type]=p.value});return o.year+'-'+o.month+'-'+o.day;
+}
+function dayDiff(start){if(!start)return null;var a=easternKey(new Date()),b=easternKey(start);if(!a||!b)return null;var aa=new Date(a+'T12:00:00Z'),bb=new Date(b+'T12:00:00Z');return Math.round((bb-aa)/86400000)}
+function classClock(c){
+  var d=dayDiff(c.start_date),open=String(c.registration_status||'').toLowerCase()==='open';
+  if(d==null)return open?'Registration open · start date pending':'Start date pending';
+  if(d>1)return (open?'Registration open · ':'')+d+' days until first day';
+  if(d===1)return (open?'Registration open · ':'')+'class begins tomorrow';
+  if(d===0)return 'First day today'+(open?' · registration open subject to availability':'');
+  return 'Class started '+Math.abs(d)+' day'+(Math.abs(d)===1?'':'s')+' ago';
+}
+function activeStudent(s){return !/cancelled|canceled|declined|refunded|withdrawn|review test/i.test(String(s.enrollment_status||''))}
+function seatsTaken(c){return state.students.filter(s=>activeStudent(s)&&(s.cohort_id===c.class_key||(!s.cohort_id&&s.program_id===c.program_id))).length}
+function knowledgeItemHtml(item){
+  var src=item.source&&item.source.name?item.source.name:(item.source&&item.source.source_name?item.source.source_name:'Official source');
+  var date=item.published_at?fmtDate(item.published_at):'';
+  var link=item.url||item.canonical_url||'';
+  return '<article class="knowledge-item"><h3>'+esc(item.title||'Resource')+'</h3><div class="knowledge-meta">'+esc(src)+(date?' · '+esc(date):'')+(item.jurisdiction?' · '+esc(item.jurisdiction):'')+'</div><p>'+esc(item.summary||'')+'</p>'+(link?'<p><a target="_blank" rel="noopener" href="'+esc(link)+'">Open official source</a></p>':'')+'</article>';
+}
+function renderKnowledgeFeed(){
+  var updates=Array.isArray(state.knowledge)?state.knowledge:[];
+  document.getElementById('instructor-updates-feed').innerHTML=
+    (updates.length?updates.map(knowledgeItemHtml).join(''):'<p class="muted">No current clinical/professional updates are available.</p>')+
+    '<p class="knowledge-meta">Current updates are separate from the course regulatory library and refresh from ITASA knowledge sources.</p>';
+
+  var assign=state.readiness&&Array.isArray(state.readiness.assignments)?state.readiness.assignments:[];
+  var blocks=assign.map(function(a){
+    var items=(state.courseLibraries[a.offering_key]||[]).filter(function(item){
+      return ['regulatory_requirement','official_guidance','evergreen_reference'].indexOf(item.information_type)!==-1;
+    });
+    return '<section class="card course"><div class="eyebrow">'+esc(a.class_name)+'</div><h3>Assigned-course regulatory library</h3>'+
+      (items.length?items.map(knowledgeItemHtml).join(''):'<p class="muted">No course-specific regulatory references are currently assigned.</p>')+
+      '</section>';
+  }).join('');
+  document.getElementById('instructor-resource-feed').innerHTML=blocks||'<p class="muted">No active course assignment is attached to this instructor account.</p>';
+}
+function renderAssignedCourseWorkspaces(){
+  var box=document.getElementById('assigned-course-workspaces');
+  var assign=state.readiness&&Array.isArray(state.readiness.assignments)?state.readiness.assignments:[];
+  var courses=[
+    {program_id:'review',offering_key:'nclex_review_test_taking',name:'NCLEX Review & Test-Taking Strategies',url:'nclex-learning-space-preview.html'},
+    {program_id:'skills',offering_key:'rn_skills_refresher_120_hour',name:'Skills Refresher Class',url:'skills-learning-space-preview.html'},
+    {program_id:'iv',offering_key:'iv_insertion_venipuncture',name:'IV Insertion & Venipuncture',url:'iv-course-review-preview.html'},
+    {program_id:'medtech',offering_key:'medication_technician_6_hour',name:'Medical Technician Class',url:'medtech-learning-space-preview.html'}
+  ];
+  box.innerHTML=courses.map(function(course){
+    var a=assign.find(function(x){return x.offering_key===course.offering_key})||null;
+    var role=a?(a.assignment_role||'Instructor'):'Course workspace';
+    var needsSkills=course.program_id==='skills'||course.program_id==='iv'||course.program_id==='medtech';
+    var extra=course.program_id==='review'
+      ? '<a class="btn secondary" href="#nclex-completion-card">Open NCLEX Completion</a>'
+      : '<a class="btn secondary" href="assessment-skills-workspace-preview.html">Open Assessments &amp; Skills</a>';
+    return '<article class="card course"><div class="eyebrow">'+esc(course.name)+'</div><h3>'+esc(role)+'</h3><div class="toolbar">'+
+      '<a class="btn secondary" href="'+course.url+'">Open Course Workspace</a>'+
+      extra+
+      '<button class="secondary" type="button" data-open-resources>Open Regulatory Resources</button></div></article>';
+  }).join('');
+  box.querySelectorAll('[data-open-resources]').forEach(function(btn){btn.onclick=function(){var tab=document.querySelector('[data-panel="resources"]');if(tab)tab.click()}});
+}
+function renderNclexCompletion(){
+  var box=document.getElementById('nclex-completion-roster');
+  var rows=Array.isArray(state.nclex)?state.nclex:[];
+  box.innerHTML=rows.map(function(r){
+    var normalized=String(r.normalized_enrollment_status||'').toLowerCase();
+    var completed=normalized==='completed'||String(r.enrollment_status||'').toLowerCase()==='completed';
+    var certIssued=!!r.certificate_id;
+    var required=Number(r.attendance_required_sessions||0),satisfied=Number(r.attendance_satisfied_sessions||0),remaining=Number(r.attendance_remaining_sessions||0);
+    var trackingActive=normalized==='active'||normalized==='completed';
+    var attendance='<div class="notice"><strong>Completion basis: Attendance</strong><br>'+
+      (trackingActive?(satisfied+' of '+required+' required sessions satisfied'):'Tracking begins when enrollment becomes active.')+
+      (Number(r.open_makeups||0)>0?'<br><strong>Open make-ups:</strong> '+esc(r.open_makeups):'')+
+      (trackingActive?'<br><strong>Eligibility:</strong> '+(r.attendance_complete?'All required attendance satisfied':'Locked — '+remaining+' required session'+(remaining===1?'':'s')+' remaining'):'')+
+      '</div>';
+    var action=!completed
+      ? (r.attendance_complete&&r.student_enrollment_id
+          ? '<button class="orange" data-mark-training-complete="'+esc(r.student_enrollment_id)+'">Mark Training Complete</button>'
+          : '<button class="secondary" disabled>Training Completion Locked</button>')
+      : !certIssued
+        ? '<div class="toolbar"><span class="tag good">Training Complete</span><button class="orange" data-issue-coc="'+esc(r.student_enrollment_id)+'">Issue Certificate of Completion</button></div>'
+        : '<p><strong>Certificate:</strong> '+esc(r.certificate_number||'Issued')+'</p><a class="btn secondary" target="_blank" href="certificate-staff-print-preview.html?student='+encodeURIComponent(r.student_id)+'">Print / Save COC PDF</a>';
+    return '<article class="card course" data-nclex-student="'+esc(r.student_id)+'"><div class="toolbar"><div><h3>'+esc(r.student_name||'Student')+'</h3><div class="muted">'+esc(r.student_email||'')+'</div></div><div class="push">'+(certIssued?'<span class="tag good">COC Issued</span>':completed?'<span class="tag good">Training Complete</span>':r.attendance_complete?'<span class="tag good">Eligible to Complete</span>':'<span class="tag warn">In Progress</span>')+'</div></div>'+attendance+action+'</article>';
+  }).join('')||'<p class="muted">No NCLEX Review students are currently on the roster.</p>';
+
+  box.querySelectorAll('[data-mark-training-complete]').forEach(function(btn){
+    btn.onclick=async function(){
+      var status=document.getElementById('nclex-completion-status');hide(status);
+      if(!confirm('Confirm training completion for this NCLEX student? The Certificate of Completion will NOT be issued until the separate Issue Certificate action is selected.'))return;
+      btn.disabled=true;
+      try{
+        var r=await window.ItasaStaffHub.markTrainingComplete(btn.dataset.markTrainingComplete);
+        if(!r||r.status!=='completed'){
+          if(r&&r.status==='requirements_incomplete')throw new Error('Training completion is locked because required attendance is not fully satisfied.');
+          throw new Error((r&&r.status)||'Training completion could not be recorded.');
+        }
+        show(status,'NCLEX training completion recorded. The Certificate of Completion can now be issued separately.','good');
+        await load();
+      }catch(e){show(status,e.message||String(e),'error')}
+      finally{btn.disabled=false}
+    };
+  });
+
+  box.querySelectorAll('[data-issue-coc]').forEach(function(btn){
+    btn.onclick=async function(){
+      var status=document.getElementById('nclex-completion-status');hide(status);
+      if(!confirm('Issue the ITASA Certificate of Completion for this student now?'))return;
+      btn.disabled=true;
+      try{
+        var r=await window.ItasaStaffHub.issueTrainingCertificate(btn.dataset.issueCoc);
+        if(!r||['issued','already_issued'].includes(r.status)===false)throw new Error((r&&r.status)||'Certificate could not be issued.');
+        show(status,'Certificate of Completion issued. The printable COC PDF is now available.','good');
+        await load();
+      }catch(e){show(status,e.message||String(e),'error')}
+      finally{btn.disabled=false}
+    };
+  });
+}
+function hubTypeLabel(v){
+  return v==='announcement'?'Announcement':
+    v==='assignment'?'Assignment':
+    v==='workbook_instruction'?'Workbook Instruction':
+    v==='material'?'Course Material':
+    v==='resource'?'Course Resource':
+    v==='instructor_message'?'Instructor Communication':v||'Item';
+}
+function hubProgramMeta(){
+  var st=window.ItasaStaffHub.getCurrentStaff()||{},admin=String(st.role||'').toLowerCase()==='administrator';
+  var all=[
+    {id:'review',label:'NCLEX Review & Test-Taking Strategies',url:'nclex-learning-space-preview.html'},
+    {id:'skills',label:'Skills Refresher Class',url:'skills-learning-space-preview.html'},
+    {id:'iv',label:'IV Insertion & Venipuncture',url:'iv-learning-space-preview.html'},
+    {id:'medtech',label:'Medical Technician Class',url:'medtech-learning-space-preview.html'}
+  ];
+  if(admin)return all;
+  var assigns=state.readiness&&Array.isArray(state.readiness.assignments)?state.readiness.assignments:[];
+  var allowed={};
+  assigns.forEach(function(a){
+    if(a.offering_key==='rn_skills_refresher_120_hour')allowed.skills=true;
+    if(a.offering_key==='iv_insertion_venipuncture')allowed.iv=true;
+    if(a.offering_key==='medication_technician_6_hour')allowed.medtech=true;
+  });
+  return all.filter(function(x){return allowed[x.id]});
+}
+function configureHubProgramOptions(){
+  var sel=document.getElementById('hub-program'),rows=hubProgramMeta(),current=sel.value;
+  sel.innerHTML=rows.map(function(x){return '<option value="'+esc(x.id)+'">'+esc(x.label)+'</option>'}).join('');
+  if(rows.some(function(x){return x.id===current}))sel.value=current;
+  var chosen=rows.find(function(x){return x.id===sel.value})||rows[0];
+  var preview=document.getElementById('hub-preview');
+  if(preview&&chosen)preview.href=chosen.url;
+  document.getElementById('hub-save').disabled=!chosen;
+  document.getElementById('hub-refresh').disabled=!chosen;
+  if(!chosen)document.getElementById('hub-content-list').innerHTML='<p class="muted">No course publishing assignment is attached to this account.</p>';
+}
+function clearHubForm(){
+  document.getElementById('hub-id').value='';
+  document.getElementById('hub-title').value='';
+  document.getElementById('hub-body').value='';
+  document.getElementById('hub-url').value='';
+  document.getElementById('hub-due').value='';
+  document.getElementById('hub-visible').checked=true;
+  document.getElementById('hub-save').textContent='Publish to Student Hub';
+}
+async function loadHubContent(){
+  var program=document.getElementById('hub-program').value,box=document.getElementById('hub-content-list'),status=document.getElementById('hub-content-status');
+  hide(status);box.innerHTML='<p class="muted">Loading class content…</p>';
+  try{
+    var r=await window.ItasaStaffHub.fetchCourseHubItems(program);
+    if(!r||r.status!=='ok')throw new Error((r&&r.status)||'Unable to load class content.');
+    var items=Array.isArray(r.items)?r.items:[];
+    box.innerHTML=items.length?items.map(function(x){
+      return '<article class="card course" data-hub-item="'+esc(x.id)+'"><div class="toolbar"><div><div class="eyebrow">'+esc(hubTypeLabel(x.item_type))+'</div><h3>'+esc(x.title||'Untitled')+'</h3></div><div class="push"><span class="tag '+(x.is_visible?'good':'warn')+'">'+(x.is_visible?'Visible':'Hidden')+'</span></div></div>'+
+        (x.body?'<p>'+esc(x.body)+'</p>':'')+
+        (x.due_at?'<p class="muted"><strong>Due:</strong> '+esc(fmtDate(x.due_at))+'</p>':'')+
+        (x.posted_by?'<p class="muted"><strong>Posted by:</strong> '+esc(x.posted_by)+(x.updated_at?' · '+esc(fmtDate(x.updated_at)):'')+'</p>':'')+
+        (x.resource_url?'<p><a target="_blank" rel="noopener" href="'+esc(x.resource_url)+'">Open linked resource</a></p>':'')+
+        '<button class="secondary" data-edit-hub>Edit</button></article>';
+    }).join(''):'<p class="muted">No Student Hub content has been published for this class yet.</p>';
+    box.querySelectorAll('[data-edit-hub]').forEach(function(btn){
+      btn.onclick=function(){
+        var id=btn.closest('[data-hub-item]').dataset.hubItem,item=items.find(function(x){return x.id===id});if(!item)return;
+        document.getElementById('hub-id').value=item.id||'';
+        document.getElementById('hub-type').value=item.item_type||'announcement';
+        document.getElementById('hub-title').value=item.title||'';
+        document.getElementById('hub-body').value=item.body||'';
+        document.getElementById('hub-url').value=item.resource_url||'';
+        document.getElementById('hub-due').value=item.due_at?String(item.due_at).slice(0,16):'';
+        document.getElementById('hub-visible').checked=item.is_visible!==false;
+        document.getElementById('hub-save').textContent='Save Changes';
+        document.getElementById('panel-hub-content').scrollIntoView({behavior:'smooth',block:'start'});
+      };
+    });
+  }catch(e){
+    box.innerHTML='<p class="muted">This class content could not be loaded.</p>';
+    show(status,e.message||String(e),'error');
+  }
+}
+async function saveHubContent(){
+  var btn=document.getElementById('hub-save'),status=document.getElementById('hub-content-status');hide(status);btn.disabled=true;
+  try{
+    var r=await window.ItasaStaffHub.saveCourseHubItem({
+      id:document.getElementById('hub-id').value||null,
+      program_id:document.getElementById('hub-program').value,
+      item_type:document.getElementById('hub-type').value,
+      title:document.getElementById('hub-title').value,
+      body:document.getElementById('hub-body').value,
+      resource_url:document.getElementById('hub-url').value,
+      due_at:document.getElementById('hub-due').value||null,
+      is_visible:document.getElementById('hub-visible').checked
+    });
+    if(!r||r.status!=='saved')throw new Error((r&&r.status)||'Content was not saved.');
+    show(status,'Saved. Students in this class can now see the item in their Learning Center.','good');
+    clearHubForm();await loadHubContent();
+  }catch(e){show(status,e.message||String(e),'error')}
+  finally{btn.disabled=false}
+}
+function renderCourses(){
+  document.getElementById('course-grid').innerHTML=state.classes.map(function(c){
+    var cap=Number(c.max_seats||0),taken=seatsTaken(c),remain=cap?Math.max(0,cap-taken):null;
+    return '<div class="card course"><div class="eyebrow">'+esc(programName(c.program_id))+'</div><h3>'+esc(c.name||programName(c.program_id))+'</h3>'+
+      '<p><span class="tag '+(dayDiff(c.start_date)>=0?'good':'warn')+'">'+esc(classClock(c))+'</span></p>'+
+      '<p><strong>Schedule:</strong> '+esc(c.meeting_time_label||'Pending confirmation')+'</p>'+
+      '<p><strong>Registered:</strong> '+taken+(cap?' of '+cap:'')+'<br><strong>Seats remaining:</strong> '+(remain==null?'Capacity not set':remain)+'</p>'+
+      '<div class="toolbar"><a class="btn secondary" href="'+studentView(c.program_id)+'">Review Student View</a></div></div>';
+  }).join('')||'<p class="muted">No class records available.</p>';
+}
+function renderOneOnOneAttention(){
+  var box=document.getElementById('one-on-one-attention');
+  var pending=(state.one||[]).filter(function(r){return r.status==='Pending'||r.status==='Approved'||r.status==='Payment Sent'});
+  box.innerHTML=pending.map(function(r){
+    var prefs=[r.preferred_datetime_1,r.preferred_datetime_2,r.preferred_datetime_3].filter(Boolean);
+    var approved=r.status==='Approved'||r.status==='Payment Sent';
+    var student='<div><h3>'+esc((r.first_name||'')+' '+(r.last_name||''))+'</h3><div class="muted">'+esc(r.email)+' · 1 hour · $100</div><p>'+(approved?'<span class="tag good">'+esc(r.status)+'</span>':'<span class="tag warn">Pending</span>')+'</p>'+(r.assistance_needed?'<p><strong>Support requested:</strong><br>'+esc(r.assistance_needed)+'</p>':'')+'</div>';
+    var preferred='<div><label style="margin-top:0">Preferred time'+(prefs.length===1?'':'s')+'</label><div class="muted">'+(prefs.length?prefs.map(esc).join('<br>'):'None provided')+'</div></div>';
+    var confirmBox=approved
+      ? '<div><label style="margin-top:0">Confirmed appointment</label><p><strong>'+esc(r.confirmed_datetime||'Pending')+'</strong></p><p class="muted">The student confirmation email/access package has been queued.</p></div>'
+      : '<div><label for="confirm-'+esc(r.id)+'" style="margin-top:0">Confirmed appointment</label><input id="confirm-'+esc(r.id)+'" data-one-confirmed placeholder="e.g. Thursday, Oct 15 at 4:00 PM"><div class="toolbar" style="margin-top:10px"><button data-one-approve>Approve &amp; Notify Student</button><button class="secondary" data-one-times>Request Different Times</button><button class="secondary" data-one-decline>Decline</button></div></div>';
+    return '<article class="card" data-one-attention="'+esc(r.id)+'"><div class="one-grid">'+student+preferred+confirmBox+'</div></article>';
+  }).join('')||'<p class="muted">No pending Personalized Learning requests right now.</p>';
+
+  box.querySelectorAll('[data-one-approve]').forEach(function(btn){
+    btn.onclick=async function(){
+      var card=btn.closest('[data-one-attention]'),confirmed=card.querySelector('[data-one-confirmed]').value;
+      if(!confirmed){alert('Enter the confirmed appointment date/time first.');return}
+      btn.disabled=true;
+      try{
+        await window.ItasaStaffHub.updateOneOnOneStatus(card.dataset.oneAttention,'Approved',confirmed);
+        await load();
+      }catch(e){alert(e.message||String(e))}
+      finally{btn.disabled=false}
+    };
+  });
+  box.querySelectorAll('[data-one-times]').forEach(function(btn){
+    btn.onclick=async function(){var card=btn.closest('[data-one-attention]');btn.disabled=true;try{await window.ItasaStaffHub.updateOneOnOneStatus(card.dataset.oneAttention,'Request Different Times','');await load()}catch(e){alert(e.message||String(e))}finally{btn.disabled=false}};
+  });
+  box.querySelectorAll('[data-one-decline]').forEach(function(btn){
+    btn.onclick=async function(){var card=btn.closest('[data-one-attention]');if(!confirm('Decline this 1:1 request and notify the student?'))return;btn.disabled=true;try{await window.ItasaStaffHub.updateOneOnOneStatus(card.dataset.oneAttention,'Declined','');await load()}catch(e){alert(e.message||String(e))}finally{btn.disabled=false}};
+  });
+}
+function experienceFormHtml(key,title,help){
+  return '<form class="card" data-experience-form="'+key+'"><div class="eyebrow">'+esc(title)+'</div><p class="muted">'+esc(help)+'</p>'+
+    '<label>Organization / setting</label><input name="organization" required>'+
+    '<label>Role / context</label><input name="role" required>'+
+    '<div class="grid2"><div><label>Start date</label><input name="start" type="date" required></div><div><label>End date</label><input name="end" type="date"></div></div>'+
+    '<label style="display:flex;gap:8px;align-items:center"><input name="current" type="checkbox" style="width:auto"> Current experience</label>'+
+    '<label>Experience summary</label><textarea name="summary" style="width:100%;min-height:90px;padding:10px;border:1px solid #b9cbcd;border-radius:9px" required></textarea>'+
+    '<p class="muted">Submitting this form records your electronic experience attestation for ITASA readiness review.</p>'+
+    '<button type="submit">Submit Experience Attestation</button><div class="notice" data-experience-status hidden></div></form>';
+}
+function bindExperienceForms(){
+  document.querySelectorAll('[data-experience-form]').forEach(function(form){
+    form.onsubmit=async function(ev){
+      ev.preventDefault();
+      var status=form.querySelector('[data-experience-status]'),btn=form.querySelector('button[type="submit"]'),current=form.elements.current.checked;
+      hide(status);btn.disabled=true;
+      try{
+        var r=await window.ItasaStaffHub.submitInstructorExperienceAttestation({
+          evidence_key:form.dataset.experienceForm,
+          organization_name:form.elements.organization.value,
+          role_or_context:form.elements.role.value,
+          experience_start:form.elements.start.value,
+          experience_end:current?null:(form.elements.end.value||null),
+          is_current_experience:current,
+          evidence_summary:form.elements.summary.value
+        });
+        if(!r||r.status!=='attested')throw new Error((r&&r.status)||'Experience attestation could not be saved.');
+        show(status,'Experience attestation saved. Readiness will recalculate automatically.','good');
+        await load();
+      }catch(e){show(status,e.message||String(e),'error')}
+      finally{btn.disabled=false}
+    };
+  });
+}
+function documentTypeLabel(v){
+  return v==='resume_cv'?'CV / Résumé':
+    v==='teaching_experience'?'Teaching Experience Evidence':
+    v==='iv_professional_experience'?'IV Professional Experience Evidence':
+    v==='license_certificate'?'License / Certificate':'Other Qualification Document';
+}
+function renderQualificationDocuments(){
+  var box=document.getElementById('readiness-documents'),docs=state.qualificationDocuments||[];
+  box.innerHTML='<h3>Instructor Documents</h3><p class="muted">Upload a CV, résumé, teaching records, IV-experience evidence, licenses/certificates, or other qualification documents. Files are private. ITASA/admin reviews supporting evidence before it can satisfy a qualification requirement.</p>'+
+    '<form id="qualification-document-form" class="card">'+
+    '<label>Document type</label><select name="document_type"><option value="resume_cv">CV / Résumé</option><option value="teaching_experience">Teaching Experience Evidence</option><option value="iv_professional_experience">IV Professional Experience Evidence</option><option value="license_certificate">License / Certificate</option><option value="other_qualification">Other Qualification Document</option></select>'+
+    '<label>Choose file</label><input name="file" type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.webp" required>'+
+    '<label>Note (optional)</label><textarea name="note" style="width:100%;min-height:70px;padding:10px;border:1px solid #b9cbcd;border-radius:9px" placeholder="What does this document support?"></textarea>'+
+    '<p class="muted">For IV or teaching experience evidence, submit the matching Experience Attestation above first so the document can be linked to that requirement.</p>'+
+    '<button type="submit">Upload Document</button><div id="qualification-document-status" class="notice" hidden></div></form>'+
+    (docs.length?'<div>'+docs.map(function(d){return '<article class="card"><div class="toolbar"><div><strong>'+esc(d.original_filename||'Document')+'</strong><div class="muted">'+esc(documentTypeLabel(d.document_type))+' · uploaded '+esc(d.uploaded_at?fmtDate(d.uploaded_at):'')+'</div></div><div class="push"><span class="tag '+(d.review_status==='verified'?'good':d.review_status==='rejected'?'warn':'')+'">'+esc(String(d.review_status||'pending').replace(/_/g,' '))+'</span></div></div>'+(d.admin_note?'<p class="muted"><strong>Admin note:</strong> '+esc(d.admin_note)+'</p>':'')+'<button type="button" class="secondary" data-view-qualification-doc="'+esc(d.storage_path)+'">View Document</button></article>'}).join('')+'</div>':'<p class="muted">No instructor documents uploaded yet.</p>');
+  var form=document.getElementById('qualification-document-form');
+  if(form)form.onsubmit=async function(ev){
+    ev.preventDefault();
+    var st=document.getElementById('qualification-document-status'),btn=form.querySelector('button[type="submit"]'),file=form.elements.file.files[0],type=form.elements.document_type.value;
+    hide(st);btn.disabled=true;
+    try{
+      var evidenceKey=type==='teaching_experience'?'teaching_experience':type==='iv_professional_experience'?'iv_professional_experience':null;
+      var r=await window.ItasaStaffHub.uploadQualificationDocument(file,{document_type:type,evidence_key:evidenceKey,instructor_note:form.elements.note.value});
+      if(!r||r.status!=='recorded')throw new Error(r&&r.status==='experience_attestation_required'?'Submit the matching Experience Attestation above before uploading this evidence.':(r&&r.status)||'Document could not be recorded.');
+      show(st,'Document uploaded securely for ITASA review.','good');
+      var docs=await window.ItasaStaffHub.fetchMyQualificationDocuments();
+      state.qualificationDocuments=(docs&&docs.status==='ok')?(docs.documents||[]):[];
+      renderQualificationDocuments();
+    }catch(e){show(st,e.message||String(e),'error')}
+    finally{btn.disabled=false}
+  };
+  document.querySelectorAll('[data-view-qualification-doc]').forEach(function(btn){
+    btn.onclick=async function(){try{var url=await window.ItasaStaffHub.qualificationDocumentSignedUrl(btn.dataset.viewQualificationDoc);if(url)window.open(url,'_blank','noopener')}catch(e){alert(e.message||String(e))}};
+  });
+}
+function renderReadiness(){
+  var r=state.readiness||{},
+      assign=Array.isArray(r.assignments)?r.assignments:[],
+      creds=Array.isArray(r.credentials)?r.credentials:[],
+      acks=Array.isArray(r.acknowledgments)?r.acknowledgments:[];
+  document.getElementById('readiness-disclaimer').textContent=r.disclaimer||'Self-attestation does not replace verification of required credentials and qualifications.';
+
+  document.getElementById('readiness-acknowledgments').innerHTML='<h3>My required acknowledgments &amp; attestations</h3><p class="muted">Read each statement carefully. Your electronic acknowledgment is stored with the statement/version you accepted. ITASA still separately verifies credentials and required qualifications.</p>'+
+    (acks.length?acks.map(function(a){
+      return '<article class="attestation '+(a.completed?'done':'')+'"><div class="toolbar"><div><strong>'+esc(a.title)+'</strong>'+(a.class_name?'<div class="muted">'+esc(a.class_name)+'</div>':'')+'</div><div class="push">'+(a.completed?'<span class="tag good">Acknowledged</span>':'<span class="tag warn">Required</span>')+'</div></div><p>'+esc(a.statement_text)+'</p><div class="attestation-actions">'+
+        (a.completed?'<span class="muted">Acknowledged '+esc(a.acknowledged_at?fmtDate(a.acknowledged_at):'')+'</span>':'<button data-acknowledge="'+esc(a.acknowledgment_key)+'">I Acknowledge &amp; Attest</button>')+
+        '</div></article>';
+    }).join(''):'<p class="muted">No acknowledgment is currently assigned to this account.</p>');
+
+  document.querySelectorAll('[data-acknowledge]').forEach(function(btn){
+    btn.onclick=async function(){
+      if(!confirm('Confirm that you have read this statement and electronically acknowledge/attest to it?'))return;
+      btn.disabled=true;
+      try{
+        var result=await window.ItasaStaffHub.acknowledgeInstructorRequirement(btn.dataset.acknowledge);
+        if(!result||result.status!=='acknowledged')throw new Error((result&&result.status)||'Acknowledgment could not be saved.');
+        await load();
+      }catch(e){alert(e.message||String(e))}
+      finally{btn.disabled=false}
+    };
+  });
+
+  var ivAssignment=assign.find(function(a){return a.offering_key==='iv_insertion_venipuncture'});
+  var needsIvExperience=ivAssignment&&Number(ivAssignment.qualification_verified||0)<Number(ivAssignment.qualification_required||0);
+  document.getElementById('readiness-experience').innerHTML=needsIvExperience
+    ? '<h3>IV qualification experience attestations</h3><p class="muted">ITASA already has an automatic structured-attestation path for the two experience requirements. Complete each declaration; once all required fields are present, readiness recalculates automatically.</p><div class="grid2">'+
+      experienceFormHtml('teaching_experience','Teaching experience','Describe your teaching, faculty, precepting, instructional, or comparable learner-education experience.')+
+      experienceFormHtml('iv_professional_experience','Professional nursing / IV experience','Describe your professional nursing experience that included IV therapy responsibilities.')+
+      '</div>'
+    : '<p class="muted">No additional IV experience declaration is currently required.</p>';
+  bindExperienceForms();
+  renderQualificationDocuments();
+
+  document.getElementById('readiness-credentials').innerHTML='<h3>Verified credentials</h3>'+(creds.length?'<ul>'+creds.map(function(c){return '<li><strong>'+esc(c.credential_name)+'</strong> · '+esc(c.jurisdiction||'')+' · verification: '+esc(c.verification_status||'')+' · good standing: '+esc(c.good_standing_status||'')+(c.expiration_date?' · expires '+esc(fmtDate(c.expiration_date)):'')+'</li>'}).join('')+'</ul>':'<p class="muted">No verified credential record is attached to this staff account.</p>');
+
+  document.getElementById('readiness-assignments').innerHTML='<h3>Course readiness</h3>'+(assign.length?assign.map(function(a){
+    var cleared=a.clearance_status==='cleared';
+    return '<article class="card course"><div class="toolbar"><div><h3>'+esc(a.class_name)+'</h3><div class="muted">'+esc(a.assignment_role||'Instructor')+'</div></div><div class="push"><span class="tag '+(cleared?'good':'warn')+'">'+esc(cleared?'Cleared':'Not yet cleared')+'</span></div></div>'+
+      '<p>Verified qualification requirements: <strong>'+esc(a.qualification_verified)+' of '+esc(a.qualification_required)+'</strong><br>ITASA professional accountability: <strong>'+esc(a.organization_acknowledgments_completed)+' of '+esc(a.organization_acknowledgments_required)+'</strong><br>Course-specific accountability: <strong>'+esc(a.course_acknowledgments_completed)+' of '+esc(a.course_acknowledgments_required)+'</strong></p>'+
+      (!cleared?'<p class="muted">This assignment is not yet cleared. Final competency validation remains restricted until all required verification and acknowledgments are complete.</p>':'<p class="muted">This assignment is cleared for the course-specific instructor role recorded by ITASA.</p>')+
+      '</article>';
+  }).join(''):'<p class="muted">No active course assignment is attached to this staff account.</p>');
+}
+function renderAttention(){
+  var items=[];
+  state.classes.forEach(function(c){
+    var cap=Number(c.max_seats||0),taken=seatsTaken(c),remain=cap?Math.max(0,cap-taken):null,d=dayDiff(c.start_date);
+    if(remain===0)items.push(programName(c.program_id)+': class is full.');
+    else if(remain!=null&&remain<=2)items.push(programName(c.program_id)+': only '+remain+' seat'+(remain===1?'':'s')+' remaining.');
+    if(d!=null&&d>=0&&d<=7)items.push(programName(c.program_id)+': first day is '+(d===0?'today':d===1?'tomorrow':'in '+d+' days')+'.');
+  });
+  var onePending=(state.one||[]).filter(function(r){return r.status==='Pending'}).length;
+  if(onePending)items.push(onePending+' pending 1:1 Personalized Learning request'+(onePending===1?' needs':'s need')+' instructor review.');
+  (state.skills||[]).forEach(function(r){
+    var name=r.student_name||'Student',session=r.skills_session;
+    if(r.remediation_required)items.push(r.class_name+': '+name+' requires targeted skills remediation/reassessment.');
+    else if(session&&session.status==='scheduled')items.push(r.class_name+': '+name+' has a scheduled skills check-off.');
+    else if(session&&session.status==='in_progress')items.push(r.class_name+': '+name+' has an in-progress skills check-off that needs completion.');
+    else if(r.skills_ready&&!session)items.push(r.class_name+': '+name+' is ready for skills check-off scheduling.');
+  });
+  document.getElementById('attention').innerHTML=items.length
+    ?'<ul>'+items.map(function(x){return '<li>'+esc(x)+'</li>'}).join('')+'</ul>'
+    :'<p class="muted">Nothing currently requires instructor action.</p>';
+}
+function render(){
+  document.getElementById('work-students').textContent=state.students.length;
+  document.getElementById('work-classes').textContent=state.classes.length;
+  document.getElementById('work-access').textContent=state.access.length;
+  renderCourses();renderAttention();renderOneOnOneAttention();renderKnowledgeFeed();renderAssignedCourseWorkspaces();renderNclexCompletion();renderReadiness();configureHubProgramOptions();
+}
+async function load(){
+  var rs=document.getElementById('refresh-status');
+  if(rs)rs.textContent='Refreshing…';
+  try{
+    var all=await Promise.all([
+      window.ItasaStaffHub.fetchStudents(),
+      window.ItasaSharedContentSupabase.fetchCollection('classes'),
+      window.ItasaStaffHub.fetchClassAccess(),
+      window.ItasaStaffHub.fetchKnowledgeFeed('updates',null,300),
+      window.ItasaStaffHub.fetchNclexCompletionRoster(),
+      window.ItasaStaffHub.fetchOneOnOneRequests(),
+      window.ItasaStaffHub.fetchAssessmentSkillsRoster(),
+      window.ItasaStaffHub.fetchInstructorReadiness(),
+      window.ItasaStaffHub.fetchMyQualificationDocuments()
+    ]);
+    state.students=all[0]||[];
+    state.classes=(all[1]&&all[1].data)||[];
+    if(!state.classes.some(function(c){return c.program_id==='medtech'}))state.classes.push({program_id:'medtech',name:'Medical Technician Class',registration_status:'Coming Soon',start_date:null,max_seats:null,notes:'Registration and payment remain closed while ITASA finalizes course launch details.'});
+    state.access=all[2]||[];
+    state.knowledge=(all[3]&&all[3].status==='ok')?(all[3].items||[]):[];
+    state.nclex=(all[4]&&all[4].status==='ok')?(all[4].rows||[]):[];
+    state.one=all[5]||[];
+    state.skills=(all[6]&&all[6].status==='ok')?(all[6].rows||[]):[];
+    state.readiness=(all[7]&&all[7].status==='ok')?all[7]:null;
+    state.qualificationDocuments=(all[8]&&all[8].status==='ok')?(all[8].documents||[]):[];
+    state.courseLibraries={};
+    var assignments=state.readiness&&Array.isArray(state.readiness.assignments)?state.readiness.assignments:[];
+    await Promise.all(assignments.map(async function(a){
+      try{
+        var feed=await window.ItasaStaffHub.fetchKnowledgeFeed('course_library',a.offering_key,50);
+        state.courseLibraries[a.offering_key]=(feed&&feed.status==='ok')?(feed.items||[]):[];
+      }catch(e){
+        console.error('Course resource load failed',a.offering_key,e);
+        state.courseLibraries[a.offering_key]=[];
+      }
+    }));
+    render();
+    if(rs)rs.textContent='Updated '+new Date().toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});
+  }catch(e){
+    console.error(e);
+    if(rs)rs.textContent='Refresh failed';
+  }
+}
+document.querySelectorAll('.tabs button').forEach(function(b){b.onclick=function(){document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.getElementById('panel-'+b.dataset.panel).classList.add('active')}})
+function sync(){
+  var st=window.ItasaStaffHub.getCurrentStaff();
+  if(st){
+    document.getElementById('login-shell').hidden=true;document.getElementById('workspace-header').hidden=false;document.getElementById('workspace').hidden=false;
+    document.getElementById('staff-name').textContent=st.full_name||st.email;document.getElementById('staff-meta').textContent=st.role+' · '+st.email;
+    document.getElementById('ops-tab').hidden=String(st.role||'').toLowerCase()!=='administrator';load();
+  }else{document.getElementById('login-shell').hidden=false;document.getElementById('workspace-header').hidden=true;document.getElementById('workspace').hidden=true}
+}
+document.getElementById('send-review-reset').onclick=async function(){
+  var s=document.getElementById('reset-status');hide(s);
+  try{
+    var redirect=window.location.origin+window.location.pathname;
+    var r=await window.ItasaStaffHub.client.auth.resetPasswordForEmail('dixonlisa101+instructor@gmail.com',{redirectTo:redirect});
+    if(r.error)throw r.error;
+    show(s,'Password-reset email sent to the Test Instructor review address. Open the email and return here from the recovery link.','good');
+  }catch(e){show(s,e.message||String(e),'error')}
+};
+if(window.location.hash.includes('type=recovery')||window.location.search.includes('type=recovery')){
+  document.getElementById('password-reset-shell').hidden=false;
+}
+document.getElementById('save-review-password').onclick=async function(){
+  var s=document.getElementById('password-reset-status'),pw=document.getElementById('new-review-password').value;hide(s);
+  if(!pw||pw.length<10){show(s,'Use a password with at least 10 characters.','error');return}
+  try{
+    var r=await window.ItasaStaffHub.client.auth.updateUser({password:pw});
+    if(r.error)throw r.error;
+    show(s,'Test Instructor password updated. You can now sign in with the review email and your new password.','good');
+  }catch(e){show(s,e.message||String(e),'error')}
+};
+
+document.getElementById('login-form').onsubmit=async function(ev){ev.preventDefault();var b=document.getElementById('login-btn'),s=document.getElementById('login-status');b.disabled=true;b.textContent='Signing in…';hide(s);var r=await window.ItasaStaffHub.signIn(document.getElementById('staff-email').value,document.getElementById('staff-password').value);document.getElementById('staff-password').value='';b.disabled=false;b.textContent='Sign In';if(!r.ok)show(s,r.error&&r.error.message||'Sign-in failed.','error');else sync()}
+document.getElementById('signout').onclick=async function(){await window.ItasaStaffHub.signOut();sync()}
+document.getElementById('hub-save').onclick=saveHubContent;
+document.getElementById('hub-clear').onclick=clearHubForm;
+document.getElementById('hub-refresh').onclick=loadHubContent;
+document.getElementById('hub-program').onchange=function(){clearHubForm();configureHubProgramOptions();loadHubContent()};
+document.querySelector('[data-panel="hub-content"]').addEventListener('click',function(){setTimeout(loadHubContent,0)});
+document.getElementById('refresh').onclick=async function(){var b=this;b.disabled=true;await load();b.disabled=false};window.ItasaStaffHub.onSessionChange(function(s){if(s.resolved)sync()});
+setInterval(function(){if(window.ItasaStaffHub.getCurrentStaff())load()},60000);
+})();
+</script>
+</body></html>

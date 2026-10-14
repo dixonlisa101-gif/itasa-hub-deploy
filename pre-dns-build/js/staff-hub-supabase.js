@@ -1,0 +1,571 @@
+/*
+ * ITASA Hub vNext — staff auth + Information Session roster.
+ *
+ * Preview branch only. This is intentionally independent of GenSpark's
+ * workspace.html route and uses Supabase Auth + RLS as the authorization
+ * boundary.
+ */
+(function () {
+  'use strict';
+
+  var SUPABASE_URL = 'https://eigkebtzkhyglsqdfpvr.supabase.co';
+  var SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_yXPEpK3gC5p91PH8-tmJgw_BuM8Y5Zv';
+
+  if (!window.supabase || typeof window.supabase.createClient !== 'function') {
+    console.error('ITASA staff hub: Supabase client unavailable.');
+    return;
+  }
+
+  var client = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+  var currentStaff = null;
+  var resolved = false;
+  var listeners = [];
+
+  function emit() {
+    listeners.forEach(function (fn) {
+      try { fn({ staff: currentStaff, resolved: resolved }); } catch (e) {}
+    });
+  }
+
+  async function resolveStaff() {
+    resolved = false;
+    emit();
+    try {
+      var sess = await client.auth.getSession();
+      var user = sess && sess.data && sess.data.session ? sess.data.session.user : null;
+      if (!user) {
+        currentStaff = null;
+        resolved = true;
+        emit();
+        return null;
+      }
+
+      var result = await client
+        .from('staff')
+        .select('id,email,full_name,role,active')
+        .eq('id', user.id)
+        .maybeSingle();
+
+      if (result.error) throw result.error;
+      if (!result.data || !result.data.active) {
+        currentStaff = null;
+      } else {
+        currentStaff = {
+          id: result.data.id,
+          email: result.data.email,
+          full_name: result.data.full_name || '',
+          role: result.data.role || ''
+        };
+      }
+    } catch (err) {
+      console.error('ITASA staff hub: resolveStaff failed', err);
+      currentStaff = null;
+    }
+    resolved = true;
+    emit();
+    return currentStaff;
+  }
+
+  client.auth.onAuthStateChange(function () {
+    setTimeout(resolveStaff, 0);
+  });
+
+  async function signIn(email, password) {
+    var result = await client.auth.signInWithPassword({
+      email: (email || '').trim().toLowerCase(),
+      password: password || ''
+    });
+    if (result.error) return { ok: false, error: result.error };
+    var staff = await resolveStaff();
+    if (!staff) {
+      await client.auth.signOut();
+      return { ok: false, error: new Error('This account is not active ITASA staff.') };
+    }
+    return { ok: true, staff: staff };
+  }
+
+  async function signOut() {
+    try { await client.auth.signOut(); }
+    finally {
+      currentStaff = null;
+      resolved = true;
+      emit();
+    }
+  }
+
+  async function fetchInfoSessionRoster() {
+    if (!currentStaff) throw new Error('Staff sign-in required.');
+
+    var result = await client
+      .from('interest_list')
+      .select([
+        'id',
+        'first_name',
+        'last_name',
+        'email',
+        'phone',
+        'nursing_school',
+        'graduation_date',
+        'nclex_exam_type',
+        'attempt_status',
+        'testing_timeframe',
+        'referral_source',
+        'support_notes',
+        'prospect_intent',
+        'program_interest',
+        'info_session_attendance',
+        'info_session_attendance_at',
+        'info_session_attendance_by',
+        'created_at'
+      ].join(','))
+      .eq('prospect_intent', 'nclex_info_session')
+      .order('created_at', { ascending: false });
+
+    if (result.error) throw result.error;
+    return result.data || [];
+  }
+
+  async function updateAttendance(id, status) {
+    if (!currentStaff) throw new Error('Staff sign-in required.');
+    var allowed = ['registered', 'Attended', 'No-show', 'Blocked'];
+    if (allowed.indexOf(status) === -1) throw new Error('Invalid attendance status.');
+
+    var result = await client
+      .from('interest_list')
+      .update({ info_session_attendance: status })
+      .eq('id', id)
+      .select('id,info_session_attendance,info_session_attendance_at,info_session_attendance_by')
+      .single();
+
+    if (result.error) throw result.error;
+    return result.data;
+  }
+
+
+  function requireStaff() {
+    if (!currentStaff) throw new Error('Staff sign-in required.');
+    return currentStaff;
+  }
+
+  function requireOperator() {
+    var st = requireStaff();
+    if (['administrator', 'instructor'].indexOf(st.role) === -1) {
+      throw new Error('Administrator or instructor access required.');
+    }
+    return st;
+  }
+
+  // READ-ONLY financial/access roster. The operations UI intentionally does
+  // not expose manual payment mutation or portal-access grant controls.
+  async function fetchStudents() {
+    requireStaff();
+    var result = await client
+      .from('students')
+      .select([
+        'id','first_name','last_name','email','phone','program_id','cohort_id',
+        'payment_status','enrollment_status','portal_access','intake_complete',
+        'certificate_status','amount_paid','remaining_balance','next_payment_due',
+        'payment_option','registration_email_sent','payment_email_sent',
+        'access_email_sent','created_at','updated_at','intake'
+      ].join(','))
+      .order('created_at', { ascending: false });
+    if (result.error) throw result.error;
+    return result.data || [];
+  }
+
+  async function fetchClassAccess() {
+    requireStaff();
+    var result = await client
+      .from('class_access')
+      .select('id,cohort_id,class_time,link,meeting_id,passcode,note,updated_at,updated_by')
+      .order('cohort_id', { ascending: true });
+    if (result.error) throw result.error;
+    return result.data || [];
+  }
+
+  async function upsertClassAccess(entry) {
+    requireOperator();
+    var cohortId = String(entry && entry.cohort_id || '').trim();
+    if (!cohortId) throw new Error('Class/cohort is required.');
+    var row = {
+      cohort_id: cohortId,
+      class_time: String(entry && entry.class_time || '').trim() || null,
+      link: String(entry && entry.link || '').trim() || null,
+      meeting_id: String(entry && entry.meeting_id || '').trim() || null,
+      passcode: String(entry && entry.passcode || '').trim() || null,
+      note: String(entry && entry.note || '').trim() || null
+    };
+    var result = await client
+      .from('class_access')
+      .upsert(row, { onConflict: 'cohort_id' })
+      .select('id,cohort_id,class_time,link,meeting_id,passcode,note,updated_at,updated_by')
+      .single();
+    if (result.error) throw result.error;
+    return result.data;
+  }
+
+
+  async function fetchServiceAccess() {
+    requireStaff();
+    var result = await client
+      .from('service_access')
+      .select('service_key,service_name,link,meeting_id,passcode,schedule_text,note,updated_at,updated_by')
+      .order('service_key', { ascending: true });
+    if (result.error) throw result.error;
+    return result.data || [];
+  }
+
+  async function upsertServiceAccess(entry) {
+    var st=requireStaff();
+    if (String(st.role || '').toLowerCase() !== 'administrator') {
+      throw new Error('Administrator access required.');
+    }
+    var serviceKey=String(entry && entry.service_key || '').trim();
+    if (['information_session','one_on_one'].indexOf(serviceKey)===-1) {
+      throw new Error('Invalid service access key.');
+    }
+    var row={
+      service_key: serviceKey,
+      service_name: serviceKey==='information_session'?'ITASA Information Session':'1:1 Test-Taking Strategies Session',
+      link: String(entry && entry.link || '').trim() || null,
+      meeting_id: String(entry && entry.meeting_id || '').trim() || null,
+      passcode: String(entry && entry.passcode || '').trim() || null,
+      schedule_text: String(entry && entry.schedule_text || '').trim() || null,
+      note: String(entry && entry.note || '').trim() || null,
+      updated_by: st.id,
+      updated_at: new Date().toISOString()
+    };
+    var result=await client
+      .from('service_access')
+      .upsert(row,{onConflict:'service_key'})
+      .select('service_key,service_name,link,meeting_id,passcode,schedule_text,note,updated_at,updated_by')
+      .single();
+    if(result.error) throw result.error;
+    return result.data;
+  }
+
+
+  async function fetchCourseHubItems(programId) {
+    requireStaff();
+    var result = await client.rpc('get_my_instructor_course_hub_items', {
+      p_program_id: programId || ''
+    });
+    if (result.error) throw result.error;
+    return result.data || { status: 'error', items: [] };
+  }
+
+  async function saveCourseHubItem(item) {
+    requireStaff();
+    item = item || {};
+    var result = await client.rpc('upsert_my_instructor_course_hub_item', {
+      p_id: item.id || null,
+      p_program_id: item.program_id || '',
+      p_item_type: item.item_type || '',
+      p_title: item.title || '',
+      p_body: item.body || null,
+      p_resource_url: item.resource_url || null,
+      p_due_at: item.due_at || null,
+      p_is_visible: item.is_visible !== false
+    });
+    if (result.error) throw result.error;
+    return result.data || { status: 'error' };
+  }
+
+  async function fetchCertificates() {
+    requireStaff();
+    var result = await client
+      .from('certificates')
+      .select([
+        'id','student_id','cohort_id','status','issued_at','certificate_url',
+        'number','completion_date','program_id','certificate_title',
+        'training_hours','provider_name','trainer_name','trainer_credential',
+        'training_location','created_at'
+      ].join(','))
+      .order('created_at', { ascending: false });
+    if (result.error) throw result.error;
+    return result.data || [];
+  }
+
+  async function fetchOneOnOneRequests() {
+    requireOperator();
+    var result = await client
+      .from('one_on_one_session_requests')
+      .select([
+        'id','program_id','first_name','last_name','email','phone',
+        'session_length','session_amount','pricing_version','assistance_needed',
+        'preferred_datetime_1','preferred_datetime_2','preferred_datetime_3',
+        'confirmed_datetime','status','status_history','portal_code','access_issued_at',
+        'zoom_link','meeting_id','passcode','created_at','updated_at'
+      ].join(','))
+      .order('created_at', { ascending: false });
+    if (result.error) throw result.error;
+    return result.data || [];
+  }
+
+  async function updateOneOnOneStatus(id, status, confirmedDatetime, details) {
+    requireOperator();
+    var allowed = ['Pending','Approved','Request Different Times','Declined','Payment Sent','Paid','Completed'];
+    if (allowed.indexOf(status) === -1) throw new Error('Invalid 1:1 request status.');
+    if (status === 'Approved' && !String(confirmedDatetime || '').trim()) {
+      throw new Error('Confirmed appointment date/time is required when approving.');
+    }
+    var patch = { status: status };
+    if (status === 'Approved') patch.confirmed_datetime = String(confirmedDatetime).trim();
+    details = details || {};
+    if (Object.prototype.hasOwnProperty.call(details,'zoom_link')) patch.zoom_link = String(details.zoom_link || '').trim() || null;
+    if (Object.prototype.hasOwnProperty.call(details,'meeting_id')) patch.meeting_id = String(details.meeting_id || '').trim() || null;
+    if (Object.prototype.hasOwnProperty.call(details,'passcode')) patch.passcode = String(details.passcode || '').trim() || null;
+
+    var result = await client
+      .from('one_on_one_session_requests')
+      .update(patch)
+      .eq('id', id)
+      .select('id,status,confirmed_datetime,zoom_link,meeting_id,passcode,status_history,updated_at')
+      .single();
+    if (result.error) throw result.error;
+    return result.data;
+  }
+
+  async function fetchAuditLog(limit) {
+    requireStaff();
+    var n = Math.max(1, Math.min(Number(limit) || 50, 200));
+    var result = await client
+      .from('audit_log')
+      .select('id,actor_name,role,action,target_type,target_id,details,at,event_category,retention_class,retain_until,source')
+      .order('at', { ascending: false })
+      .limit(n);
+    if (result.error) throw result.error;
+    return result.data || [];
+  }
+
+
+
+
+  async function fetchInstructorReadiness() {
+    requireStaff();
+    var result = await client.rpc('get_my_instructor_readiness');
+    if (result.error) throw result.error;
+    return result.data || { status: 'error', assignments: [], credentials: [] };
+  }
+
+
+  async function acknowledgeInstructorRequirement(key) {
+    requireStaff();
+    var result = await client.rpc('acknowledge_my_instructor_requirement', {
+      p_acknowledgment_key: key || ''
+    });
+    if (result.error) throw result.error;
+    return result.data || { status: 'error' };
+  }
+
+
+  async function submitInstructorExperienceAttestation(payload) {
+    requireStaff();
+    payload = payload || {};
+    var result = await client.rpc('submit_my_instructor_experience_attestation', {
+      p_evidence_key: payload.evidence_key || '',
+      p_organization_name: payload.organization_name || '',
+      p_role_or_context: payload.role_or_context || '',
+      p_experience_start: payload.experience_start || null,
+      p_experience_end: payload.experience_end || null,
+      p_is_current_experience: !!payload.is_current_experience,
+      p_evidence_summary: payload.evidence_summary || ''
+    });
+    if (result.error) throw result.error;
+    return result.data || { status: 'error' };
+  }
+
+  async function uploadQualificationDocument(file, meta) {
+    requireStaff();
+    if (!file) throw new Error('Choose a document to upload.');
+    meta = meta || {};
+    var safeName = String(file.name || 'document').replace(/[^a-zA-Z0-9._-]+/g, '_');
+    var path = currentStaff.id + '/' + Date.now() + '-' + safeName;
+    var up = await client.storage.from('staff-qualification-documents').upload(path, file, {
+      contentType: file.type || 'application/octet-stream',
+      upsert: false
+    });
+    if (up.error) throw up.error;
+    var rec = await client.rpc('record_my_qualification_document', {
+      p_document_type: meta.document_type || 'other_qualification',
+      p_evidence_key: meta.evidence_key || null,
+      p_storage_path: path,
+      p_original_filename: file.name || safeName,
+      p_mime_type: file.type || 'application/octet-stream',
+      p_file_size: Number(file.size || 0),
+      p_instructor_note: meta.instructor_note || null
+    });
+    if (rec.error) {
+      await client.storage.from('staff-qualification-documents').remove([path]);
+      throw rec.error;
+    }
+    return rec.data || { status: 'error' };
+  }
+
+  async function fetchMyQualificationDocuments() {
+    requireStaff();
+    var result = await client.rpc('get_my_qualification_documents');
+    if (result.error) throw result.error;
+    return result.data || { status: 'error', documents: [] };
+  }
+
+  async function qualificationDocumentSignedUrl(path) {
+    requireStaff();
+    var result = await client.storage.from('staff-qualification-documents').createSignedUrl(path, 300);
+    if (result.error) throw result.error;
+    return result.data && result.data.signedUrl ? result.data.signedUrl : null;
+  }
+
+  async function fetchQualificationDocumentReviewQueue() {
+    requireStaff();
+    var result = await client.rpc('get_staff_qualification_document_review_queue');
+    if (result.error) throw result.error;
+    return result.data || { status: 'error', documents: [] };
+  }
+
+  async function reviewQualificationDocument(id, decision, note) {
+    requireStaff();
+    var result = await client.rpc('review_staff_qualification_document', {
+      p_document_id: id,
+      p_decision: decision,
+      p_admin_note: note || null
+    });
+    if (result.error) throw result.error;
+    return result.data || { status: 'error' };
+  }
+
+  async function fetchAssessmentSkillsRoster() {
+    requireOperator();
+    var result = await client.rpc('get_assessment_skills_roster');
+    if (result.error) throw result.error;
+    return result.data || { status: 'error', rows: [] };
+  }
+
+  async function fetchKnowledgeFeed(channel, offeringKey, limit) {
+    requireStaff();
+    var result = await client.rpc('get_my_staff_knowledge_feed', {
+      p_channel: channel || 'updates',
+      p_offering_key: offeringKey || null,
+      p_limit: Number(limit || 50)
+    });
+    if (result.error) throw result.error;
+    return result.data || { status: 'error', items: [] };
+  }
+
+  async function fetchNclexCompletionRoster() {
+    requireOperator();
+    var result = await client.rpc('get_nclex_completion_roster');
+    if (result.error) throw result.error;
+    return result.data || { status: 'error', rows: [] };
+  }
+
+  async function getTrainingCompletionControl(enrollmentId) {
+    requireOperator();
+    var result = await client.rpc('get_training_completion_control', {
+      p_student_enrollment_id: enrollmentId
+    });
+    if (result.error) throw result.error;
+    return result.data || { status: 'error' };
+  }
+
+  async function markTrainingComplete(enrollmentId) {
+    requireOperator();
+    var result = await client.rpc('mark_training_complete', {
+      p_student_enrollment_id: enrollmentId
+    });
+    if (result.error) throw result.error;
+    return result.data || { status: 'error' };
+  }
+
+  async function issueTrainingCertificate(enrollmentId) {
+    requireOperator();
+    var result = await client.rpc('issue_training_certificate', {
+      p_student_enrollment_id: enrollmentId
+    });
+    if (result.error) throw result.error;
+    return result.data || { status: 'error' };
+  }
+
+
+  async function fetchAccessRecoveryExceptions() {
+    requireStaff();
+    var result=await client.rpc('get_access_recovery_exception_queue');
+    if(result.error)throw result.error;
+    return result.data||{status:'error',requests:[]};
+  }
+
+  async function reviewAccessRecoveryException(requestId,decision,note) {
+    requireStaff();
+    var result=await client.rpc('review_access_recovery_exception',{
+      p_request_id:requestId,
+      p_decision:decision,
+      p_admin_note:note||''
+    });
+    if(result.error)throw result.error;
+    return result.data||{status:'error'};
+  }
+
+  async function fetchEvidenceRetentionOverview() {
+    requireStaff();
+    var result = await client.rpc('get_evidence_retention_overview');
+    if (result.error) throw result.error;
+    return result.data || { status: 'error', rows: [] };
+  }
+
+  async function fetchItSystemOversight() {
+    requireStaff();
+    var result = await client.rpc('get_it_system_oversight');
+    if (result.error) throw result.error;
+    return result.data || { status: 'error' };
+  }
+
+  function onSessionChange(fn) {
+    if (typeof fn === 'function') listeners.push(fn);
+    return function () {
+      listeners = listeners.filter(function (x) { return x !== fn; });
+    };
+  }
+
+  window.ItasaStaffHub = {
+    client: client,
+    signIn: signIn,
+    signOut: signOut,
+    resolveStaff: resolveStaff,
+    getCurrentStaff: function () { return currentStaff; },
+    isResolved: function () { return resolved; },
+    fetchInfoSessionRoster: fetchInfoSessionRoster,
+    updateAttendance: updateAttendance,
+    fetchStudents: fetchStudents,
+    fetchClassAccess: fetchClassAccess,
+    upsertClassAccess: upsertClassAccess,
+    fetchServiceAccess: fetchServiceAccess,
+    upsertServiceAccess: upsertServiceAccess,
+    fetchCourseHubItems: fetchCourseHubItems,
+    saveCourseHubItem: saveCourseHubItem,
+    fetchCertificates: fetchCertificates,
+    fetchOneOnOneRequests: fetchOneOnOneRequests,
+    updateOneOnOneStatus: updateOneOnOneStatus,
+    fetchAuditLog: fetchAuditLog,
+    fetchInstructorReadiness: fetchInstructorReadiness,
+    acknowledgeInstructorRequirement: acknowledgeInstructorRequirement,
+    submitInstructorExperienceAttestation: submitInstructorExperienceAttestation,
+    uploadQualificationDocument: uploadQualificationDocument,
+    fetchMyQualificationDocuments: fetchMyQualificationDocuments,
+    qualificationDocumentSignedUrl: qualificationDocumentSignedUrl,
+    fetchQualificationDocumentReviewQueue: fetchQualificationDocumentReviewQueue,
+    reviewQualificationDocument: reviewQualificationDocument,
+    fetchAssessmentSkillsRoster: fetchAssessmentSkillsRoster,
+    fetchKnowledgeFeed: fetchKnowledgeFeed,
+    fetchNclexCompletionRoster: fetchNclexCompletionRoster,
+    getTrainingCompletionControl: getTrainingCompletionControl,
+    markTrainingComplete: markTrainingComplete,
+    issueTrainingCertificate: issueTrainingCertificate,
+    fetchAccessRecoveryExceptions: fetchAccessRecoveryExceptions,
+    reviewAccessRecoveryException: reviewAccessRecoveryException,
+    fetchEvidenceRetentionOverview: fetchEvidenceRetentionOverview,
+    fetchItSystemOversight: fetchItSystemOversight,
+    onSessionChange: onSessionChange
+  };
+
+  resolveStaff();
+})();

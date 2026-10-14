@@ -1,0 +1,501 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
+<title>ITASA Operations Workspace vNext Preview</title>
+<style>
+:root{--teal:#177982;--dark:#0d5961;--ink:#18343b;--muted:#64777c;--line:#d9e7e8;--soft:#f6fbfb;--warn:#fff7e9;--danger:#fff0f0;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;color:var(--ink);background:#f8fbfb}
+*{box-sizing:border-box}body{margin:0}.preview{background:#382e28;color:#fff;text-align:center;padding:10px 16px;font-weight:800}
+main{max-width:1200px;margin:auto;padding:24px 18px 64px}.card{background:#fff;border:1px solid var(--line);border-radius:15px;padding:18px;margin:14px 0;box-shadow:0 7px 20px rgba(17,71,78,.05)}
+h1,h2,h3{margin:.2rem 0 .7rem}.muted{color:var(--muted)}.eyebrow{text-transform:uppercase;letter-spacing:.08em;font-size:.74rem;font-weight:900;color:var(--teal)}
+label{display:block;font-weight:800;margin:.7rem 0 .3rem}input,select,textarea{width:100%;padding:10px 11px;border:1px solid #b9cbcd;border-radius:9px;font:inherit}textarea{min-height:76px}
+button{border:0;border-radius:9px;padding:10px 13px;font:inherit;font-weight:800;cursor:pointer;background:var(--teal);color:#fff}button.secondary{background:#e9f4f4;color:var(--dark)}button.danger{background:#9d3c3c}button[disabled]{opacity:.5;cursor:not-allowed}
+.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.push{margin-left:auto}.metrics{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}.metric{background:#fff;border:1px solid var(--line);border-radius:12px;padding:13px}.metric strong{display:block;font-size:1.5rem;margin-top:4px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}.tabs button{background:#eaf4f4;color:var(--dark)}.tabs button.active{background:var(--teal);color:#fff}.panel{display:none}.panel.active{display:block}
+table{width:100%;border-collapse:collapse}th,td{padding:10px 8px;border-bottom:1px solid #e5eeee;text-align:left;vertical-align:top}th{font-size:.82rem;color:#5e7277}.tag{display:inline-block;border-radius:999px;padding:4px 8px;background:#edf5f5;font-size:.78rem;font-weight:800}.tag.good{background:#e8f6ed;color:#2d6b4b}.tag.warn{background:#fff1dc;color:#8e5619}.tag.bad{background:#fae9e9;color:#8a3131}
+.notice{padding:11px 13px;border-radius:10px;background:#eef7f7;margin:10px 0}.notice.warn{background:var(--warn)}.notice.error{background:var(--danger);color:#8a3131}.notice.good{background:#ecf7f0;color:#2b6447}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.class-card{border:1px solid var(--line);border-radius:13px;padding:16px;background:#fff}.formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.full{grid-column:1/-1}
+.request{border:1px solid var(--line);border-radius:13px;padding:15px;margin:12px 0;background:#fff}.history{font-size:.86rem;color:#5f7378}.read-only{border-left:4px solid #91aeb1}.risk{border-left:4px solid #d3923c}
+[hidden]{display:none!important}
+@media(max-width:900px){.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.grid2{grid-template-columns:1fr}}
+@media(max-width:680px){.formgrid,.metrics{grid-template-columns:1fr}table,thead,tbody,tr,td,th{display:block}thead{display:none}tr{border:1px solid var(--line);border-radius:11px;margin:10px 0;padding:9px}td{border:0;padding:5px 0}.full{grid-column:auto}}
+</style>
+</head>
+<body>
+<div class="preview">PREVIEW ONLY — GenSpark-independent ITASA Operations Workspace. Not live.</div>
+<main>
+  <div class="card">
+    <div class="toolbar"><div><div class="eyebrow">ITASA Operations</div><h1>Operations Workspace vNext</h1></div><a class="push" href="instructor-workspace-preview.html">← Instructor Workspace</a></div>
+    <p class="muted">Authenticated directly through ITASA's Supabase staff system. No GenSpark workspace or GenSpark login is used.</p>
+
+    <div id="login-shell">
+      <form id="login-form" style="max-width:520px">
+        <label for="staff-email">ITASA Staff Email</label>
+        <input id="staff-email" type="email" autocomplete="username" required>
+        <label for="staff-password">Password</label>
+        <input id="staff-password" type="password" autocomplete="current-password" required>
+        <button id="login-btn" type="submit" style="margin-top:14px">Sign In</button>
+      </form>
+      <div id="login-status" class="notice" hidden></div>
+    </div>
+
+    <div id="workspace-header" hidden>
+      <div class="toolbar">
+        <div><strong id="staff-name"></strong><div id="staff-meta" class="muted"></div></div>
+        <span id="refresh-status" class="muted push"></span><button id="refresh-all" class="secondary">Refresh Operations</button>
+        <button id="signout-btn" class="secondary">Sign Out</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="workspace" hidden>
+    <div class="metrics">
+      <div class="metric"><span>Students</span><strong id="m-students">—</strong></div>
+      <div class="metric"><span>Info Session</span><strong id="m-info">—</strong></div>
+      <div class="metric"><span>Pending 1:1</span><strong id="m-one">—</strong></div>
+      <div class="metric"><span>Zoom Paths Set</span><strong id="m-access">—</strong></div>
+      <div class="metric"><span>Certificates</span><strong id="m-certs">—</strong></div>
+    </div>
+
+    <div class="tabs">
+      <button data-panel="students" class="active">Students</button>
+      <button data-panel="recovery">Access Recovery</button>
+      <button data-panel="info">Information Session</button>
+      <button data-panel="access">Class Access / Zoom</button>
+      <button data-panel="one">Personalized Learning Requests</button>
+      <button data-panel="certs">Certificates</button>
+      <button data-panel="audit">Audit Activity</button>
+      <button data-panel="build">TLC Build Status</button>
+      <button data-panel="it">IT &amp; System Oversight</button>
+    </div>
+
+    <section id="panel-students" class="panel active">
+      <div class="card read-only">
+        <div class="eyebrow">Read-only financial truth</div>
+        <h2>Student Operations</h2>
+        <p class="muted">Payment status, balances, portal access, and email-delivery state are displayed here but cannot be manually changed from this workspace. Stripe-confirmed payments and the authoritative payment RPC remain the source of truth; email delivery state is tracked by ITASA's email outbox.</p>
+        <div class="toolbar">
+          <input id="student-search" placeholder="Search name, email, class…" style="max-width:360px">
+        </div>
+        <div style="overflow:auto"><table><thead><tr><th>Student</th><th>Class</th><th>Registration</th><th>Payment</th><th>Access</th><th>Communications</th></tr></thead><tbody id="students-body"></tbody></table></div>
+      </div>
+    </section>
+
+    <section id="panel-recovery" class="panel">
+      <div class="card">
+        <div class="eyebrow">Student Access Recovery Exceptions</div>
+        <h2>Simple Admin/IT recovery queue</h2>
+        <p class="muted">Most students recover access automatically. Only students who cannot use their registered email or recovery key appear here. Review the matched student information, then choose one action.</p>
+        <div id="recovery-queue-status" class="notice" hidden></div>
+        <div id="recovery-queue"><p class="muted">Loading recovery exceptions…</p></div>
+      </div>
+    </section>
+
+    <section id="panel-info" class="panel">
+      <div class="card">
+        <div class="eyebrow">Screen before Zoom</div>
+        <h2>Information Session Roster</h2>
+        <p class="muted">Known Interest List prospects only. Blocking an email prevents future Information Session handoffs through the Hub; already-issued Zoom access still requires host enforcement when applicable.</p>
+        <div class="toolbar"><input id="info-search" placeholder="Search roster…" style="max-width:360px"><select id="info-filter" style="max-width:180px"><option value="">All statuses</option><option>registered</option><option>Attended</option><option>No-show</option><option>Blocked</option></select></div>
+        <div id="info-status" class="notice" hidden></div>
+        <div style="overflow:auto"><table><thead><tr><th>Prospect</th><th>Interest</th><th>Submitted</th><th>Status</th><th>Action</th></tr></thead><tbody id="info-body"></tbody></table></div>
+      </div>
+    </section>
+
+    <section id="panel-access" class="panel">
+      <div class="card risk">
+        <div class="eyebrow">Operational requirement</div>
+        <h2>Zoom Access — Four ITASA Pathways</h2>
+        <p class="muted"><strong>Zoom is used only for:</strong> NCLEX Review, Skills Refresher, the Information Session, and the ITASA Personalized Learning Session - 1:1 Session. IV Insertion &amp; Venipuncture and Medical Technician Class do not require Zoom access here.</p>
+        <div id="access-status" class="notice warn">Loading current Zoom configuration…</div>
+        <h3>Classes</h3><div id="access-grid" class="grid2"></div>
+        <h3 style="margin-top:18px">Services</h3><div id="service-access-grid" class="grid2"></div>
+      </div>
+    </section>
+
+    <section id="panel-one" class="panel">
+      <div class="card">
+        <div class="eyebrow">Scheduling & follow-up</div>
+        <h2>ITASA Personalized Learning Session - Personalized Learning Requests</h2>
+        <p class="muted">The current 1:1 rate is <strong>$100 for one hour</strong>. When an instructor confirms the appointment, the system creates the student's 1:1 access code and queues the confirmation email with the appointment, payment step, Student Space sign-in, and configured Zoom access.</p>
+        <div id="one-status" class="notice" hidden></div>
+        <div id="one-list"></div>
+      </div>
+    </section>
+
+    <section id="panel-certs" class="panel">
+      <div class="card read-only">
+        <div class="eyebrow">Read-only first increment</div>
+        <h2>Certificates</h2>
+        <p class="muted">Certificate records are visible here. Course completion and certificate issuance are completed through the validated instructor workflows; this operations view provides oversight of the resulting records.</p>
+        <div style="overflow:auto"><table><thead><tr><th>Certificate</th><th>Student ID</th><th>Class</th><th>Status</th><th>Issued</th></tr></thead><tbody id="certs-body"></tbody></table></div>
+      </div>
+    </section>
+
+    <section id="panel-audit" class="panel">
+      <div class="card read-only">
+        <div class="eyebrow">Accountability</div>
+        <h2>Recent Audit Activity</h2>
+        <p class="muted">Filter the audit trail by student/instructor text, action, target, category, retention class, or date. Audit records are read-only here.</p>
+        <div class="formgrid" style="margin-bottom:12px">
+          <div><label for="audit-search">Search</label><input id="audit-search" placeholder="Student, instructor, action, target…"></div>
+          <div><label for="audit-category">Category</label><select id="audit-category"><option value="">All categories</option></select></div>
+          <div><label for="audit-retention">Retention</label><select id="audit-retention"><option value="">All retention classes</option></select></div>
+          <div><label for="audit-from">From date</label><input id="audit-from" type="date"></div>
+          <div><label for="audit-to">To date</label><input id="audit-to" type="date"></div>
+        </div>
+        <div style="overflow:auto"><table><thead><tr><th>When</th><th>Actor</th><th>Action</th><th>Target</th><th>Category</th><th>Retention</th><th>Details</th></tr></thead><tbody id="audit-body"></tbody></table></div>
+      </div>
+    </section>
+
+    <section id="panel-build" class="panel">
+      <div class="card read-only">
+        <div class="eyebrow">Read-only implementation tracker</div>
+        <h2>TLC Build &amp; Implementation Status</h2>
+        <p class="muted">This view mirrors the project implementation tracker used during development. It is read-only here so Admin/IT can see what is Not Started, In Progress, Built, Tested, or Verified Live without changing project controls.</p>
+        <div class="toolbar" style="margin-bottom:12px">
+          <button id="refresh-build-status" class="secondary" type="button">Refresh Build Status</button>
+        </div>
+        <div id="build-status" class="notice">Loading TLC implementation tracker…</div>
+        <div id="build-tracker"></div>
+      </div>
+    </section>
+
+    <section id="panel-it" class="panel">
+      <div class="card">
+        <div class="eyebrow">ITASA IT Oversight</div>
+        <h2>System health &amp; automation checks</h2>
+        <p class="muted">Administrator-only view of the student-email queue, knowledge-source health, required Zoom pathways, and scheduled background jobs.</p>
+        <div id="it-status" class="notice" hidden></div>
+        <div class="card">
+          <div class="eyebrow">Release Readiness</div>
+          <h3>Final TLC functional audit</h3>
+          <ul>
+            <li>Verify Explore Courses shows NCLEX Review, Skills Refresher, IV Insertion &amp; Venipuncture, and Medical Technician Class correctly.</li>
+            <li>Verify Direct Registration allows only courses currently open for enrollment; IV registration/payment must remain blocked, and Medical Technician must remain Coming Soon with registration/payment closed.</li>
+            <li>Verify Student Sign In and each student learning space route correctly: NCLEX, Skills Refresher, IV, and Medical Technician.</li>
+            <li>Verify Instructor → My Courses, Review Student View, assessments/skills work, and IV/Medical Technician instructor resources route correctly.</li>
+            <li>Test all major navigation links, buttons, forms, images, and protected routes on desktop and mobile.</li>
+            <li>Confirm there are no broken images, dead links, misleading availability messages, or unintended payment/registration paths.</li>
+            <li><strong>Email release hold:</strong> Resend domain verification is still required for innovationtrainingnstaffing.com before TLC registration and 1:1 notification emails can be confirmed live.</li>
+            <li><strong>Zoom configuration mismatch:</strong> The Information Session Zoom registration page still shows the past Sep 20, 2026 date. Update Zoom so it matches the TLC recurring schedule: third Sunday of each month, 6:00 PM–7:15 PM Eastern.</li>
+            <li>After DNS verification, run a controlled live email test and confirm prospect/student and instructor notifications change from pending to sent.</li>
+          </ul>
+        </div>
+        <div id="it-oversight"></div>
+        <div class="card read-only">
+          <div class="eyebrow">Record Retention</div>
+          <h3>Five-Year Supporting Evidence Retention</h3>
+          <p class="muted">Signed skills checklists and supporting evidence files are retained for five years after upload. After the retention date, the stored file is purged automatically while the lightweight evidence/audit record remains.</p>
+          <div id="retention-summary"><p class="muted">Loading retention status…</p></div>
+          <div style="overflow:auto"><table><thead><tr><th>Student</th><th>Course</th><th>File</th><th>Uploaded</th><th>Retain Until</th><th>Status</th></tr></thead><tbody id="retention-body"></tbody></table></div>
+        </div>
+        <div class="card">
+          <div class="eyebrow">Instructor Qualification Review</div>
+          <h3>Private instructor documents</h3>
+          <p class="muted">Review CVs, résumés, IV-experience evidence, teaching records, licenses/certificates, and other qualification documents submitted by instructors. Verification here can satisfy a linked qualification requirement; instructor uploads never self-verify.</p>
+          <div id="qualification-review-status" class="notice" hidden></div>
+          <div id="qualification-review-list"><p class="muted">Loading instructor documents…</p></div>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/shared-content-supabase.js"></script>
+<script src="js/staff-hub-supabase.js?v=20260930-recovery2"></script>
+<script>
+(function(){
+'use strict';
+var state={students:[],info:[],access:[],serviceAccess:[],classes:[],one:[],certs:[],audit:[],it:null,retention:null,recoveryExceptions:[],qualificationReviews:[]};
+function esc(v){return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
+function fmt(v){if(!v)return '';var d=new Date(v);return isNaN(d.getTime())?String(v):d.toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'})}
+function money(v){var n=Number(v||0);return n.toLocaleString('en-US',{style:'currency',currency:'USD'})}
+function statusTag(v){var s=String(v||'');var cls=/paid|issued|active|attended|completed/i.test(s)?'good':/blocked|declined|error/i.test(s)?'bad':'warn';return '<span class="tag '+cls+'">'+esc(s||'—')+'</span>'}
+function show(el,msg,tone){el.hidden=false;el.className='notice '+(tone||'');el.textContent=msg}
+function hide(el){el.hidden=true;el.textContent=''}
+function programName(id){return id==='review'?'NCLEX Review & Test-Taking Strategies':id==='skills'?'Skills Refresher Class':id==='iv'?'IV Insertion & Venipuncture':id==='medtech'?'Medical Technician Class':id||'—'}
+
+function renderBuildTrackerMarkdown(md){
+  var lines=String(md||'').split(/\r?\n/),html=[],inList=false;
+  function closeList(){if(inList){html.push('</ul>');inList=false}}
+  function statusInfo(body){
+    var statuses=[
+      {mark:'✅',label:'Verified',cls:'good'},
+      {mark:'🟩',label:'Built',cls:'good'},
+      {mark:'🟨',label:'In Progress',cls:'warn'},
+      {mark:'⏸',label:'Blocked',cls:'bad'},
+      {mark:'⬜',label:'Not Started',cls:''}
+    ];
+    for(var i=0;i<statuses.length;i++){
+      if(body.indexOf(statuses[i].mark)===0)return statuses[i];
+    }
+    return null;
+  }
+  lines.forEach(function(line){
+    if(/^# /.test(line)){closeList();html.push('<h2>'+esc(line.replace(/^# /,''))+'</h2>');return}
+    if(/^## /.test(line)){closeList();html.push('<h3 style="margin-top:20px">'+esc(line.replace(/^## /,''))+'</h3>');return}
+    if(/^\d+\. /.test(line)){if(!inList){html.push('<ul>');inList=true}html.push('<li>'+esc(line)+'</li>');return}
+    if(/^- /.test(line)){
+      if(!inList){html.push('<ul>');inList=true}
+      var body=line.replace(/^- /,'');
+      var st=statusInfo(body),clean=body;
+      if(st)clean=body.slice(st.mark.length).trim();
+      html.push('<li>'+(st?'<span class="tag '+st.cls+'">'+esc(st.label)+'</span> ':'')+esc(clean)+'</li>');
+      return
+    }
+    closeList();
+    if(line.trim())html.push('<p class="muted">'+esc(line)+'</p>');
+  });
+  closeList();
+  return html.join('');
+}
+async function loadBuildTracker(){
+  var status=document.getElementById('build-status'),box=document.getElementById('build-tracker');
+  if(!status||!box)return;
+  status.hidden=false;status.className='notice';status.textContent='Loading TLC implementation tracker…';
+  try{
+    var r=await fetch('TLC_IMPLEMENTATION_TRACKER.md?v=20260930-2',{cache:'no-store'});
+    if(!r.ok)throw new Error('Tracker could not be loaded.');
+    var md=await r.text();
+    box.innerHTML=renderBuildTrackerMarkdown(md);
+    status.className='notice good';status.textContent='Current tracker loaded from the TLC project.';
+  }catch(e){
+    box.innerHTML='';
+    status.className='notice error';status.textContent=e.message||'Tracker could not be loaded.';
+  }
+}
+
+document.querySelectorAll('.tabs button').forEach(function(b){b.onclick=function(){document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.getElementById('panel-'+b.dataset.panel).classList.add('active');if(b.dataset.panel==='build')loadBuildTracker()}});
+
+function renderStudents(){
+  var q=(document.getElementById('student-search').value||'').toLowerCase().trim();
+  var rows=state.students.filter(function(s){return !q||[s.first_name,s.last_name,s.email,s.program_id,s.cohort_id].join(' ').toLowerCase().includes(q)});
+  document.getElementById('students-body').innerHTML=rows.map(function(s){
+    var choice=s.intake&&s.intake.registration_payment_choice?s.intake.registration_payment_choice:null;
+    return '<tr><td><strong>'+esc((s.first_name||'')+' '+(s.last_name||''))+'</strong><br><span class="muted">'+esc(s.email)+'</span></td>'+
+      '<td>'+esc(programName(s.program_id))+'<br><span class="muted">'+esc(s.cohort_id||'')+'</span></td>'+
+      '<td>'+statusTag(s.enrollment_status)+'<br><span class="muted">'+esc(choice?choice.label:'')+'</span></td>'+
+      '<td>'+statusTag(s.payment_status)+'<br>'+money(s.amount_paid)+' paid · '+money(s.remaining_balance)+' remaining</td>'+
+      '<td>'+statusTag(s.portal_access?'Portal enabled':'Portal pending')+'</td>'+
+      '<td><span class="muted">Registration email: '+(s.registration_email_sent?'sent':'pending')+'<br>Payment email: '+(s.payment_email_sent?'sent':'pending')+'<br>Access email: '+(s.access_email_sent?'sent':'pending')+'</span></td></tr>';
+  }).join('')||'<tr><td colspan="6" class="muted">No student records match this view.</td></tr>';
+}
+document.getElementById('student-search').addEventListener('input',renderStudents);
+document.getElementById('refresh-build-status').onclick=loadBuildTracker;
+
+function renderRecoveryQueue(){
+  var box=document.getElementById('recovery-queue'),rows=state.recoveryExceptions||[];
+  if(!box)return;
+  box.innerHTML=rows.length?rows.map(function(r){
+    var match=r.match_summary||{};
+    return '<article class="request" data-recovery-request="'+esc(r.request_id)+'">'+
+      '<div class="toolbar"><div><strong>'+esc(r.student_name||'Student')+'</strong><br><span class="muted">'+esc(programName(r.program_id))+' · requested '+esc(fmt(r.created_at))+'</span></div><div class="push">'+statusTag(r.status||'pending_review')+'</div></div>'+
+      '<p><strong>Current email:</strong> '+esc(r.current_email_masked||'')+'<br><strong>Requested new email:</strong> '+esc(r.requested_new_email||'')+'</p>'+
+      '<p class="muted">System match: name '+(match.name_match?'matched':'not confirmed')+' · phone '+(match.phone_match?'matched':'not confirmed')+' · course '+(match.program_match?'matched':'not confirmed')+'</p>'+
+      '<label>Admin note (optional)</label><input data-recovery-note placeholder="Only add a note if needed">'+
+      '<div class="toolbar" style="margin-top:10px"><button data-recovery-decision="approve">Approve &amp; Reissue Access</button><button class="secondary" data-recovery-decision="needs_review">Needs Review</button><button class="danger" data-recovery-decision="deny">Deny</button></div>'+
+      '</article>';
+  }).join(''):'<p class="muted">No access-recovery exceptions need Admin/IT attention.</p>';
+
+  box.querySelectorAll('[data-recovery-decision]').forEach(function(btn){
+    btn.onclick=async function(){
+      var card=btn.closest('[data-recovery-request]'),id=card.dataset.recoveryRequest,note=card.querySelector('[data-recovery-note]').value,decision=btn.dataset.recoveryDecision;
+      if(decision==='approve'&&!confirm('Approve this matched recovery request, update the student email, invalidate the old access code, and issue new access?'))return;
+      if(decision==='deny'&&!confirm('Deny this recovery request?'))return;
+      btn.disabled=true;
+      try{
+        var rr=await window.ItasaStaffHub.reviewAccessRecoveryException(id,decision,note);
+        if(!rr||rr.status!==decision&&!(decision==='needs_review'&&rr.status==='needs_review'))throw new Error((rr&&rr.status)||'Recovery review could not be saved.');
+        show(document.getElementById('recovery-queue-status'),
+          decision==='approve'?'Access restored. New credentials were queued to the approved email.':decision==='deny'?'Recovery request denied.':'Request remains open for additional review.',
+          decision==='approve'?'good':decision==='deny'?'warn':'');
+        await loadRecoveryQueue();
+      }catch(e){show(document.getElementById('recovery-queue-status'),e.message||String(e),'error')}
+      finally{btn.disabled=false}
+    };
+  });
+}
+
+function normInfo(r){return r.info_session_attendance||'registered'}
+function renderInfo(){
+  var q=(document.getElementById('info-search').value||'').toLowerCase().trim(),f=document.getElementById('info-filter').value;
+  var rows=state.info.filter(function(r){var s=normInfo(r);if(f&&s!==f)return false;return !q||[r.first_name,r.last_name,r.email,r.program_interest,r.nursing_school].join(' ').toLowerCase().includes(q)});
+  document.getElementById('info-body').innerHTML=rows.map(function(r){
+    var s=normInfo(r);return '<tr data-id="'+esc(r.id)+'"><td><strong>'+esc((r.first_name||'')+' '+(r.last_name||''))+'</strong><br><span class="muted">'+esc(r.email)+'</span></td>'+
+      '<td>'+esc(r.program_interest||r.nclex_exam_type||'General')+'</td><td>'+esc(fmt(r.created_at))+'</td><td>'+statusTag(s)+'</td><td><select data-info-status><option '+(s==='registered'?'selected':'')+'>registered</option><option '+(s==='Attended'?'selected':'')+'>Attended</option><option '+(s==='No-show'?'selected':'')+'>No-show</option><option '+(s==='Blocked'?'selected':'')+'>Blocked</option></select><button data-save-info style="margin-top:6px">Save</button></td></tr>';
+  }).join('')||'<tr><td colspan="5" class="muted">No roster entries match this view.</td></tr>';
+  document.querySelectorAll('[data-save-info]').forEach(function(btn){btn.onclick=async function(){var tr=btn.closest('tr'),id=tr.dataset.id,status=tr.querySelector('[data-info-status]').value;if(status==='Blocked'&&!confirm('Block this email from future Information Session registration?'))return;btn.disabled=true;try{await window.ItasaStaffHub.updateAttendance(id,status);await loadInfo();show(document.getElementById('info-status'),'Roster status updated.','good')}catch(e){show(document.getElementById('info-status'),e.message||String(e),'error')}finally{btn.disabled=false}}});
+}
+document.getElementById('info-search').addEventListener('input',renderInfo);document.getElementById('info-filter').addEventListener('change',renderInfo);
+
+function renderAccess(){
+  var existing={};state.access.forEach(function(a){existing[a.cohort_id]=a});
+  var zoomClasses=(state.classes||[]).filter(function(c){return c.program_id==='review'||c.program_id==='skills'});
+  document.getElementById('access-grid').innerHTML=zoomClasses.map(function(c){
+    var a=existing[c.class_key]||{};
+    return '<form class="class-card" data-access-form data-cohort="'+esc(c.class_key)+'"><div class="eyebrow">'+esc(programName(c.program_id))+'</div><h3>'+esc(c.name||'Class')+'</h3><p class="muted">'+esc(c.notes||'')+'</p>'+
+      '<div class="formgrid"><div class="full"><label>Zoom Link</label><input name="link" value="'+esc(a.link||'')+'" placeholder="Enter the reusable Zoom link"></div><div><label>Meeting ID</label><input name="meeting_id" value="'+esc(a.meeting_id||'')+'"></div><div><label>Passcode</label><input name="passcode" value="'+esc(a.passcode||'')+'"></div><div class="full"><label>Class Time / Instructor Instructions</label><input name="class_time" value="'+esc(a.class_time||'')+'"></div><div class="full"><label>Student Note</label><textarea name="note">'+esc(a.note||'')+'</textarea></div></div>'+
+      '<button type="submit">'+(a.id?'Update Zoom Access':'Save Zoom Access')+'</button>'+(a.updated_at?'<span class="muted" style="margin-left:8px">Last updated '+esc(fmt(a.updated_at))+'</span>':'')+'</form>';
+  }).join('')||'<div class="notice warn">No NCLEX/Skills class records are available.</div>';
+
+  var svc={};(state.serviceAccess||[]).forEach(function(a){svc[a.service_key]=a});
+  var serviceDefs=[
+    {key:'information_session',name:'ITASA Information Session'},
+    {key:'one_on_one',name:'ITASA Personalized Learning Session - 1:1 Session'}
+  ];
+  document.getElementById('service-access-grid').innerHTML=serviceDefs.map(function(s){
+    var a=svc[s.key]||{};
+    return '<form class="class-card" data-service-access data-service="'+s.key+'"><div class="eyebrow">Service</div><h3>'+esc(s.name)+'</h3>'+
+      '<div class="formgrid"><div class="full"><label>Zoom Link / Registration Link</label><input name="link" value="'+esc(a.link||'')+'" placeholder="Enter reusable Zoom access"></div><div><label>Meeting ID</label><input name="meeting_id" value="'+esc(a.meeting_id||'')+'"></div><div><label>Passcode</label><input name="passcode" value="'+esc(a.passcode||'')+'"></div><div class="full"><label>Schedule / Timing</label><input name="schedule_text" value="'+esc(a.schedule_text||'')+'"></div><div class="full"><label>Note</label><textarea name="note">'+esc(a.note||'')+'</textarea></div></div>'+
+      '<button type="submit">Save Service Zoom Access</button>'+(a.updated_at?'<span class="muted" style="margin-left:8px">Last updated '+esc(fmt(a.updated_at))+'</span>':'')+'</form>';
+  }).join('');
+
+  document.querySelectorAll('[data-access-form]').forEach(function(form){form.onsubmit=async function(ev){ev.preventDefault();var b=form.querySelector('button'),fd=new FormData(form);b.disabled=true;try{await window.ItasaStaffHub.upsertClassAccess({cohort_id:form.dataset.cohort,link:fd.get('link'),meeting_id:fd.get('meeting_id'),passcode:fd.get('passcode'),class_time:fd.get('class_time'),note:fd.get('note')});await loadAccess();show(document.getElementById('access-status'),'Class Zoom access saved securely in Supabase.','good')}catch(e){show(document.getElementById('access-status'),e.message||String(e),'error')}finally{b.disabled=false}}});
+  document.querySelectorAll('[data-service-access]').forEach(function(form){form.onsubmit=async function(ev){ev.preventDefault();var b=form.querySelector('button'),fd=new FormData(form);b.disabled=true;try{await window.ItasaStaffHub.upsertServiceAccess({service_key:form.dataset.service,link:fd.get('link'),meeting_id:fd.get('meeting_id'),passcode:fd.get('passcode'),schedule_text:fd.get('schedule_text'),note:fd.get('note')});await loadAccess();show(document.getElementById('access-status'),'Service Zoom access saved securely in Supabase.','good')}catch(e){show(document.getElementById('access-status'),e.message||String(e),'error')}finally{b.disabled=false}}});
+}
+
+function renderOne(){
+  document.getElementById('one-list').innerHTML=state.one.map(function(r){
+    var hist=Array.isArray(r.status_history)?r.status_history.slice().reverse():[];
+    return '<div class="request" data-one="'+esc(r.id)+'"><div class="toolbar"><div><strong>'+esc((r.first_name||'')+' '+(r.last_name||''))+'</strong><br><span class="muted">'+esc(r.email)+' · '+esc(fmt(r.created_at))+'</span></div><div class="push">'+statusTag(r.status)+'</div></div>'+
+      '<p><strong>'+esc(r.session_length==='2_hour'?'2-hour session':'1-hour session')+' — '+money(r.session_length==='2_hour'?200:100)+'</strong> <span class="tag good">$100/hour current rate</span></p>'+
+      '<p><strong>Assistance:</strong> '+esc(r.assistance_needed||'Not specified')+'</p><p><strong>Preferred times:</strong><br>'+esc(r.preferred_datetime_1||'')+(r.preferred_datetime_2?'<br>'+esc(r.preferred_datetime_2):'')+(r.preferred_datetime_3?'<br>'+esc(r.preferred_datetime_3):'')+'</p>'+
+      (r.confirmed_datetime?'<p><strong>Confirmed:</strong> '+esc(r.confirmed_datetime)+'</p>':'')+
+      '<div class="formgrid"><div><label>Status</label><select data-one-status><option '+(r.status==='Pending'?'selected':'')+'>Pending</option><option '+(r.status==='Approved'?'selected':'')+'>Approved</option><option '+(r.status==='Request Different Times'?'selected':'')+'>Request Different Times</option><option '+(r.status==='Declined'?'selected':'')+'>Declined</option><option '+(r.status==='Payment Sent'?'selected':'')+'>Payment Sent</option><option '+(r.status==='Paid'?'selected':'')+'>Paid</option><option '+(r.status==='Completed'?'selected':'')+'>Completed</option></select></div><div><label>Confirmed appointment (required for Approved)</label><input data-one-confirmed value="'+esc(r.confirmed_datetime||'')+'" placeholder="e.g. Tuesday, Oct 14 at 4:00 PM"></div></div><button data-save-one style="margin-top:9px">Save Status</button>'+
+      (hist.length?'<details><summary>Status history</summary><div class="history">'+hist.map(h=>'<div>'+esc(h.status||'')+' · '+esc(fmt(h.at))+' · '+esc(h.by||'')+'</div>').join('')+'</div></details>':'')+'</div>';
+  }).join('')||'<p class="muted">No 1:1 requests are on file.</p>';
+  document.querySelectorAll('[data-save-one]').forEach(function(btn){btn.onclick=async function(){var box=btn.closest('[data-one]'),status=box.querySelector('[data-one-status]').value,confirmed=box.querySelector('[data-one-confirmed]').value;btn.disabled=true;try{await window.ItasaStaffHub.updateOneOnOneStatus(box.dataset.one,status,confirmed);await loadOne();show(document.getElementById('one-status'),'1:1 request status updated.','good')}catch(e){show(document.getElementById('one-status'),e.message||String(e),'error')}finally{btn.disabled=false}}});
+}
+
+function renderCerts(){
+ document.getElementById('certs-body').innerHTML=state.certs.map(c=>'<tr><td><strong>'+esc(c.certificate_title||c.number||'Certificate')+'</strong><br><span class="muted">'+esc(c.number||'')+'</span></td><td>'+esc(c.student_id||'')+'</td><td>'+esc(programName(c.program_id||c.cohort_id))+'</td><td>'+statusTag(c.status)+'</td><td>'+esc(fmt(c.issued_at||c.created_at))+'</td></tr>').join('')||'<tr><td colspan="5" class="muted">No certificate records yet.</td></tr>';
+}
+function renderAudit(){
+ var search=(document.getElementById('audit-search')&&document.getElementById('audit-search').value||'').toLowerCase().trim();
+ var category=document.getElementById('audit-category')?document.getElementById('audit-category').value:'';
+ var retention=document.getElementById('audit-retention')?document.getElementById('audit-retention').value:'';
+ var from=document.getElementById('audit-from')?document.getElementById('audit-from').value:'';
+ var to=document.getElementById('audit-to')?document.getElementById('audit-to').value:'';
+ var rows=(state.audit||[]).filter(function(a){
+   if(category&&String(a.event_category||'system')!==category)return false;
+   if(retention&&String(a.retention_class||'technical')!==retention)return false;
+   var t=a.at?new Date(a.at):null;
+   if(from&&t&&!isNaN(t.getTime())&&t<new Date(from+'T00:00:00'))return false;
+   if(to&&t&&!isNaN(t.getTime())&&t>new Date(to+'T23:59:59'))return false;
+   if(search){
+     var hay=[a.actor_name,a.role,a.action,a.target_type,a.target_id,a.details,a.event_category,a.retention_class].join(' ').toLowerCase();
+     if(hay.indexOf(search)===-1)return false;
+   }
+   return true;
+ });
+ document.getElementById('audit-body').innerHTML=rows.map(a=>'<tr><td>'+esc(fmt(a.at))+'</td><td>'+esc(a.actor_name||'ITASA System')+'<br><span class="muted">'+esc(a.role||a.source||'system')+'</span></td><td>'+esc(a.action||'')+'</td><td>'+esc(a.target_type||'')+'<br><span class="muted">'+esc(a.target_id||'')+'</span></td><td>'+esc(a.event_category||'system')+'</td><td>'+esc(a.retention_class||'technical')+(a.retain_until?'<br><span class="muted">until '+esc(fmt(a.retain_until))+'</span>':'')+'</td><td>'+esc(a.details||'')+'</td></tr>').join('')||'<tr><td colspan="7" class="muted">No audit entries match these filters.</td></tr>';
+}
+function qualificationDocLabel(v){return v==='resume_cv'?'CV / Résumé':v==='teaching_experience'?'Teaching Experience Evidence':v==='iv_professional_experience'?'IV Professional Experience Evidence':v==='license_certificate'?'License / Certificate':'Other Qualification Document'}
+function renderQualificationReviews(){
+  var box=document.getElementById('qualification-review-list'),rows=state.qualificationReviews||[];
+  box.innerHTML=rows.length?rows.map(function(d){
+    var tone=d.review_status==='verified'?'good':d.review_status==='rejected'?'bad':'warn';
+    return '<article class="request" data-qualification-review="'+esc(d.id)+'"><div class="toolbar"><div><strong>'+esc(d.staff_name||d.staff_email||'Instructor')+'</strong><br><span class="muted">'+esc(d.staff_email||'')+' · '+esc(qualificationDocLabel(d.document_type))+' · '+esc(fmt(d.uploaded_at))+'</span></div><div class="push"><span class="tag '+tone+'">'+esc(String(d.review_status||'pending').replace(/_/g,' '))+'</span></div></div>'+
+      '<p><strong>File:</strong> '+esc(d.original_filename||'Document')+'</p>'+
+      (d.evidence_key?'<p><strong>Supports:</strong> '+esc(String(d.evidence_key).replace(/_/g,' '))+'</p>':'')+
+      (d.instructor_note?'<p><strong>Instructor note:</strong> '+esc(d.instructor_note)+'</p>':'')+
+      (d.admin_note?'<p class="muted"><strong>Admin note:</strong> '+esc(d.admin_note)+'</p>':'')+
+      '<div class="toolbar"><button type="button" class="secondary" data-view-qual-doc="'+esc(d.storage_path)+'">View Document</button><input data-qual-note placeholder="Admin note (optional)" value="'+esc(d.admin_note||'')+'" style="flex:1;min-width:220px"><button type="button" data-qual-decision="verified">Verify</button><button type="button" class="secondary" data-qual-decision="needs_more_information">Need More Info</button><button type="button" class="secondary" data-qual-decision="rejected">Reject</button></div></article>';
+  }).join(''):'<p class="muted">No instructor qualification documents have been submitted.</p>';
+
+  box.querySelectorAll('[data-view-qual-doc]').forEach(function(btn){btn.onclick=async function(){try{var url=await window.ItasaStaffHub.qualificationDocumentSignedUrl(btn.dataset.viewQualDoc);if(url)window.open(url,'_blank','noopener')}catch(e){show(document.getElementById('qualification-review-status'),e.message||String(e),'error')}}});
+  box.querySelectorAll('[data-qual-decision]').forEach(function(btn){btn.onclick=async function(){
+    var card=btn.closest('[data-qualification-review]'),note=card.querySelector('[data-qual-note]').value,decision=btn.dataset.qualDecision;
+    if(decision==='verified'&&!confirm('Verify this document as qualification evidence?'))return;
+    btn.disabled=true;
+    try{
+      var r=await window.ItasaStaffHub.reviewQualificationDocument(card.dataset.qualificationReview,decision,note);
+      if(!r||r.status!=='reviewed')throw new Error((r&&r.status)||'Document review could not be saved.');
+      show(document.getElementById('qualification-review-status'),'Instructor document review saved.','good');
+      await loadQualificationReviews();
+    }catch(e){show(document.getElementById('qualification-review-status'),e.message||String(e),'error')}
+    finally{btn.disabled=false}
+  }});
+}
+function yn(v){return v?'<span class="tag good">Configured</span>':'<span class="tag warn">Needs setup</span>'}
+function renderItOversight(){
+  var box=document.getElementById('it-oversight'),d=state.it||{};
+  if(d.status!=='ok'){box.innerHTML='<p class="muted">IT oversight data is unavailable for this account.</p>';return}
+  var e=d.email_outbox||{},k=d.knowledge_sources||{},z=d.zoom_access||{},jobs=Array.isArray(d.scheduled_jobs)?d.scheduled_jobs:[],
+      flags=Array.isArray(d.flags)?d.flags:[],pending=Array.isArray(d.pending_work)?d.pending_work:[],completed=Array.isArray(d.completed_work)?d.completed_work:[];
+  function list(items,empty){
+    return items.length?'<ul>'+items.map(function(x){return '<li><strong>'+esc(x.label||x.key||'Item')+'</strong>'+(x.detail?'<br><span class="muted">'+esc(typeof x.detail==='string'?x.detail:JSON.stringify(x.detail))+'</span>':'')+'</li>'}).join('')+'</ul>':'<p class="muted">'+empty+'</p>';
+  }
+  box.innerHTML='<div class="grid2">'+
+    '<div class="card risk"><div class="eyebrow">Flags to Fix</div><h3>Needs correction</h3>'+list(flags,'No current system flags.')+'</div>'+
+    '<div class="card"><div class="eyebrow">Pending Work</div><h3>Still open</h3>'+list(pending,'No pending system work recorded.')+'</div>'+
+    '</div>'+
+    '<div class="card"><div class="eyebrow">Completed Work</div><h3>Confirmed complete</h3>'+list(completed,'No completed-system milestones are recorded yet.')+'</div>'+
+    '<div class="metrics"><div class="metric"><span>Email pending</span><strong>'+esc(e.pending||0)+'</strong></div><div class="metric"><span>Email failed</span><strong>'+esc(e.failed||0)+'</strong></div><div class="metric"><span>Knowledge sources</span><strong>'+esc(k.active_sources||0)+'</strong></div><div class="metric"><span>Source errors</span><strong>'+esc(k.sources_with_errors||0)+'</strong></div><div class="metric"><span>Background jobs</span><strong>'+jobs.filter(function(j){return j.active}).length+'</strong></div></div>'+
+    '<div class="card"><h3>Required Zoom pathways</h3><p>NCLEX Review: '+yn(z.nclex_zoom_configured)+'<br>Skills Refresher: '+yn(z.skills_zoom_configured)+'<br>Information Session: '+yn(z.information_session_zoom_configured)+'<br>1:1 Session: '+yn(z.one_on_one_zoom_configured)+'</p><p class="muted">IV Insertion &amp; Venipuncture and Medical Technician Class are intentionally not Zoom pathways.</p></div>'+
+    '<div class="card"><h3>Automation</h3><p>Email queue last sent: '+esc(e.last_sent_at?fmt(e.last_sent_at):'No sent email recorded')+'<br>Knowledge source last success: '+esc(k.last_success_at?fmt(k.last_success_at):'No successful collection recorded')+'</p>'+jobs.map(function(j){return '<p><strong>'+esc(j.jobname)+'</strong> · '+esc(j.schedule)+' · '+(j.active?'active':'inactive')+'</p>'}).join('')+'<p class="muted">Oversight last checked: '+esc(d.checked_at?fmt(d.checked_at):'Now')+'. Flags disappear when the underlying condition is fixed; resolved work moves out of Pending and may appear under Completed Work while the condition remains verified.</p></div>';
+}
+
+function renderRetention(){
+  var d=state.retention||{},summary=document.getElementById('retention-summary'),body=document.getElementById('retention-body');
+  if(!summary||!body)return;
+  if(d.status!=='ok'){
+    summary.innerHTML='<p class="muted">Retention data is unavailable.</p>';
+    body.innerHTML='<tr><td colspan="6" class="muted">No retention records available.</td></tr>';
+    return;
+  }
+  summary.innerHTML='<div class="metrics">'+
+    '<div class="metric"><span>Active files</span><strong>'+esc(d.active_files||0)+'</strong></div>'+
+    '<div class="metric"><span>Due for purge</span><strong>'+esc(d.due_for_purge||0)+'</strong></div>'+
+    '<div class="metric"><span>Purged</span><strong>'+esc(d.purged_files||0)+'</strong></div>'+
+    '<div class="metric"><span>Purge errors</span><strong>'+esc(d.error_files||0)+'</strong></div>'+
+    '<div class="metric"><span>Policy</span><strong style="font-size:1rem">'+esc(d.retention_policy||'5 years')+'</strong></div>'+
+    '</div>';
+  var rows=Array.isArray(d.rows)?d.rows:[];
+  body.innerHTML=rows.map(function(x){
+    return '<tr><td><strong>'+esc(x.student_name||'Student')+'</strong><br><span class="muted">'+esc(x.student_email||'')+'</span></td>'+
+      '<td>'+esc(x.course_name||'')+'</td>'+
+      '<td>'+esc(x.original_filename||'')+'</td>'+
+      '<td>'+esc(x.uploaded_at?fmt(x.uploaded_at):'')+'</td>'+
+      '<td>'+esc(x.retain_until?fmt(x.retain_until):'')+'</td>'+
+      '<td>'+statusTag(x.purge_status||'active')+(x.purged_at?'<br><span class="muted">Purged '+esc(fmt(x.purged_at))+'</span>':'')+(x.purge_error?'<br><span class="muted">'+esc(x.purge_error)+'</span>':'')+'</td></tr>';
+  }).join('')||'<tr><td colspan="6" class="muted">No supporting-evidence files are stored yet.</td></tr>';
+}
+
+function metrics(){document.getElementById('m-students').textContent=state.students.length;document.getElementById('m-info').textContent=state.info.length;document.getElementById('m-one').textContent=state.one.filter(function(r){return r.status==='Pending'}).length;var classSet=state.access.filter(function(a){return ['cohort-review-fall-2026','cohort-skills-fall-2026'].indexOf(a.cohort_id)!==-1&&a.link}).length;var serviceSet=state.serviceAccess.filter(function(a){return ['information_session','one_on_one'].indexOf(a.service_key)!==-1&&a.link}).length;document.getElementById('m-access').textContent=(classSet+serviceSet)+'/4';document.getElementById('m-certs').textContent=state.certs.length}
+
+async function loadStudents(){state.students=await window.ItasaStaffHub.fetchStudents();renderStudents();metrics()}
+async function loadRecoveryQueue(){var r=await window.ItasaStaffHub.fetchAccessRecoveryExceptions();state.recoveryExceptions=(r&&r.status==='ok')?(r.requests||[]):[];renderRecoveryQueue()}
+async function loadInfo(){state.info=await window.ItasaStaffHub.fetchInfoSessionRoster();renderInfo();metrics()}
+async function loadAccess(){var all=await Promise.all([window.ItasaStaffHub.fetchClassAccess(),window.ItasaStaffHub.fetchServiceAccess(),window.ItasaSharedContentSupabase.fetchCollection('classes')]);state.access=all[0]||[];state.serviceAccess=all[1]||[];state.classes=(all[2]&&all[2].data)||[];renderAccess();metrics();var classSet=state.access.filter(function(a){return ['cohort-review-fall-2026','cohort-skills-fall-2026'].indexOf(a.cohort_id)!==-1&&a.link}).length;var serviceSet=state.serviceAccess.filter(function(a){return ['information_session','one_on_one'].indexOf(a.service_key)!==-1&&a.link}).length;var configured=classSet+serviceSet;show(document.getElementById('access-status'),configured===4?'All four ITASA Zoom pathways are configured.':configured+' of 4 ITASA Zoom pathways are configured.',configured===4?'good':'warn')}
+async function loadOne(){state.one=await window.ItasaStaffHub.fetchOneOnOneRequests();renderOne();metrics()}
+async function loadCerts(){state.certs=await window.ItasaStaffHub.fetchCertificates();renderCerts();metrics()}
+async function loadAudit(){
+  state.audit=await window.ItasaStaffHub.fetchAuditLog(200);
+  var cats=Array.from(new Set((state.audit||[]).map(function(a){return a.event_category||'system'}))).sort();
+  var rets=Array.from(new Set((state.audit||[]).map(function(a){return a.retention_class||'technical'}))).sort();
+  var cat=document.getElementById('audit-category'),ret=document.getElementById('audit-retention');
+  if(cat){var cv=cat.value;cat.innerHTML='<option value="">All categories</option>'+cats.map(function(x){return '<option>'+esc(x)+'</option>'}).join('');cat.value=cv}
+  if(ret){var rv=ret.value;ret.innerHTML='<option value="">All retention classes</option>'+rets.map(function(x){return '<option>'+esc(x)+'</option>'}).join('');ret.value=rv}
+  renderAudit();
+}
+async function loadIt(){state.it=await window.ItasaStaffHub.fetchItSystemOversight();renderItOversight()}
+async function loadRetention(){state.retention=await window.ItasaStaffHub.fetchEvidenceRetentionOverview();renderRetention()}
+async function loadQualificationReviews(){var r=await window.ItasaStaffHub.fetchQualificationDocumentReviewQueue();state.qualificationReviews=(r&&r.status==='ok')?(r.documents||[]):[];renderQualificationReviews()}
+async function loadAll(){var rs=document.getElementById('refresh-status');if(rs)rs.textContent='Refreshing…';try{await Promise.all([loadStudents(),loadRecoveryQueue(),loadInfo(),loadAccess(),loadOne(),loadCerts(),loadAudit(),loadIt(),loadRetention(),loadQualificationReviews()]);if(rs)rs.textContent='Updated '+new Date().toLocaleTimeString([], {hour:'numeric',minute:'2-digit'})}catch(e){console.error(e);if(rs)rs.textContent='Refresh failed';alert('Some operations data could not be loaded. '+(e.message||e))}}
+
+function syncSession(){var st=window.ItasaStaffHub.getCurrentStaff();if(st){document.getElementById('login-shell').hidden=true;document.getElementById('workspace-header').hidden=false;document.getElementById('staff-name').textContent=st.full_name||st.email;document.getElementById('staff-meta').textContent=st.role+' · '+st.email;if(String(st.role||'').toLowerCase()!=='administrator'){document.getElementById('workspace').hidden=true;document.getElementById('workspace-header').hidden=true;var s=document.getElementById('login-status');show(s,'Operations & IT Oversight requires administrator authorization. Use the Instructor Workspace for ordinary instructor work.','error');return}document.getElementById('workspace').hidden=false;loadAll()}else{document.getElementById('login-shell').hidden=false;document.getElementById('workspace-header').hidden=true;document.getElementById('workspace').hidden=true}}
+document.getElementById('login-form').onsubmit=async function(ev){ev.preventDefault();var b=document.getElementById('login-btn'),s=document.getElementById('login-status');b.disabled=true;b.textContent='Signing in…';hide(s);var res=await window.ItasaStaffHub.signIn(document.getElementById('staff-email').value,document.getElementById('staff-password').value);document.getElementById('staff-password').value='';b.disabled=false;b.textContent='Sign In';if(!res.ok)show(s,res.error&&res.error.message||'Sign-in failed.','error');else syncSession()};
+['audit-search','audit-category','audit-retention','audit-from','audit-to'].forEach(function(id){
+  var el=document.getElementById(id);if(el)el.addEventListener(id==='audit-search'?'input':'change',renderAudit);
+});
+document.getElementById('signout-btn').onclick=async function(){await window.ItasaStaffHub.signOut();syncSession()};
+document.getElementById('refresh-all').onclick=async function(){var b=this;b.disabled=true;await loadAll();b.disabled=false};
+window.ItasaStaffHub.onSessionChange(function(s){if(s.resolved)syncSession()});
+})();
+</script>
+</body>
+</html>

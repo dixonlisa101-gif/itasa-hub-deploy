@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>NCLEX Learning Space | ITASA Learning Center</title>
+  <style>
+    :root{
+      --teal:#177982;--teal-dark:#0d5961;--orange:#dd7b2d;--ink:#18343b;
+      --muted:#63767b;--line:#d9e7e8;--soft:#f5fafa;--warm:#fff6ec;--white:#fff;
+      font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;color:var(--ink);background:#f8fbfb
+    }
+    *{box-sizing:border-box}body{margin:0}a{color:var(--teal-dark)}
+    .preview{background:#3b2d23;color:#fff;padding:9px 16px;text-align:center;font-weight:800}
+    header{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10}
+    nav{max-width:1100px;margin:auto;padding:12px 18px;display:flex;align-items:center;gap:16px}
+    .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--teal-dark);font-weight:900;margin-right:auto}
+    .brand img{width:52px;height:52px;object-fit:contain;border-radius:50%}
+    .brand small{display:block;color:var(--orange);font-size:.72rem;text-transform:uppercase;letter-spacing:.08em}
+    main{max-width:1100px;margin:auto;padding:30px 18px 64px}
+    .hero{background:linear-gradient(135deg,#eaf7f6,#fff5e8);border:1px solid var(--line);border-left:6px solid var(--orange);border-radius:20px;padding:28px;margin-bottom:18px}
+    .eyebrow{font-size:.76rem;font-weight:900;text-transform:uppercase;letter-spacing:.09em;color:var(--teal)}
+    h1{font-size:clamp(2rem,5vw,3.2rem);line-height:1.05;margin:.35rem 0 .8rem}h2{margin:.2rem 0 .65rem}h3{margin:.2rem 0 .5rem}
+    .muted{color:var(--muted)}.lead{font-size:1.08rem;color:#4e666c;max-width:800px}
+    .card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px;margin:16px 0;box-shadow:0 7px 20px rgba(17,71,78,.05)}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+    .grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+    label{display:block;font-weight:800;margin:.8rem 0 .35rem}input{width:100%;padding:11px 12px;border:1px solid #b9cbcd;border-radius:9px;font:inherit}
+    .btn{display:inline-block;border:0;border-radius:10px;padding:11px 15px;font:inherit;font-weight:800;cursor:pointer;text-decoration:none;background:var(--teal);color:#fff}
+    .btn.orange{background:var(--orange)}.btn.secondary{background:#e8f4f4;color:var(--teal-dark)}
+    .btnrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+    .status{border-left:5px solid var(--teal)}.ok{border-left-color:#3c8b65}.warn{border-left-color:var(--orange)}.error{border-left-color:#b74848}
+    .workspace{display:none}.workspace.active{display:block}
+    .welcome-strip{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+    .welcome-strip img{width:84px;height:84px;border-radius:50%;object-fit:contain;background:#fff}
+    .quick{min-height:150px}.quick.orange{border-top:4px solid var(--orange)}
+    .section-title{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+    .tag{display:inline-block;padding:4px 9px;border-radius:999px;background:#e9f5f4;font-size:.78rem;font-weight:800}
+    ul{padding-left:20px}.module{border-top:1px solid var(--line);padding:14px 0}.module:first-child{border-top:0}
+    .community{background:var(--warm);border-left:5px solid var(--orange)}
+    footer{text-align:center;padding:24px 18px;border-top:1px solid var(--line);background:#fff;color:#60757a}
+    [hidden]{display:none!important}
+    @media(max-width:760px){.grid,.grid3{grid-template-columns:1fr}nav{align-items:flex-start}.brand span{display:none}}
+  </style>
+</head>
+<body>
+  <div class="preview">PREVIEW ONLY — Secure NCLEX Learning Space prototype. No production records are modified.</div>
+  <header>
+    <nav>
+      <a class="brand" href="index.html"><img src="assets/itasa-circular-brand-logo.png" alt="ITASA logo"><span>ITASA<small>Learning Center</small></span></a>
+      <a href="student-portal-cutover-preview.html">Student Home</a>
+      <a href="index.html">Learning Center Home</a>
+      <button id="student-signout" class="btn secondary" type="button" hidden>Sign Out</button>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="eyebrow">NCLEX Review &amp; Test-Taking Strategies</div>
+      <h1>Your NCLEX Learning Space</h1>
+      <p class="lead">This is the secure student space for your NCLEX learning experience at ITASA. Enter with the same email and Learning Center access code ITASA provided to you.</p>
+    </section>
+
+    <section id="login-card" class="card">
+      <h2>Enter your learning space</h2>
+      <p class="muted">Sign in here only if you opened this learning space directly. If you entered through Student Sign In, your validated session will carry you here automatically.</p>
+      <form id="login-form">
+        <label for="email">Student email</label>
+        <input id="email" type="email" autocomplete="username" required>
+        <label for="code">Learning Center access code</label>
+        <input id="code" type="password" autocomplete="current-password" required>
+        <button id="login-btn" class="btn orange" type="submit" style="margin-top:14px">Enter NCLEX Learning Space</button>
+      </form>
+      <p class="muted" style="margin-top:10px"><a href="student-access-recovery.html">Forgot your registered email or access code?</a></p>
+    </section>
+
+    <div id="status" class="card status" hidden></div>
+
+    <section id="workspace" class="workspace">
+      <div class="card welcome-strip">
+        <img src="assets/itasa-circular-brand-logo.png" alt="ITASA logo">
+        <div>
+          <div class="eyebrow">Welcome back</div>
+          <h2 id="student-welcome">NCLEX Student</h2>
+          <p class="muted" id="student-summary">Your ITASA NCLEX learning space is ready.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="eyebrow">Class Schedule</div>
+        <h2>NCLEX Review &amp; Test-Taking Strategies</h2>
+        <div id="schedule-box"><p class="muted">Loading current class schedule…</p></div>
+      </div>
+
+      <div class="grid3">
+        <div class="card quick orange">
+          <div class="eyebrow">Class Access</div>
+          <h3>Join your scheduled class</h3>
+          <div id="class-access"><p class="muted">Checking your secure class-access details…</p></div>
+        </div>
+        <div class="card quick">
+          <div class="eyebrow">Student Workbook</div>
+          <h3>NCLEX Student Workbook</h3>
+          <div id="workbook-resource">
+            <p class="muted">Open the ITASA NCLEX Student Workbook from the protected student-resource file store.</p>
+            <a class="btn orange" target="_blank" rel="noopener" href="https://drive.google.com/file/d/1rNZ0wEnKDI0mPXpqs5cyTVS_0MvCHwm-/view">Open Student Workbook</a>
+            <p class="muted" style="margin-top:10px">Review build: the file is restricted in Google Drive. Production access will be tied to the registered/paid student rather than made public.</p>
+          </div>
+        </div>
+        <div class="card quick">
+          <div class="eyebrow">Learning Materials</div>
+          <h3>Assigned class materials</h3>
+          <div id="materials"><p class="muted">Instructor-assigned materials will appear here as they are made available to your class.</p></div><div id="course-hub-items" style="margin-top:14px"></div>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="card">
+          <div class="section-title">
+            <div>
+              <div class="eyebrow">ITASA Updates</div>
+              <h2>Announcements</h2>
+            </div>
+            <span class="tag">Learning Center</span>
+          </div>
+          <div id="announcements"><p class="muted">Loading current ITASA announcements…</p></div>
+        </div>
+
+        <div class="card">
+          <div class="eyebrow">Practice &amp; Support</div>
+          <h2>NCLEX preparation support</h2>
+          <p class="muted">Use this area for assigned practice, test-taking strategy support, and instructor-directed learning activities as ITASA adds them.</p>
+          <div class="btnrow">
+            <a class="btn secondary" href="one-on-one-request-preview.html" target="_blank" rel="noopener">Request 1:1 Test-Taking Strategies Support</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="eyebrow">Attendance Requirement</div>
+        <h2>My Attendance</h2>
+        <p class="muted"><strong>100% attendance is required for NCLEX course completion.</strong> If you miss a required class, that requirement stays open until you attend an approved make-up opportunity.</p>
+        <div id="attendance-summary"><p class="muted">Checking your attendance record…</p></div>
+        <div id="attendance-list"></div>
+        <div id="makeup-requirements" style="margin-top:14px"></div>
+      </div>
+
+      <div class="card">
+        <div class="eyebrow">Completion</div>
+        <h2>Completion &amp; Certificate</h2>
+        <div id="completion"><p class="muted">Checking your completion information…</p></div>
+      </div>
+
+      <div class="card community">
+        <div class="eyebrow">ITASA Community</div>
+        <h2>Your learning continues between class sessions.</h2>
+        <p class="muted">The Learning Center is your student learning home. Follow ITASA on Facebook for encouragement, educational content, announcements, and community updates between Learning Center visits.</p>
+        <a class="btn secondary" target="_blank" rel="noopener" href="https://www.facebook.com/profile.php?id=61557528076740">Follow ITASA on Facebook</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>Innovation Training &amp; Staffing Agency · Empowering Nurses. Elevating Healthcare.</footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/student-course-hub-content.js?v=1"></script>
+<script src="js/student-portal-supabase.js?v=20260930-completion2"></script>
+  <script src="js/shared-content-supabase.js"></script>
+  <script>
+  (function(){
+    'use strict';
+    const form=document.getElementById('login-form');
+    const btn=document.getElementById('login-btn');
+    const status=document.getElementById('status');
+    const workspace=document.getElementById('workspace');
+    let classRow=null;
+
+    function esc(v){return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
+    function showStatus(html,tone){status.hidden=false;status.className='card status '+(tone||'');status.innerHTML=html}
+    function fmtDate(v){if(!v)return '';const d=new Date(v);if(isNaN(d.getTime()))return '';return d.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}
+    function easternDateKey(value){
+  const d=value?new Date(value):new Date(); if(isNaN(d.getTime()))return '';
+  const parts=new Intl.DateTimeFormat('en-CA',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(d),obj={};
+  parts.forEach(function(p){if(p.type!=='literal')obj[p.type]=p.value});return obj.year+'-'+obj.month+'-'+obj.day;
+}
+function classCountdown(row){
+  if(!row||!row.start_date)return 'ITASA will confirm your class start date.';
+  const today=easternDateKey(new Date()),start=easternDateKey(row.start_date);
+  const a=new Date(today+'T12:00:00Z'),b=new Date(start+'T12:00:00Z'),days=Math.round((b-a)/86400000);
+  if(days>1)return days+' days until the first day of class';
+  if(days===1)return 'Class begins tomorrow';
+  if(days===0)return 'First day of class is today';
+  return 'Class is in progress';
+}
+
+    async function loadClass(){
+      try{
+        if(!window.ItasaSharedContentSupabase)return;
+        const r=await window.ItasaSharedContentSupabase.fetchCollection('classes');
+        classRow=((r&&r.data)||[]).find(function(x){return x.program_id==='review'})||null;
+      }catch(e){console.error(e)}
+    }
+    function renderSchedule(){
+      const box=document.getElementById('schedule-box');
+      if(!classRow){box.innerHTML='<p class="muted">ITASA will confirm your class schedule.</p>';return}
+      box.innerHTML='<p><strong>'+esc(classCountdown(classRow))+'</strong></p>'+
+        '<p><strong>Start:</strong> '+esc(classRow.start_date?fmtDate(classRow.start_date):'Pending')+'<br>'+
+        '<strong>Schedule:</strong> '+esc(classRow.meeting_time_label||'Pending')+'<br>'+
+        '<strong>Format:</strong> '+esc(classRow.delivery_method||'Zoom')+'</p>';
+    }
+    loadClass();
+
+    function renderAccess(a){
+      const box=document.getElementById('class-access');
+      if(!a){box.innerHTML='<p class="muted">Class access has not been posted for this student yet.</p>';return}
+      let html='';
+      if(a.classTime)html+='<p><strong>Class time:</strong><br>'+esc(a.classTime)+'</p>';
+      if(a.note)html+='<p class="muted">'+esc(a.note)+'</p>';
+      if(a.link)html+='<a class="btn orange" target="_blank" rel="noopener" href="'+esc(a.link)+'">Join Class on Zoom</a>';
+      else html+='<p class="muted">The class join link is not available yet.</p>';
+      box.innerHTML=html;
+    }
+
+    function renderWorkspace(ws,st){
+      const materials=document.getElementById('materials');
+      const enrollments=Array.isArray(ws&&ws.enrollments)?ws.enrollments:[];
+      if(enrollments.length){
+        const enrollment=enrollments[0]||{};
+        const sections=Array.isArray(enrollment.sections)?enrollment.sections:[];
+        if(sections.length){
+          materials.innerHTML=sections.map(function(s,i){
+            const title=s.public_name||s.title||s.section_title||('Learning Section '+(i+1));
+            const items=Array.isArray(s.items)?s.items:[];
+            return '<div class="module"><strong>'+esc(title)+'</strong>'+
+              (items.length?'<p class="muted">'+items.length+' assigned item(s)</p>':'<p class="muted">Materials will appear as ITASA assigns them.</p>')+
+              '</div>';
+          }).join('');
+        }
+      }
+    }
+
+
+    function renderAttendance(a){
+      const summary=document.getElementById('attendance-summary');
+      const list=document.getElementById('attendance-list');
+      if(!a||a.status!=='ok'){
+        summary.innerHTML='<p class="muted">Attendance information is temporarily unavailable.</p>';
+        list.innerHTML='';
+        return;
+      }
+      const total=Number(a.required_sessions||0),done=Number(a.satisfied_sessions||0);
+      summary.innerHTML='<p><strong>'+done+' of '+total+' required sessions satisfied</strong></p>'+
+        '<p><span class="tag '+(a.attendance_complete?'good':'warn')+'">'+(a.attendance_complete?'Attendance Complete':'Attendance In Progress')+'</span></p>';
+      const rows=Array.isArray(a.sessions)?a.sessions:[];
+      list.innerHTML=rows.map(function(s){
+        const when=s.scheduled_start?new Date(s.scheduled_start).toLocaleString('en-US',{timeZone:'America/New_York',month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'}):'';
+        const st=String(s.attendance_status||'pending');
+        const label=st==='attended'?'Attended':st==='missed'?'Missed — Make-up required':st==='excused'?'Excused — Make-up required':'Scheduled';
+        return '<div class="module"><div class="toolbar"><div><strong>'+esc(s.title||'NCLEX Class Session')+'</strong><div class="muted">'+esc(when)+'</div></div><span class="tag '+(st==='attended'?'good':(st==='missed'||st==='excused'?'warn':''))+'">'+esc(label)+'</span></div>'+
+          (s.makeup_required?'<p class="muted"><strong>Make-up required.</strong> Your next approved opportunity will appear here when ITASA schedules a matching session.</p>':'')+
+          '</div>';
+      }).join('')||'<p class="muted">No required class sessions are posted yet.</p>';
+    }
+
+    function renderMakeups(m,email,code,access){
+      const box=document.getElementById('makeup-requirements');
+      if(!box)return;
+      if(!m||m.status!=='ok'){box.innerHTML='';return}
+      const reqs=Array.isArray(m.requirements)?m.requirements:[];
+      if(!reqs.length){box.innerHTML='';return}
+      box.innerHTML='<h3>Make-Up Requirements</h3>'+reqs.map(function(r){
+        const opp=Array.isArray(r.opportunities)?r.opportunities:[];
+        const scheduled=String(r.status||'')==='scheduled';
+        let html='<div class="module" data-makeup="'+esc(r.obligation_id)+'"><strong>'+esc(r.title||'Make-up required')+'</strong>';
+        if(scheduled&&r.scheduled_opportunity_id){
+          html+='<p class="muted"><strong>Make-up opportunity reserved.</strong> Use the protected class-access link below when it is time for your make-up session.</p>'+
+            (access&&access.link?'<p><a class="btn orange" target="_blank" rel="noopener" href="'+esc(access.link)+'">Join Make-Up Class</a></p>':'<p class="muted">Class access is not available yet. ITASA will post it before the session.</p>');
+        }else if(!opp.length){
+          html+='<p class="muted">Next opportunity not scheduled yet. ITASA will post the next eligible session here automatically.</p>';
+        }else{
+          html+='<p class="muted">Choose the next approved opportunity that works for you.</p>';
+          html+=opp.map(function(o){
+            const when=o.scheduled_start?new Date(o.scheduled_start).toLocaleString('en-US',{timeZone:'America/New_York',month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'}):'';
+            return '<button class="btn secondary" style="margin:6px 8px 0 0" data-reserve-makeup="'+esc(o.training_session_id)+'">'+esc(when)+' · '+esc(o.class_name||'NCLEX Review')+'</button>';
+          }).join('');
+        }
+        return html+'</div>';
+      }).join('');
+
+      box.querySelectorAll('[data-reserve-makeup]').forEach(function(btn){
+        btn.onclick=async function(){
+          const row=btn.closest('[data-makeup]'),ob=row&&row.getAttribute('data-makeup'),sid=btn.getAttribute('data-reserve-makeup');
+          if(!ob||!sid)return;
+          btn.disabled=true;
+          const original=btn.textContent;btn.textContent='Reserving…';
+          try{
+            const r=await window.ItasaStudentPortal.reserveNclexMakeup(email,code,ob,sid);
+            if(!r||r.status!=='reserved')throw new Error((r&&r.status)||'Make-up opportunity could not be reserved.');
+            const refreshed=await window.ItasaStudentPortal.getNclexMakeupOpportunities(email,code);
+            renderMakeups(refreshed,email,code,access);
+          }catch(e){
+            btn.disabled=false;btn.textContent=original;
+            showStatus('<strong>Make-up reservation was not completed.</strong><br>'+esc(e.message||String(e)),'warn');
+          }
+        };
+      });
+    }
+
+    function renderCertificates(certs,training){
+      const box=document.getElementById('completion');
+      const rows=Array.isArray(certs&&certs.certificates)?certs.certificates:[];
+      if(training&&training.status==='ok'&&training.training_complete&&!training.certificate_issued){
+        box.innerHTML='<p><strong>Training complete.</strong></p><p class="muted">Your Certificate of Completion has not been issued yet. It will appear here after the instructor completes the separate certificate-issuance step.</p>';return
+      }
+      if(!rows.length){
+        box.innerHTML='<p><strong>Training status:</strong> '+esc(training&&training.training_complete?'Complete':'In progress')+'</p><p class="muted">No Certificate of Completion has been issued yet.</p>';return
+      }
+      box.innerHTML='<p><span class="tag good">Certificate Issued</span></p><ul>'+rows.map(function(c){
+        return '<li><strong>'+esc(c.certificate_title||c.certificate_number||'Certificate')+'</strong>'+
+          (c.completion_date?' — '+esc(c.completion_date):'')+
+          (' — <a href="certificate-print-preview.html?certificate='+encodeURIComponent(c.certificate_id)+'">View / Print Certificate</a>')+
+          '</li>';
+      }).join('')+'</ul>';
+    }
+
+    async function loadAnnouncements(){
+      try{
+        if(!window.ItasaSharedContentSupabase)return;
+        const data=await window.ItasaSharedContentSupabase.fetchAll();
+        const anns=Array.isArray(data.announcements)?data.announcements:[];
+        const seen=new Set();
+        const relevant=anns.filter(function(a){
+          const title=String(a&&a.title||'').trim();
+          const body=String(a&&a.body||'').trim();
+          if(!title&&!body)return false;
+          if(title.toLowerCase()==='welcome to the itasa learning center')return false;
+          const key=(title+'|'+body).toLowerCase();
+          if(seen.has(key))return false;
+          seen.add(key);
+          const hay=(title+' '+body).toLowerCase();
+          return hay.includes('nclex') ||
+                 hay.includes('practice exam') ||
+                 hay.includes('licensure') ||
+                 hay.includes('nursys') ||
+                 hay.includes('next generation') ||
+                 hay.includes('ngn');
+        });
+        document.getElementById('announcements').innerHTML=relevant.length
+          ? '<ul>'+relevant.slice(0,8).map(function(a){return '<li><strong>'+esc(a.title||'Announcement')+'</strong><br>'+esc(a.body||'')+(a.resource_url?'<br><a target="_blank" rel="noopener" href="'+esc(a.resource_url)+'">'+esc(a.resource_label||'Open official resource')+'</a>':'')+'</li>'}).join('')+'</ul>'
+          : '<p class="muted">No current NCLEX announcements are posted.</p>';
+      }catch(err){
+        document.getElementById('announcements').innerHTML='<p class="muted">Announcements are temporarily unavailable.</p>';
+      }
+    }
+
+    form.addEventListener('submit',async function(ev){
+      ev.preventDefault();
+      workspace.classList.remove('active');
+      const email=document.getElementById('email').value.trim().toLowerCase();
+      const code=document.getElementById('code').value.trim();
+      btn.disabled=true;btn.textContent='Checking access…';
+      showStatus('<strong>Checking your secure ITASA student access…</strong>','');
+      try{
+        const login=await window.ItasaStudentPortal.login(email,code,[]);
+        if(login.status!=='ok'||!login.student){
+          const msg={pending_review:'Your Learning Center access is still pending review.',invalid_code:'The access code was not accepted.',not_found:'No matching student access was found.',invalid_credentials:'The email/access-code pair was not accepted.'};
+          showStatus('<strong>Access not opened.</strong><br>'+esc(msg[login.status]||'ITASA could not validate this access right now.'),'warn');
+          return;
+        }
+        const st=login.student;
+        window.ItasaStudentPortal.setSessionCredentials(email,code);
+        if(st.programId!=='review'){
+          showStatus('<strong>This secure account is valid, but it is not assigned to the NCLEX Review learning space.</strong><br><a href="student-portal-cutover-preview.html">Return to Student Sign In</a>','warn');
+          return;
+        }
+
+        document.getElementById('student-welcome').textContent='Welcome, '+((st.first_name||'').trim()||'NCLEX Student');
+        document.getElementById('student-summary').textContent='NCLEX Review & Test-Taking Strategies · '+(st.enrollmentStatus||'Student');
+        renderSchedule();
+        const results=await Promise.all([
+          window.ItasaStudentPortal.getZoomAccess(email,code),
+          window.ItasaStudentPortal.getLearningWorkspace(email,code),
+          window.ItasaStudentPortal.getCertificates(email,code),
+          window.ItasaStudentPortal.getNclexAttendance(email,code),
+          window.ItasaStudentPortal.getNclexMakeupOpportunities(email,code),
+          window.ItasaStudentPortal.getTrainingCompletionStatus(email,code)
+        ]);
+        renderAccess(results[0]);
+        renderWorkspace(results[1],st);
+        renderCertificates(results[2],results[5]);
+        renderAttendance(results[3]);
+        renderMakeups(results[4],email,code,results[0]);
+        await window.ItasaStudentCourseHub.load(document.getElementById('course-hub-items'),email,code);
+        await loadAnnouncements();
+        document.getElementById('login-card').hidden=true;
+        document.getElementById('student-signout').hidden=false;
+        workspace.classList.add('active');
+        showStatus('<strong>Welcome to your NCLEX Learning Space.</strong>','ok');
+        document.getElementById('code').value='';
+        workspace.scrollIntoView({behavior:'smooth',block:'start'});
+      }catch(err){
+        console.error(err);
+        showStatus('<strong>Unable to open the NCLEX Learning Space right now.</strong> No student records were changed.','error');
+      }finally{
+        btn.disabled=false;btn.textContent='Enter NCLEX Learning Space';
+      }
+    });
+
+    document.getElementById('student-signout').addEventListener('click',function(){
+      window.ItasaStudentPortal.clearSessionCredentials();
+      window.location.href='student-portal-cutover-preview.html';
+    });
+
+    const cached=window.ItasaStudentPortal.getSessionCredentials();
+    if(cached){
+      document.getElementById('email').value=cached.email;
+      document.getElementById('code').value=cached.accessCode;
+      setTimeout(function(){ form.requestSubmit(); },0);
+    }
+  })();
+  </script>
+</body>
+</html>
