@@ -107,11 +107,14 @@ Status key: ⬜ Not Started · 🟨 In Progress · 🟩 Built · ✅ Tested/Veri
 - 🟩 Minimize manual remediation scheduling
 - 🟩 Minimize manual access-recovery work
 - 🟩 Keep exceptions in small Admin/IT action queues
-- ✅ Clinical & Professional Updates feed now loads the full eligible current set instead of silently capping at 20; Florida authority-source ingestion type mismatch corrected and fresh collection verified
-- ✅ Student Current Events now requests up to 50 course-relevant items, filters out static regulatory/library references, and retains true safety/professional/legislative/evidence updates
-- ✅ Student Current Events uses a 30-day visibility window while retaining older records in TLC history/resources
+- ✅ Clinical & Professional Updates feed loads the full eligible current set instead of silently capping at 20; Florida authority-source ingestion type mismatch corrected and fresh collection verified
+- ✅ Student Current Events is course-specific: every item must directly support what that student is being taught in NCLEX, Skills Refresher, IV, or Medication Technician
+- ✅ Source priority is Florida/local first: Florida Board of Nursing, Florida Department of Health, AHCA, Florida Statutes/Administrative Code, and Central Florida public-health/health-system sources when directly relevant; national sources such as FDA, CDC, NCSBN, or NIH are used when Florida/local coverage is insufficient or a national alert materially affects the course
+- ✅ Current Events must be teachable and relatable: each item needs a clear course connection, concise summary, why-it-matters context, date, and authoritative source; generic homepages, archive walls, navigation text, and unrelated healthcare news are excluded
+- ✅ Freshness is matched to course length: short/intensive courses refresh more often and use a tighter visibility window; multi-week and self-paced courses may use a wider window while still prioritizing the newest relevant items
+- ✅ Minimum educational continuity: when no qualifying new event exists, use a current Florida regulation, rule, safety bulletin, or practice standard that directly teaches the course topic rather than displaying an empty/no-content message
 - ✅ AHCA Health Quality Assurance archive is parsed into individual dated alerts for students; archive-container wall-of-text is suppressed
-- ✅ Web-monitor deduplication hardened: one current record per monitored official page; prior duplicate snapshots archived, not deleted
+- ✅ Web-monitor deduplication remains hardened: one current record per monitored official page; prior duplicate snapshots archived, not deleted
 - ✅ Stale AHCA regulatory PDF links replaced with current Florida Administrative Code rule pages for 59A-36.008 and 59A-36.011
 
 ## 9. Verification Discipline
