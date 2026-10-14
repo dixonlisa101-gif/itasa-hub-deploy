@@ -249,15 +249,20 @@ function classCountdown(row){
       return !!title&&!!body&&!blockedTitle&&!blockedUrl&&!navigationLeak&&!unusablyLong;
     }
     function isCourseRelevantCurrentEvent(item,programId){
-      var text=(String(item&&item.title||'')+' '+String(item&&item.body||item&&item.summary||'')+' '+String(item&&item.course_label||'')).toLowerCase();
+      var text=(String(item&&item.title||'')+' '+String(item&&item.body||item&&item.summary||'')+' '+String(item&&item.source&&item.source.name||'')).toLowerCase();
       function hasAny(words){return words.some(function(w){return text.indexOf(w)!==-1;});}
       if(programId==='medtech'){
-        return hasAny([
-          'medication','med tech','medication technician','assisted living','prescription label','dosage',
-          'tablet','liquid medication','prn','adverse reaction','medication observation','insulin',
-          'nebulizer','glucometer','oxygen','cpap','anti-embolism','colostomy','vital sign',
-          'infection control','59a-36.008','59a-36.011','429.255','429.256'
+        var operationalNoise=hasAny([
+          'hfrs','hurricane','tropical storm','county removal','text exercise','ndms',
+          'consumer satisfaction survey','patient safety culture survey','facility reporting'
         ]);
+        var medRelevant=hasAny([
+          'medication','prescription label','dosage','tablet','liquid medication','prn',
+          'adverse reaction','medication observation','insulin','nebulizer','glucometer',
+          'oxygen','cpap','anti-embolism','colostomy','vital sign','infection control',
+          'assisted living','59a-36.008','59a-36.011','429.255','429.256'
+        ]);
+        return medRelevant && !operationalNoise;
       }
       if(programId==='iv'){
         return hasAny([
