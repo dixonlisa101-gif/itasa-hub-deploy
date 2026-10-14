@@ -24,7 +24,7 @@ label{display:block;font-weight:800;margin:.7rem 0 .3rem}input,select,textarea{w
 <section class="card">
 <div class="eyebrow">Assessments & Skills</div>
 <h1>Student Readiness & Skills Check-Offs</h1>
-<p class="muted">Medical Technician Class assessments, IV testing, Skills Refresher competency check-offs, skills scheduling, competency validation, remediation, completion, and Certificates of Completion are managed here. <strong>Skills readiness is calculated by the system; instructors do not manually change it.</strong></p>
+<p class="muted">Medication Technician Class assessments, IV testing, Skills Refresher competency check-offs, skills scheduling, competency validation, remediation, completion, and Certificates of Completion are managed here. <strong>Skills readiness is calculated by the system; instructors do not manually change it.</strong></p>
 <div id="login-shell">
 <form id="login-form" style="max-width:520px"><label for="staff-email">ITASA Staff Email</label><input id="staff-email" type="email" autocomplete="username" required><label for="staff-password">Password</label><input id="staff-password" type="password" autocomplete="current-password" required><button id="login-btn" type="submit" style="margin-top:12px">Sign In</button></form>
 <div id="login-status" class="notice" hidden></div>
@@ -35,7 +35,7 @@ label{display:block;font-weight:800;margin:.7rem 0 .3rem}input,select,textarea{w
 <section id="workspace" hidden>
 <div class="card">
 <div class="eyebrow">Student Progress</div><h2>Assessment & Skills Roster</h2>
-<p class="muted">Medical Technician Class requires all six module assessments at 80% or higher before the in-person skills check-off can be scheduled. IV requires the final knowledge assessment at 80% or higher before final competency validation. Skills Refresher uses the approved 16-item competency check-off during the supervised in-person validation.</p>
+<p class="muted">Medication Technician Class requires all six module assessments at 80% or higher before the in-person skills check-off can be scheduled. IV requires the final knowledge assessment at 80% or higher before final competency validation. Skills Refresher uses the approved 16-item competency check-off during the supervised in-person validation.</p>
 
 <div id="page-status" class="notice" hidden></div>
 <div id="roster"></div>
@@ -53,7 +53,7 @@ label{display:block;font-weight:800;margin:.7rem 0 .3rem}input,select,textarea{w
       <select id="rem-course">
         <option value="rn_skills_refresher_120_hour">Skills Refresher Class</option>
         <option value="iv_insertion_venipuncture">IV Insertion &amp; Venipuncture</option>
-        <option value="medication_technician_6_hour">Medical Technician Class</option>
+        <option value="medication_technician_6_hour">Medication Technician Class</option>
       </select>
     </div>
     <div>
@@ -167,13 +167,13 @@ function readinessMessage(r){
   if(Number(r.assessments_passed||0)<Number(r.assessments_total||0)){
     return 'Not ready yet: '+esc(r.assessments_passed||0)+' of '+esc(r.assessments_total||0)+' required module assessments have been passed at 80% or higher.';
   }
-  return 'Not ready yet: the required online Medical Technician Class learning/content requirements are still incomplete.';
+  return 'Not ready yet: the required online Medication Technician Class learning/content requirements are still incomplete.';
 }
 
 function renderRoster(){
  var box=document.getElementById('roster');
  var rows=Array.isArray(state.rows)?state.rows:[];
- if(!rows.length){box.innerHTML='<p class="muted">No Skills Refresher, Medical Technician Class, or IV enrollments are available.</p>';return}
+ if(!rows.length){box.innerHTML='<p class="muted">No Skills Refresher, Medication Technician Class, or IV enrollments are available.</p>';return}
 
  var groups={};
  rows.forEach(function(r){
@@ -278,7 +278,7 @@ async function openSession(id){
    var d=await window.ItasaAssessmentSkillsStaff.getSessionDetail(id);
    if(!d||d.status!=='ok')throw new Error((d&&d.status)||'Unable to load skills check-off.');
    var items=Array.isArray(d.items)?d.items:[];
-   var printLink=d.class_name==='Medical Technician Class'?'medical-technician-skills-checklist-print.html':
+   var printLink=d.class_name==='Medication Technician Class'?'medical-technician-skills-checklist-print.html':
      d.class_name==='Skills Refresher Class'?'skills-refresher-skills-checklist-print.html':
      'iv-skills-checklist-print.html';
    card.innerHTML='<div class="eyebrow">'+esc(d.class_name)+'</div><h2>'+esc(d.student_name)+' — Skills Check-Off</h2><p><strong>Status:</strong> '+tag(String(d.session_status||'').replace(/_/g,' '),d.session_status==='completed'?'good':'warn')+(d.scheduled_at?'<br><strong>Scheduled:</strong> '+esc(fmt(d.scheduled_at))+(d.scheduled_end_at?' - '+esc(fmt(d.scheduled_end_at)):''):'')+'</p><p><a class="btn secondary" target="_blank" href="'+printLink+'">Print Skills Checklist</a></p>'+
