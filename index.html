@@ -57,7 +57,7 @@
   </style>
 </head>
 <body>
-  <div class="preview">PREVIEW ONLY — GenSpark-independent ITASA Hub vNext. Not connected to the live domain.</div>
+
   <header>
     <nav>
       <a class="brand" href="#home"><img class="brand-logo" src="assets/itasa-circular-brand-logo.png" alt="ITASA logo"><span class="brand-copy"><strong>ITASA</strong><small>Learning Center</small></span></a>
@@ -66,7 +66,7 @@
         <a href="#courses">Explore Courses</a>
         <a href="#information-session">Information Session</a>
         <a href="#register">Register Now</a>
-        <a href="student-portal-cutover-preview.html">Student Sign In</a>
+        <a href="student-portal-course-aware-v2.html">Student Sign In</a>
         <a href="instructor-workspace-preview.html">Staff Sign In</a>
       </div>
     </nav>
@@ -154,7 +154,7 @@
             <p class="muted">Use the sign-in information ITASA sent to the email address used during registration to access your Learning Center.</p>
           </div>
           <div class="btnrow">
-            <a class="btn" href="student-portal-cutover-preview.html">Student Sign In</a>
+            <a class="btn" href="student-portal-course-aware-v2.html">Student Sign In</a>
             <a class="btn secondary" href="instructor-workspace-preview.html">Staff Sign In</a>
           </div>
         </div>
@@ -316,7 +316,7 @@
           <p class="muted">Students use their email and Learning Center access code. Staff use Supabase-authenticated ITASA staff credentials.</p>
         </div>
         <div class="btnrow">
-          <a class="btn" href="student-portal-cutover-preview.html">Student Sign In</a>
+          <a class="btn" href="student-portal-course-aware-v2.html">Student Sign In</a>
           <a class="btn secondary" href="instructor-workspace-preview.html">Staff Sign In</a>
         </div>
       </div>
@@ -411,7 +411,7 @@
       var id=row.program_id;
       var title=id==='review'?'NCLEX Review & Test-Taking Strategies':id==='skills'?'Skills Refresher Class':id==='iv'?'IV Insertion & Venipuncture':'Medication Technician Class';
       var certificate=id==='skills'||id==='iv'||id==='medtech'
-        ?'<p class="muted">Certificate of Completion provided upon successful completion of course requirements. CEU/CNE approval is not currently being advertised.</p>':'';
+        ?'<p class="muted">Certificate of Completion provided upon successful completion of course requirements.</p>':'';
       return '<div class="card course-card">'+
         '<span class="tag">'+esc(id==='iv'?'temporarily unavailable':(row.registration_status||''))+'</span>'+
         '<h3>'+esc(title)+'</h3>'+
