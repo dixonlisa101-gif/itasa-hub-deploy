@@ -1,0 +1,478 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+  <title>Student Sign In | ITASA Learning Center</title>
+  <style>
+    :root{
+      --teal:#177982;--teal-dark:#0d5961;--orange:#dd7b2d;--ink:#18343b;
+      --muted:#63767b;--line:#d9e7e8;--soft:#f5fafa;--warm:#fff6ec;
+      font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;color:var(--ink);background:#f8fbfb
+    }
+    *{box-sizing:border-box}body{margin:0}a{color:var(--teal-dark)}
+    .preview{background:#3b2d23;color:#fff;text-align:center;padding:9px 16px;font-weight:800}
+    header{background:#fff;border-bottom:1px solid var(--line)}
+    nav{max-width:1000px;margin:auto;padding:12px 18px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+    .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--teal-dark);font-weight:900;margin-right:auto}
+    .brand img{width:54px;height:54px;border-radius:50%;object-fit:contain}
+    .brand small{display:block;color:var(--orange);font-size:.72rem;text-transform:uppercase;letter-spacing:.08em}
+    main{max-width:900px;margin:auto;padding:38px 18px 64px}
+    .hero{background:linear-gradient(135deg,#eaf7f6,#fff5e8);border:1px solid var(--line);border-left:6px solid var(--orange);border-radius:20px;padding:28px;margin-bottom:18px}
+    .eyebrow{text-transform:uppercase;letter-spacing:.09em;font-size:.76rem;font-weight:900;color:var(--teal)}
+    h1{font-size:clamp(2rem,5vw,3.1rem);line-height:1.05;margin:.35rem 0 .8rem}h2,h3{margin:.2rem 0 .65rem}
+    .lead{font-size:1.08rem;color:#4e666c}.muted{color:var(--muted)}
+    .card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px;margin:16px 0;box-shadow:0 7px 20px rgba(17,71,78,.05)}
+    label{display:block;font-weight:800;margin:.8rem 0 .35rem}input{width:100%;padding:11px 12px;border:1px solid #b9cbcd;border-radius:9px;font:inherit}
+    .btn{display:inline-block;border:0;border-radius:10px;padding:11px 15px;font:inherit;font-weight:800;cursor:pointer;text-decoration:none;background:var(--teal);color:#fff}
+    .btn.orange{background:var(--orange)}.btn.secondary{background:#e8f4f4;color:var(--teal-dark)}
+    .btnrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+    .notice{border-left:5px solid var(--teal)}.notice.ok{border-left-color:#3c8b65}.notice.warn{border-left-color:var(--orange)}.notice.error{border-left-color:#b74848}
+    .space-card{border-top:4px solid var(--orange)}
+    .summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 18px;margin-top:14px}
+    .summary div:nth-child(odd){font-weight:800}
+    .community{background:var(--warm);border-left:5px solid var(--orange)}.current-events-head{display:flex;align-items:flex-start;gap:14px;justify-content:space-between}.current-events-copy{min-width:0}.current-events-body{padding-top:12px;border-top:1px solid var(--line);margin-top:12px}.hub-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0;border-bottom:1px solid var(--line)}.hub-tabs button{background:transparent;color:var(--teal-dark);border-radius:8px 8px 0 0;padding:10px 12px}.hub-tabs button.active{background:#fff;color:var(--teal-dark);border:1px solid var(--line);border-bottom-color:#fff;box-shadow:0 -2px 0 var(--orange) inset}.hub-panel{display:none;padding-top:6px}.hub-panel.active{display:block}.feed-item{border-left:4px solid var(--teal);padding:12px 14px;margin:10px 0;background:#fff;border-radius:10px}.feed-item h3{margin:.1rem 0 .4rem}.feed-meta{font-size:.82rem;color:var(--muted)}
+    [hidden]{display:none!important}
+    footer{text-align:center;padding:24px 18px;border-top:1px solid var(--line);background:#fff;color:#60757a}
+    @media(max-width:650px){.summary{grid-template-columns:1fr}.summary div:nth-child(odd){margin-top:8px}.brand span{display:none}}
+  </style>
+</head>
+<body>
+  <div class="preview">PREVIEW ONLY — Student Sign In experience. Not yet connected to the ITASA production domain.</div>
+  <header>
+    <nav>
+      <a class="brand" href="index.html"><img src="assets/itasa-circular-brand-logo.png" alt="ITASA logo"><span>ITASA<small>Learning Center</small></span></a>
+      <a href="index.html">Learning Center Home</a>
+      <button id="student-signout" class="btn secondary" type="button" hidden>Sign Out</button>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div id="student-view-label" class="eyebrow">Student Sign In</div>
+      <h1>Welcome back to your Learning Center.</h1>
+      <p id="student-intro" class="lead">Sign in with the email address you used for registration and the Learning Center access code ITASA sent after your payment was confirmed.</p>
+    </section>
+
+    <section id="login-card" class="card">
+      <h2>Enter your student space</h2>
+      <form id="login-form">
+        <label for="email">Student email</label>
+        <input id="email" type="email" autocomplete="username" required>
+        <label for="code">Learning Center access code</label>
+        <input id="code" type="password" autocomplete="current-password" required>
+        <button id="login-btn" class="btn orange" type="submit" style="margin-top:14px">Sign In</button>
+      </form>
+      <p class="muted" style="margin-top:12px"><a href="student-access-recovery.html">Forgot your registered email or Learning Center access code?</a></p>
+    </section>
+
+    <div id="status" class="card notice" hidden></div>
+
+    <section id="student-home" hidden>
+      <div class="card">
+        <div class="eyebrow">Student Home</div>
+        <h2 id="welcome-name">Welcome back.</h2>
+        <p class="muted">Your Learning Center keeps your class access, learning materials, updates, support, and completion information together in one place.</p>
+      </div>
+
+      <div id="space-card" class="card space-card"></div>
+
+      <div class="card current-events-card">
+        <div class="current-events-head">
+          <div class="current-events-copy">
+            <div class="eyebrow">Current Events</div>
+            <h2>Healthcare &amp; professional updates <span id="current-events-count"></span></h2>
+            <p class="muted">Course-relevant updates are available here when you want to review them.</p>
+          </div>
+          <button id="current-events-toggle" class="btn secondary" type="button" aria-expanded="false" aria-controls="current-events-body">Show Current Events</button>
+        </div>
+        <div id="current-events-body" class="current-events-body" hidden>
+          <div id="hub-events-feed"><p class="muted">Loading current healthcare updates…</p></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="eyebrow">Your Class Hub</div>
+        <h2>Announcements, assignments &amp; learning materials</h2>
+        <p class="muted">Your instructor uses this space for class announcements, assignments, workbook instructions, course materials/resources, and instructor communications.</p>
+        <div id="course-hub-content"><p class="muted">Loading your class Hub…</p></div>
+      </div>
+
+      <div class="card">
+        <div class="eyebrow">Additional Learning Support</div>
+        <h2>ITASA Personalized Learning Session (1:1)</h2>
+        <p class="muted">Need individual learning or test-taking support? Submit a request from the ITASA Learning Center. After ITASA confirms a date/time, you will receive your Personalized Learning access code and can return to your dedicated space for the appointment, payment step, and session access.</p>
+        <div class="btnrow"><a id="personalized-request-link" class="btn secondary" href="one-on-one-request-preview.html">Request a Personalized Learning Session</a><a class="btn secondary" href="one-on-one-learning-space-preview.html">Open Approved Personalized Learning Space</a></div>
+      </div>
+
+      <div class="card community">
+        <div class="eyebrow">ITASA Community</div>
+        <h2>Stay connected between class sessions.</h2>
+        <p class="muted">Follow ITASA on Facebook for encouragement, educational content, announcements, and community updates between Learning Center visits.</p>
+        <a class="btn secondary" target="_blank" rel="noopener" href="https://www.facebook.com/profile.php?id=61557528076740">Follow ITASA on Facebook</a>
+      </div>
+
+      <div class="card">
+        <div class="eyebrow">Access Recovery</div>
+        <h2>Set up free backup recovery</h2>
+        <p class="muted">These options help you recover your Learning Center without paid text messages and without needing Marie to troubleshoot the account.</p>
+        <label for="backup-email">Backup email</label>
+        <input id="backup-email" type="email" placeholder="A different email you can access">
+        <div class="btnrow" style="margin-top:10px">
+          <button id="verify-backup-email" class="btn secondary" type="button">Send Backup Email Verification</button>
+          <button id="generate-recovery-key" class="btn secondary" type="button">Generate One-Time Recovery Key</button>
+        </div>
+        <div id="recovery-options-status" class="notice" hidden></div>
+      </div>
+
+      <div class="card">
+        <div class="eyebrow">Need Help?</div>
+        <h2>ITASA student support</h2>
+        <p class="muted">If your class access or Learning Center information does not look right, email ITASA directly at <a href="mailto:info@innovationtrainingnstaffing.com">info@innovationtrainingnstaffing.com</a>.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>Innovation Training &amp; Staffing Agency · Empowering Nurses. Elevating Healthcare.</footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/student-portal-supabase.js?v=20260930-recovery1"></script>
+  <script src="js/shared-content-supabase.js?v=20260927-1"></script>
+  <script>
+  (function(){
+    'use strict';
+    const form=document.getElementById('login-form');
+    const btn=document.getElementById('login-btn');
+    const status=document.getElementById('status');
+    const home=document.getElementById('student-home');
+    const spaceCard=document.getElementById('space-card');
+    const loginCard=document.getElementById('login-card');
+    const signout=document.getElementById('student-signout');
+    let classes=[];
+
+    function esc(v){return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
+    function showStatus(html,tone){status.hidden=false;status.className='card notice '+(tone||'');status.innerHTML=html}
+    function programName(id){
+      return id==='review'?'NCLEX Review & Test-Taking Strategies':
+             id==='skills'?'Skills Refresher Class':
+             id==='iv'?'IV Insertion & Venipuncture':
+             id==='medtech'?'Medical Technician Class':
+             'ITASA Class';
+    }
+    function classFor(id){return classes.find(function(x){return x.program_id===id})||null}
+    function fmtDate(v){if(!v)return '';var d=new Date(v);if(isNaN(d.getTime()))return '';return d.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}
+function easternDateKey(value){
+  const d=value?new Date(value):new Date(); if(isNaN(d.getTime()))return '';
+  const parts=new Intl.DateTimeFormat('en-CA',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(d),obj={};
+  parts.forEach(function(p){if(p.type!=='literal')obj[p.type]=p.value});return obj.year+'-'+obj.month+'-'+obj.day;
+}
+function classCountdown(row){
+  if(!row||!row.start_date)return 'ITASA will confirm your class start date.';
+  const today=easternDateKey(new Date()),start=easternDateKey(row.start_date);
+  const a=new Date(today+'T12:00:00Z'),b=new Date(start+'T12:00:00Z'),days=Math.round((b-a)/86400000);
+  if(days>1)return days+' days until the first day of class';
+  if(days===1)return 'Class begins tomorrow';
+  if(days===0)return 'First day of class is today';
+  return 'Class is in progress';
+}
+
+
+    async function loadClasses(){
+      try{
+        if(window.ItasaSharedContentSupabase){
+          const result=await window.ItasaSharedContentSupabase.fetchCollection('classes');
+          classes=(result&&result.data)||[];
+        }
+      }catch(err){console.error('Unable to load class summary',err)}
+    }
+    const classesReady=loadClasses();
+
+    function renderFeedItems(items,type){
+      if(!Array.isArray(items)||!items.length)return '<p class="muted">No course-specific updates are posted right now.</p>';
+      return items.map(function(item){
+        var title=esc(item.title||'ITASA Update');
+        var body=esc(item.body||item.summary||'');
+        var badge=type==='events'&&item.course_label?'<div class="feed-meta"><strong>'+esc(item.course_label)+'</strong></div>':''; var source=item.source&&item.source.name?'<div class="feed-meta">'+esc(item.source.name)+(item.published_at?' · '+esc(fmtDate(item.published_at)):'')+'</div>':'';
+        var link='';
+        var url=item.resource_url||item.url||'';
+        var label=item.resource_label||'Open source';
+        if(url)link='<p><a target="_blank" rel="noopener" href="'+esc(url)+'">'+esc(label)+'</a></p>';
+        return '<article class="feed-item">'+badge+'<h3>'+title+'</h3>'+source+'<p>'+body+'</p>'+link+'</article>';
+      }).join('');
+    }
+    async function loadStudentFeedsDirect(email,code){
+      var feed=await window.ItasaStudentPortal.getHubFeeds(email,code,50);
+      if(feed&&feed.status==='ok')return feed;
+      try{
+        var c=window.__itasaStudentPortalClient;
+        if(c){
+          var r=await c.rpc('get_my_student_hub_feeds',{
+            p_email:(email||'').trim().toLowerCase(),
+            p_access_code:(code||'').trim(),
+            p_limit:50
+          });
+          if(!r.error&&r.data)return r.data;
+        }
+      }catch(err){console.error('Direct student feed fallback failed',err)}
+      return {status:'error'};
+    }
+    function isStudentReadyCurrentEvent(item){
+      if(!item||['safety_alert','professional_update','policy_legislative_development','peer_reviewed_evidence'].indexOf(item.information_type)===-1)return false;
+      var title=String(item.title||'').trim();
+      var body=String(item.body||item.summary||'').replace(/\s+/g,' ').trim();
+      var url=String(item.resource_url||item.url||'').trim().toLowerCase();
+      var titleLower=title.toLowerCase();
+      var combined=(title+' '+body).toLowerCase();
+      var blockedTitle=
+        titleLower==='practitioner legislative updates - florida department of health' ||
+        titleLower==='homepage - florida board of nursing' ||
+        titleLower==='florida board of nursing' ||
+        titleLower==='homepage';
+      var blockedUrl=
+        url==='https://floridasnursing.gov/' ||
+        url==='https://floridasnursing.gov' ||
+        url.indexOf('floridahealth.gov/licensing-regulations/medical-quality-assurance/2024-legislation')!==-1;
+      var navigationLeak=
+        combined.indexOf('skip to content')!==-1 ||
+        combined.indexOf('county health departments')!==-1 ||
+        combined.indexOf('file a complaint')!==-1 ||
+        combined.indexOf('verify a license')!==-1 ||
+        combined.indexOf('status of application')!==-1 ||
+        combined.indexOf('processing times')!==-1 ||
+        combined.indexOf('official websites use .gov')!==-1 ||
+        combined.indexOf('$refs.')!==-1 ||
+        combined.indexOf('selected.scrollintoview')!==-1;
+      var unusablyLong=body.length>1200;
+      return !!title&&!!body&&!blockedTitle&&!blockedUrl&&!navigationLeak&&!unusablyLong;
+    }
+    function getVerifiedCurrentEventsFallback(){
+      return [
+        {
+          information_type:'professional_update',
+          course_label:'Healthcare Operations',
+          title:'HFRS Update: County Removal for Hurricane Isaias',
+          body:'AHCA posted an October 13 update to Health Facility Reporting System requirements as counties were removed from Hurricane Isaias reporting.',
+          source:{name:'Florida Agency for Health Care Administration'},
+          published_at:'2026-10-13',
+          resource_url:'https://ahca.myflorida.com/health-quality-assurance/health-quality-assurance-alerts-archive.html',
+          resource_label:'Open official source'
+        },
+        {
+          information_type:'professional_update',
+          course_label:'Emergency Preparedness',
+          title:'HFRS Activated: Report for Hurricane Isaias',
+          body:'AHCA activated HFRS reporting for affected health care facilities as part of Hurricane Isaias emergency preparedness and response.',
+          source:{name:'Florida Agency for Health Care Administration'},
+          published_at:'2026-10-08',
+          resource_url:'https://ahca.myflorida.com/health-quality-assurance/emergency-preparedness-resources/isaias-2026.html',
+          resource_label:'Open official source'
+        },
+        {
+          information_type:'policy_legislative_development',
+          course_label:'Medication Safety',
+          title:'Early Prescription Refills Permitted Under State of Emergency',
+          body:'Florida authorized pharmacists to dispense up to a 30-day emergency refill of maintenance medication for people in areas covered by the state of emergency.',
+          source:{name:'Florida Board of Nursing'},
+          published_at:'2026-10-07',
+          resource_url:'https://floridasnursing.gov/latest-news/',
+          resource_label:'Open official source'
+        },
+        {
+          information_type:'policy_legislative_development',
+          course_label:'Emergency Preparedness',
+          title:'Rule Notice 59A-18.018: Emergency Management Plans',
+          body:'AHCA issued an October 6 rule notice concerning emergency management plans for regulated health care providers and facilities.',
+          source:{name:'Florida Agency for Health Care Administration'},
+          published_at:'2026-10-06',
+          resource_url:'https://ahca.myflorida.com/health-quality-assurance/health-quality-assurance-alerts-archive.html',
+          resource_label:'Open official source'
+        }
+      ];
+    }
+    function renderStudentFeeds(feed){
+      var events=document.getElementById('hub-events-feed');
+      if(!feed||feed.status!=='ok'){
+        events.innerHTML='<p class="muted">Current healthcare updates are temporarily unavailable.</p>';
+        return;
+      }
+      var eventItems=(Array.isArray(feed.current_events)?feed.current_events:[]).filter(isStudentReadyCurrentEvent);
+      var usingFallback=false;
+      if(!eventItems.length){eventItems=getVerifiedCurrentEventsFallback();usingFallback=true;}
+      var count=document.getElementById('current-events-count');
+      if(count)count.textContent=eventItems.length?'('+eventItems.length+')':'';
+      events.innerHTML=renderFeedItems(eventItems,'events')+
+        '<p class="feed-meta">'+(usingFallback?'Showing recent verified updates from official Florida health sources.':'Current Events refresh automatically from ITASA medical and professional knowledge sources.')+'</p>';
+    }
+
+    function hubTypeLabel(v){
+      return v==='announcement'?'Announcements':
+        v==='assignment'?'Assignments':
+        v==='workbook_instruction'?'Workbook Instructions':
+        v==='material'?'Course Materials':
+        v==='resource'?'Course Resources':
+        v==='instructor_message'?'Instructor Communications':'Class Information';
+    }
+    function renderCourseHubItems(payload){
+      var box=document.getElementById('course-hub-content'),items=payload&&payload.status==='ok'&&Array.isArray(payload.items)?payload.items:[];
+      if(!items.length){box.innerHTML='<p class="muted">No instructor-posted Hub items are available for your class yet.</p>';return}
+      var order=['announcement','instructor_message','assignment','workbook_instruction','material','resource'];
+      box.innerHTML=order.map(function(type){
+        var rows=items.filter(function(x){return x.item_type===type});
+        if(!rows.length)return '';
+        return '<section style="margin-top:16px"><h3>'+esc(hubTypeLabel(type))+'</h3>'+rows.map(function(x){
+          return '<article class="feed-item"><h3>'+esc(x.title||'Class item')+'</h3>'+
+            (x.due_at?'<div class="feed-meta"><strong>Due:</strong> '+esc(fmtDate(x.due_at))+'</div>':'')+
+            (x.body?'<p>'+esc(x.body)+'</p>':'')+
+            (x.resource_url?'<p><a target="_blank" rel="noopener" href="'+esc(x.resource_url)+'">Open linked item</a></p>':'')+
+            '</article>';
+        }).join('')+'</section>';
+      }).join('');
+    }
+
+    function renderSpace(st){
+      const id=st.programId||'';
+      const row=classFor(id);
+      let html='<div class="eyebrow">Your Learning Space</div><h2>'+esc(programName(id))+'</h2>';
+      if(row){
+        html+='<div class="summary">';
+        html+='<div>Class status</div><div><strong>'+esc(classCountdown(row))+'</strong></div>';
+        html+='<div>Start</div><div>'+esc(row.start_date?fmtDate(row.start_date):'ITASA will confirm your cohort start date')+'</div>';
+        html+='<div>Schedule</div><div>'+esc(row.meeting_time_label||'ITASA will confirm your class schedule')+'</div>';
+        html+='</div>';
+      }
+      if(id==='review'){
+        html+='<p class="muted">Your NCLEX space includes secure class access, announcements, learning materials, progress, completion information, and test-taking support.</p>'+
+              '<a class="btn orange" href="nclex-learning-space-preview.html">Open NCLEX Learning Space</a>';
+      }else if(id==='skills'){
+        html+='<p class="muted">Your Skills Refresher space includes secure class access, assigned learning materials, progress, the required in-person skills check-off, and completion information.</p>'+
+              '<a class="btn orange" href="skills-learning-space-preview.html">Open Skills Refresher Learning Space</a>';
+      }else if(id==='iv'){
+        html+='<p class="muted">Your IV space includes secure class access, IV-specific learning materials, safety Q&amp;A, hands-on skills preparation, competency validation, and completion information.</p>'+
+              '<a class="btn orange" href="iv-learning-space-preview.html">Open IV Learning Space</a>';
+      }else if(id==='medtech'){
+        html+='<p class="muted">Your Medical Technician Class learning space includes six online modules, practice activities, module-assessment information, and preparation for required in-person physical and verbal skills validation.</p>'+
+              '<a class="btn orange" href="medtech-learning-space-preview.html">Open Medical Technician Class</a>';
+      }else{
+        html+='<p class="muted">ITASA will provide the appropriate Learning Center space for your registered class.</p>';
+      }
+      spaceCard.innerHTML=html;
+    }
+
+    async function openStudentSpace(email,code,restoreHome){
+      home.hidden=true;
+      signout.hidden=true;
+      btn.disabled=true;btn.textContent='Signing in…';
+      showStatus('<strong>Checking your Learning Center access…</strong>','');
+      try{
+        if(!window.ItasaStudentPortal)throw new Error('Student access system unavailable.');
+        const login=await window.ItasaStudentPortal.login(email,code,[]);
+        if(login.status!=='ok'||!login.student){
+          window.ItasaStudentPortal.clearSessionCredentials();
+          const messages={
+            pending_review:'Your Learning Center access is still pending review.',
+            invalid_code:'The access code was not accepted.',
+            not_found:'No matching student access was found.',
+            invalid_credentials:'The email/access-code pair was not accepted.'
+          };
+          showStatus('<strong>We could not open your student space.</strong><br>'+esc(messages[login.status]||'Please verify your sign-in information and try again.'),'warn');
+          return;
+        }
+        const st=login.student;
+        window.ItasaStudentPortal.setSessionCredentials(email,code);
+        document.getElementById('welcome-name').textContent='Welcome back, '+((st.first_name||'').trim()||'Student')+'.';
+        var requestLink=document.getElementById('personalized-request-link');
+        if(requestLink){
+          var fromMap={review:'nclex',skills:'skills',iv:'iv',medtech:'medtech'};
+          var fromKey=fromMap[st.program_id]||'';
+          requestLink.href='one-on-one-request-preview.html'+(fromKey?'?from='+encodeURIComponent(fromKey):'');
+        }
+        await classesReady;
+        renderSpace(st);
+        const feed=await loadStudentFeedsDirect(email,code);
+        renderStudentFeeds(feed);
+        const hubItems=await window.ItasaStudentPortal.getCourseHubItems(email,code);
+        renderCourseHubItems(hubItems);
+        loginCard.hidden=true;
+        signout.hidden=false;
+        document.getElementById('student-view-label').textContent='Student Home';
+        document.getElementById('student-intro').textContent='Your class access, materials, updates, and completion information are ready below.';
+        home.hidden=false;
+        showStatus(restoreHome?'<strong>Welcome back to Student Home.</strong>':'<strong>You’re signed in.</strong> Your Student Home is ready below.','ok');
+        document.getElementById('code').value='';
+        home.scrollIntoView({behavior:'smooth',block:'start'});
+      }catch(err){
+        console.error(err);
+        showStatus('<strong>Student Sign In is temporarily unavailable.</strong> Please try again or contact ITASA if the issue continues.','error');
+      }finally{
+        if(home.hidden)loginCard.hidden=false;
+        btn.disabled=false;btn.textContent='Sign In';
+      }
+    }
+
+    form.addEventListener('submit',function(ev){
+      ev.preventDefault();
+      openStudentSpace(document.getElementById('email').value.trim().toLowerCase(),document.getElementById('code').value.trim(),false);
+    });
+
+    signout.addEventListener('click',function(){
+      window.ItasaStudentPortal.clearSessionCredentials();
+      window.location.replace('student-portal-cutover-preview.html');
+    });
+
+    document.getElementById('verify-backup-email').addEventListener('click',async function(){
+      var cached=window.ItasaStudentPortal.getSessionCredentials(),s=document.getElementById('recovery-options-status');
+      if(!cached){showStatus('<strong>Please sign in again before changing recovery options.</strong>','warn');return}
+      var backup=document.getElementById('backup-email').value.trim();
+      if(!backup){s.hidden=false;s.className='notice warn';s.textContent='Enter a backup email first.';return}
+      this.disabled=true;
+      try{
+        var r=await window.ItasaStudentPortal.setBackupEmail(cached.email,cached.accessCode,backup);
+        s.hidden=false;
+        if(r&&r.status==='verification_sent'){
+          s.className='notice good';s.textContent='Verification email queued for '+(r.masked_backup_email||'your backup email')+'.';
+        }else{
+          s.className='notice warn';s.textContent=(r&&r.status==='backup_must_be_different')?'Use a different email from your main sign-in email.':'Backup email verification could not be started.';
+        }
+      }finally{this.disabled=false}
+    });
+
+    document.getElementById('generate-recovery-key').addEventListener('click',async function(){
+      var cached=window.ItasaStudentPortal.getSessionCredentials(),s=document.getElementById('recovery-options-status');
+      if(!cached){showStatus('<strong>Please sign in again before changing recovery options.</strong>','warn');return}
+      if(!confirm('Generate a new one-time recovery key? Save it somewhere private. Any previous recovery key will stop working.'))return;
+      this.disabled=true;
+      try{
+        var r=await window.ItasaStudentPortal.issueRecoveryKey(cached.email,cached.accessCode);
+        s.hidden=false;
+        if(r&&r.status==='issued'){
+          s.className='notice good';
+          s.innerHTML='<strong>Save this recovery key now:</strong><br><span style="font-size:1.15rem">'+esc(r.recovery_key||'')+'</span><br><span class="muted">It is shown here once and can be used one time if you lose access to your email.</span>';
+        }else{
+          s.className='notice warn';s.textContent='A recovery key could not be generated.';
+        }
+      }finally{this.disabled=false}
+    });
+
+    var currentEventsToggle=document.getElementById('current-events-toggle');
+    var currentEventsBody=document.getElementById('current-events-body');
+    if(currentEventsToggle&&currentEventsBody){
+      currentEventsToggle.addEventListener('click',function(){
+        var willOpen=currentEventsBody.hidden;
+        currentEventsBody.hidden=!willOpen;
+        currentEventsToggle.setAttribute('aria-expanded',willOpen?'true':'false');
+        currentEventsToggle.textContent=willOpen?'Hide Current Events':'Show Current Events';
+      });
+    }
+
+    const cached=window.ItasaStudentPortal&&window.ItasaStudentPortal.getSessionCredentials();
+    if(cached){
+      loginCard.hidden=true;
+      openStudentSpace(cached.email,cached.accessCode,true);
+    }
+  })();
+  </script>
+</body>
+</html>
