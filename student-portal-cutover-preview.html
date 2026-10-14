@@ -219,13 +219,25 @@ function classCountdown(row){
       }catch(err){console.error('Direct student feed fallback failed',err)}
       return {status:'error'};
     }
+    function isStudentReadyCurrentEvent(item){
+      if(!item||['safety_alert','professional_update','policy_legislative_development','peer_reviewed_evidence'].indexOf(item.information_type)===-1)return false;
+      var title=String(item.title||'').trim();
+      var body=String(item.body||item.summary||'').replace(/\\s+/g,' ').trim();
+      var url=String(item.resource_url||item.url||'').toLowerCase();
+      var combined=(title+' '+body).toLowerCase();
+      var genericTitle=/^(home|homepage|welcome|practitioner legislative updates)(\\s*-|$)/i.test(title);
+      var navigationLeak=/skip to content|county health departments|file a complaint|verify a license|status of application|processing times|how you know|official websites use \\.gov|\\$refs\\.|selected\\.scrollintoview/i.test(combined);
+      var knownIndexPage=url.indexOf('/licensing-regulations/medical-quality-assurance/2024-legislation/')!==-1||/floridasnursing\\.gov\\/?$/.test(url);
+      var unusablyLong=body.length>1400;
+      return !!title&&!!body&&!genericTitle&&!navigationLeak&&!knownIndexPage&&!unusablyLong;
+    }
     function renderStudentFeeds(feed){
       var events=document.getElementById('hub-events-feed');
       if(!feed||feed.status!=='ok'){
         events.innerHTML='<p class="muted">Current healthcare updates are temporarily unavailable.</p>';
         return;
       }
-      var eventItems=(Array.isArray(feed.current_events)?feed.current_events:[]).filter(function(item){return ['safety_alert','professional_update','policy_legislative_development','peer_reviewed_evidence'].indexOf(item.information_type)!==-1;});
+      var eventItems=(Array.isArray(feed.current_events)?feed.current_events:[]).filter(isStudentReadyCurrentEvent);
       var count=document.getElementById('current-events-count');
       if(count)count.textContent=eventItems.length?'('+eventItems.length+')':'';
       events.innerHTML=renderFeedItems(eventItems,'events')+
