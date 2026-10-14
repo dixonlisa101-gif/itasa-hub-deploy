@@ -248,6 +248,39 @@ function classCountdown(row){
       var unusablyLong=body.length>1200;
       return !!title&&!!body&&!blockedTitle&&!blockedUrl&&!navigationLeak&&!unusablyLong;
     }
+    function isCourseRelevantCurrentEvent(item,programId){
+      var text=(String(item&&item.title||'')+' '+String(item&&item.body||item&&item.summary||'')+' '+String(item&&item.course_label||'')).toLowerCase();
+      function hasAny(words){return words.some(function(w){return text.indexOf(w)!==-1;});}
+      if(programId==='medtech'){
+        return hasAny([
+          'medication','med tech','medication technician','assisted living','prescription label','dosage',
+          'tablet','liquid medication','prn','adverse reaction','medication observation','insulin',
+          'nebulizer','glucometer','oxygen','cpap','anti-embolism','colostomy','vital sign',
+          'infection control','59a-36.008','59a-36.011','429.255','429.256'
+        ]);
+      }
+      if(programId==='iv'){
+        return hasAny([
+          'iv therapy','intravenous','venipuncture','infusion','vascular access','catheter','injection',
+          'injectable','saline','argatroban','brevital','particulate matter','fluid administration','64b9-12'
+        ]);
+      }
+      if(programId==='skills'){
+        return hasAny([
+          'clinical skill','patient safety','infection control','vital sign','medication safety','injection',
+          'catheter','wound','oxygen','glucometer','mobility','transfer','specimen','assessment','competency'
+        ]);
+      }
+      if(programId==='review'){
+        return hasAny([
+          'nclex','licensure','license','nursing practice','patient safety','medication safety','pharmacology',
+          'clinical judgment','test plan','board of nursing','recall','infection control','delegation',
+          'prioritization','scope of practice'
+        ]);
+      }
+      return true;
+    }
+
     function currentEventsCourseConfig(programId){
       if(programId==='review')return {
         empty:'No NCLEX-specific healthcare or nursing updates are posted right now.',
@@ -327,24 +360,32 @@ function classCountdown(row){
       ];
       if(programId==='medtech')return [
         {
+          information_type:'policy_legislative_development',
+          course_label:'Medication Technician · Florida Regulation',
+          title:'Florida Rule 59A-36.008: Medication Practices',
+          body:'Florida’s assisted-living medication rule addresses medication practices and is directly relevant to medication assistance, storage, documentation, and safe resident support. Use this rule to connect class skills with Florida requirements.',
+          source:{name:'Florida Administrative Code'},
+          resource_url:'https://flrules.org/gateway/RuleNo.asp?id=59A-36.008',
+          resource_label:'Open Florida rule'
+        },
+        {
+          information_type:'policy_legislative_development',
+          course_label:'Medication Technician · Florida Regulation',
+          title:'Florida Rule 59A-36.011: Staff Training Requirements and Competency Test',
+          body:'Florida’s assisted-living training rule sets staff training and competency requirements. This supports why Medication Technician skills must be taught, demonstrated, and validated rather than treated as information-only learning.',
+          source:{name:'Florida Administrative Code'},
+          resource_url:'https://flrules.org/gateway/RuleNo.asp?id=59A-36.011',
+          resource_label:'Open Florida rule'
+        },
+        {
           information_type:'professional_update',
-          course_label:'Medication Technician',
+          course_label:'Medication Technician · Florida',
           title:'Early Prescription Refills Permitted Under State of Emergency',
-          body:'Florida authorized up to a 30-day emergency refill of maintenance medication for people in areas covered by the October state of emergency.',
+          body:'Florida authorized up to a 30-day emergency refill of maintenance medication for people in covered areas. Teaching connection: recognize changes in medication supply while continuing to follow the authorized order, documentation, storage, and assistance rules.',
           source:{name:'Florida Board of Nursing'},
           published_at:'2026-10-08',
           resource_url:'https://floridasnursing.gov/hurricane-isaias-early-prescription-refills-permitted-under-state-of-emergency/',
           resource_label:'Open official source'
-        },
-        {
-          information_type:'safety_alert',
-          course_label:'Medication Technician',
-          title:'FDA Recall: Argatroban Injection',
-          body:'FDA posted a recall of multiple lots of Argatroban Injection because particulate matter was identified. This is a current medication-safety alert.',
-          source:{name:'U.S. Food and Drug Administration'},
-          published_at:'2026-10-14',
-          resource_url:'https://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts/par-health-issues-voluntary-nationwide-recall-argatroban-injection-due-presence-particulate-matter',
-          resource_label:'Open FDA recall'
         }
       ];
       if(programId==='skills')return [
@@ -379,7 +420,7 @@ function classCountdown(row){
         events.innerHTML='<p class="muted">Current healthcare updates are temporarily unavailable.</p>';
         return;
       }
-      var eventItems=(Array.isArray(feed.current_events)?feed.current_events:[]).filter(isStudentReadyCurrentEvent);
+      var eventItems=(Array.isArray(feed.current_events)?feed.current_events:[]).filter(isStudentReadyCurrentEvent).filter(function(item){return isCourseRelevantCurrentEvent(item,programId);});
       var usingVerifiedFallback=false;
       if(!eventItems.length){
         eventItems=verifiedCourseCurrentEvents(programId);
