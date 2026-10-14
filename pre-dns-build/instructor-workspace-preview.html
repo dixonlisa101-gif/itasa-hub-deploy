@@ -24,7 +24,7 @@ label{display:block;font-weight:800;margin:.7rem 0 .3rem}input{width:100%;paddin
 <main>
   <div class="card">
     <div class="eyebrow">Instructor Workspace</div><h1>Welcome to your ITASA work space.</h1>
-    <p class="muted">Manage your classes, teaching resources, readiness, and student-facing work from one protected staff entry point.</p><div class="notice"><strong>Instructor course authority:</strong> Assignment alone does not establish clearance. IV Insertion &amp; Venipuncture and Medical Technician Class instructors must maintain verified professional credentials, satisfy the course-specific qualification requirements, complete required ITASA acknowledgments, and understand and apply the Florida laws, rules, scope boundaries, and course requirements governing the assigned class. Final competency validation remains restricted until the assignment is cleared.</div>
+    <p class="muted">Manage your classes, teaching resources, readiness, and student-facing work from one protected staff entry point.</p><div class="notice"><strong>Instructor course authority:</strong> Assignment alone does not establish clearance. IV Insertion &amp; Venipuncture and Medication Technician Class instructors must maintain verified professional credentials, satisfy the course-specific qualification requirements, complete required ITASA acknowledgments, and understand and apply the Florida laws, rules, scope boundaries, and course requirements governing the assigned class. Final competency validation remains restricted until the assignment is cleared.</div>
     <div id="login-shell"><form id="login-form" style="max-width:520px"><label for="staff-email">ITASA Staff Email</label><input id="staff-email" type="email" autocomplete="username" required><label for="staff-password">Password</label><input id="staff-password" type="password" autocomplete="current-password" required><button id="login-btn" type="submit" style="margin-top:14px">Sign In</button></form>
     <div class="card" style="margin-top:16px;background:#f8fbfb">
       <div class="eyebrow">Review Account</div>
@@ -71,7 +71,7 @@ label{display:block;font-weight:800;margin:.7rem 0 .3rem}input{width:100%;paddin
     </section>
 
     <section id="panel-courses" class="panel">
-      <div class="card"><div class="eyebrow">Assessments &amp; Skills</div><h2>Student readiness &amp; skills check-offs</h2><p class="muted">Review Medical Technician Class assessment results, IV competency status, schedule skills check-offs, and record competency results.</p><div class="toolbar"><a class="btn orange" href="assessment-skills-workspace-preview.html">Open Assessments &amp; Skills</a><a class="btn secondary" target="_blank" rel="noopener" href="skills-refresher-competency-checkoff-print.html">Print Skills Refresher Competency Check-Off (PDF)</a></div></div>
+      <div class="card"><div class="eyebrow">Assessments &amp; Skills</div><h2>Student readiness &amp; skills check-offs</h2><p class="muted">Review Medication Technician Class assessment results, IV competency status, schedule skills check-offs, and record competency results.</p><div class="toolbar"><a class="btn orange" href="assessment-skills-workspace-preview.html">Open Assessments &amp; Skills</a><a class="btn secondary" target="_blank" rel="noopener" href="skills-refresher-competency-checkoff-print.html">Print Skills Refresher Competency Check-Off (PDF)</a></div></div>
       <div class="card"><div class="eyebrow">IV course · Staff review</div><h2>Review the six-module teaching draft</h2><p class="muted">Revision 7 includes the phase-card activity, simpler practice prompts, references, and separate Teaching Notes. Enrollment remains on hold.</p><a class="btn orange" href="iv-course-review-preview.html">Open IV Course Review</a></div>
       <div class="card">
         <div class="eyebrow">Course Workspaces</div>
@@ -102,7 +102,7 @@ label{display:block;font-weight:800;margin:.7rem 0 .3rem}input{width:100%;paddin
               <option value="review">NCLEX Review &amp; Test-Taking Strategies</option>
               <option value="skills">Skills Refresher Class</option>
               <option value="iv">IV Insertion &amp; Venipuncture</option>
-              <option value="medtech">Medical Technician Class</option>
+              <option value="medtech">Medication Technician Class</option>
             </select>
           </div>
           <div>
@@ -187,7 +187,7 @@ function esc(v){return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'
 function show(el,msg,tone){el.hidden=false;el.className='notice '+(tone||'');el.textContent=msg}
 function hide(el){el.hidden=true;el.textContent=''}
 function fmtDate(v){if(!v)return '';var d=new Date(v);return isNaN(d.getTime())?String(v):d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}
-function programName(id){return id==='review'?'NCLEX Review & Test-Taking Strategies':id==='skills'?'Skills Refresher Class':id==='iv'?'IV Insertion & Venipuncture':id==='medtech'?'Medical Technician Class':id||'ITASA Class'}
+function programName(id){return id==='review'?'NCLEX Review & Test-Taking Strategies':id==='skills'?'Skills Refresher Class':id==='iv'?'IV Insertion & Venipuncture':id==='medtech'?'Medication Technician Class':id||'ITASA Class'}
 function studentView(id){return id==='review'?'nclex-learning-space-preview.html':id==='skills'?'skills-learning-space-preview.html':id==='iv'?'iv-learning-space-preview.html':id==='medtech'?'medtech-learning-space-preview.html':'student-portal-cutover-preview.html'}
 function easternKey(value){
   var d=value?new Date(value):new Date(); if(isNaN(d.getTime()))return '';
@@ -234,7 +234,7 @@ function renderAssignedCourseWorkspaces(){
     {program_id:'review',offering_key:'nclex_review_test_taking',name:'NCLEX Review & Test-Taking Strategies',url:'nclex-learning-space-preview.html'},
     {program_id:'skills',offering_key:'rn_skills_refresher_120_hour',name:'Skills Refresher Class',url:'skills-learning-space-preview.html'},
     {program_id:'iv',offering_key:'iv_insertion_venipuncture',name:'IV Insertion & Venipuncture',url:'iv-course-review-preview.html'},
-    {program_id:'medtech',offering_key:'medication_technician_6_hour',name:'Medical Technician Class',url:'medtech-learning-space-preview.html'}
+    {program_id:'medtech',offering_key:'medication_technician_6_hour',name:'Medication Technician Class',url:'medtech-learning-space-preview.html'}
   ];
   box.innerHTML=courses.map(function(course){
     var a=assign.find(function(x){return x.offering_key===course.offering_key})||null;
@@ -321,7 +321,7 @@ function hubProgramMeta(){
     {id:'review',label:'NCLEX Review & Test-Taking Strategies',url:'nclex-learning-space-preview.html'},
     {id:'skills',label:'Skills Refresher Class',url:'skills-learning-space-preview.html'},
     {id:'iv',label:'IV Insertion & Venipuncture',url:'iv-learning-space-preview.html'},
-    {id:'medtech',label:'Medical Technician Class',url:'medtech-learning-space-preview.html'}
+    {id:'medtech',label:'Medication Technician Class',url:'medtech-learning-space-preview.html'}
   ];
   if(admin)return all;
   var assigns=state.readiness&&Array.isArray(state.readiness.assignments)?state.readiness.assignments:[];
@@ -611,7 +611,7 @@ async function load(){
     ]);
     state.students=all[0]||[];
     state.classes=(all[1]&&all[1].data)||[];
-    if(!state.classes.some(function(c){return c.program_id==='medtech'}))state.classes.push({program_id:'medtech',name:'Medical Technician Class',registration_status:'Coming Soon',start_date:null,max_seats:null,notes:'Registration and payment remain closed while ITASA finalizes course launch details.'});
+    if(!state.classes.some(function(c){return c.program_id==='medtech'}))state.classes.push({program_id:'medtech',name:'Medication Technician Class',registration_status:'Open',start_date:null,max_seats:null,notes:'Self-paced online learning. Required in-person skills validation is scheduled after the online requirements are complete.'});
     state.access=all[2]||[];
     state.knowledge=(all[3]&&all[3].status==='ok')?(all[3].items||[]):[];
     state.nclex=(all[4]&&all[4].status==='ok')?(all[4].rows||[]):[];
