@@ -138,7 +138,7 @@
         .eq('is_current', true);
       if (response.error) return;
       (response.data || []).forEach(function (row) {
-        if (['review', 'skills', 'medtech'].indexOf(row.program_id) === -1 ||
+        if (['review', 'skills'].indexOf(row.program_id) === -1 ||
             Number(row.payment_number) !== 1 ||
             row.checkout_stage !== 'registration' || row.is_current !== true ||
             !/^https:\/\/buy[.]stripe[.]com\/[A-Za-z0-9]+$/.test(row.checkout_url || '')) return;
@@ -195,6 +195,7 @@
 
   async function submitRegistration(entry) {
     if (['iv', 'medtech'].indexOf((entry.course_id || '').toLowerCase()) !== -1) return { status: 'registration_not_open', reason: 'course_enrollment_hold' };
+    if (!entry.professional_support_ack || !entry.certificate_outcomes_ack || !entry.learning_center_disclaimer_ack || !entry.payment_policy_ack) return { status: 'acknowledgments_required' };
     var c = client();
     if (!c) return { status: 'error', error: new Error('Supabase client unavailable.') };
     try {
