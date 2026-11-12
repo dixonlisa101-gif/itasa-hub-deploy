@@ -116,7 +116,7 @@
   }
 
   function paymentOptions(courseId, classRow) {
-    if (courseId === 'iv') return [];
+    if (courseId === 'iv' || courseId === 'medtech') return [];
     var cfg = PAYMENT_CONFIG[courseId];
     if (!cfg) return [];
     if (isFirstDay(classRow)) return cfg.options.filter(function (o) { return o.key === 'full'; });
@@ -151,7 +151,7 @@
   }
 
   function checkoutFor(courseId, paymentOptionKey) {
-    if (courseId === 'iv') return null;
+    if (courseId === 'iv' || courseId === 'medtech') return null;
     return currentCheckoutLinks[courseId + ':' + paymentOptionKey] || null;
   }
 
@@ -194,7 +194,7 @@
   }
 
   async function submitRegistration(entry) {
-    if ((entry.course_id || '').toLowerCase() === 'iv') return { status: 'registration_not_open', reason: 'iv_compliance_hold' };
+    if (['iv', 'medtech'].indexOf((entry.course_id || '').toLowerCase()) !== -1) return { status: 'registration_not_open', reason: 'course_enrollment_hold' };
     var c = client();
     if (!c) return { status: 'error', error: new Error('Supabase client unavailable.') };
     try {
