@@ -268,7 +268,7 @@
                 <option value="review">NCLEX Review & Test-Taking Strategies</option>
                 <option value="skills">Skills Refresher Class</option>
                 <option value="iv" disabled>IV Insertion & Venipuncture — Registration temporarily unavailable</option>
-                <option value="medtech">Medication Technician Class</option>
+                <option value="medtech" disabled>Medication Technician Class — Enrollment closed</option>
               </select>
             </div>
 
@@ -282,7 +282,7 @@
             <div class="full"><div class="eyebrow">Student Acknowledgements</div><p class="muted">Please review these important notices before you continue.</p></div>
 
             <div class="full"><label class="ack"><input type="checkbox" name="professional_support_ack" required><span>I understand that ITASA provides educational and professional support and that my class is designed to guide my learning experience.</span></label></div>
-            <div class="full"><label class="ack"><input type="checkbox" name="certificate_outcomes_ack" required><span>I understand that class completion results in a Certificate of Completion only and does not guarantee NCLEX success, licensure, employment, or assignment.</span></label></div>
+            <div class="full"><label class="ack"><input type="checkbox" name="certificate_outcomes_ack" required><span>I understand that ITASA courses are examination preparation, professional development, or skills review only. Completion provides a Certificate of Completion where applicable; it does not grant a professional license or state-issued credential, qualify me for a new scope of practice, or authorize clinical duties I am not otherwise qualified to perform.</span></label></div>
 
             <div class="full disclaimer">
               <h3>ITASA Learning Center Disclaimer</h3>
@@ -351,7 +351,7 @@
     };
 
     function pricingMarkup(id,row,forForm){
-      if(id==='iv')return '<div class="notice"><strong>Registration and payment are temporarily unavailable for this course.</strong><br><span class="muted">Please check back for updates.</span></div>';
+      if(id==='iv'||id==='medtech')return '<div class="notice"><strong>Registration and payment are temporarily unavailable for this course.</strong><br><span class="muted">Please check back for updates.</span></div>';
       var hub=window.ItasaPublicHubVNext;
       var cfg=hub.paymentConfig[id];
       if(!cfg)return '<p class="muted">Pricing is not available.</p>';
@@ -400,7 +400,7 @@
       return 'Class has started';
     }
     function classRegistrationOpen(row){
-      if(!row||String(row.registration_status||'').toLowerCase()!=='open')return false;
+      if(!row||row.program_id==='iv'||row.program_id==='medtech'||String(row.registration_status||'').toLowerCase()!=='open')return false;
       if(!row.start_date)return true;
       var today=easternDateKey(new Date()),start=easternDateKey(row.start_date);
       if(!today||!start)return true;
@@ -413,11 +413,11 @@
       var certificate=id==='skills'||id==='iv'||id==='medtech'
         ?'<p class="muted">Certificate of Completion provided upon successful completion of course requirements.</p>':'';
       return '<div class="card course-card">'+
-        '<span class="tag">'+esc(id==='iv'?'temporarily unavailable':(row.registration_status||''))+'</span>'+
+        '<span class="tag">'+esc(id==='iv'?'temporarily unavailable':id==='medtech'?'enrollment closed':(row.registration_status||''))+'</span>'+
         '<h3>'+esc(title)+'</h3>'+
-        '<p><span class="tag">'+esc(id==='iv'?'Registration temporarily unavailable':classCountdown(row))+'</span></p>'+
+        '<p><span class="tag">'+esc(id==='iv'?'Registration temporarily unavailable':id==='medtech'?'Enrollment Closed':classCountdown(row))+'</span></p>'+
         '<p>'+esc(purpose[id]||'')+'</p>'+
-        '<p class="muted">'+esc(id==='medtech'?(String(row.notes||'').replace('Class start date will be announced by ITASA.','').trim()||'Registration is open. Complete the online requirements at your own pace. Your required in-person skills validation will be scheduled after the online requirements are complete.'):(row.notes||''))+'</p>'+
+        '<p class="muted">'+esc(id==='medtech'?'Registration is currently closed.':(row.notes||''))+'</p>'+
         '<p class="muted"><strong>Format:</strong> '+esc(
           id==='review'
             ? 'Live online instruction via Zoom'
@@ -428,14 +428,14 @@
                 : (row.delivery_method||'')
         )+'</p>'+
         certificate+
-        '<details><summary>View Class Pricing &amp; Payment Options</summary><div style="margin-top:10px">'+pricingMarkup(id,row,false)+'<div class="btnrow">'+(id==='iv'?'':(classRegistrationOpen(row)?'<button class="btn" type="button" data-register-course="'+esc(id)+'">Register for This Course</button>':'<span class="tag">Registration Closed</span>'))+'</div></div></details>'+
+        '<details><summary>View Class Pricing &amp; Payment Options</summary><div style="margin-top:10px">'+pricingMarkup(id,row,false)+'<div class="btnrow">'+((id==='iv'||id==='medtech')?'':(classRegistrationOpen(row)?'<button class="btn" type="button" data-register-course="'+esc(id)+'">Register for This Course</button>':'<span class="tag">Registration Closed</span>'))+'</div></div></details>'+
       '</div>';
     }
 
     async function loadClasses(){
       try{
         classes=await window.ItasaPublicHubVNext.getClasses();
-        if(!classes.some(function(c){return c.program_id==='medtech'}))classes.push({program_id:'medtech',name:'Medication Technician Class',registration_status:'open',start_date:null,notes:'Registration is open. Complete the online requirements at your own pace. Your required in-person skills validation will be scheduled after the online requirements are complete.'});
+        if(!classes.some(function(c){return c.program_id==='medtech'}))classes.push({program_id:'medtech',name:'Medication Technician Class',registration_status:'closed',start_date:null,notes:'Registration is currently closed.'});
         courseGrid.innerHTML=classes.map(courseCard).join('');
         courseGrid.querySelectorAll('[data-register-course]').forEach(function(b){b.onclick=function(){regCourse.value=b.dataset.registerCourse;refreshPayments();location.hash='#register'}});
         courseGrid.querySelectorAll('[data-info-course]').forEach(function(b){b.onclick=function(){document.getElementById('info-interest').value=b.dataset.infoCourse;location.hash='#information-session'}});
@@ -541,7 +541,7 @@
       hide(status);result.hidden=true;
       var fd=new FormData(form);
       var course=fd.get('course_id'), option=fd.get('payment_option');
-      if(course==='iv'){show(status,'Registration and payment are temporarily unavailable for IV Insertion & Venipuncture.','error');return}
+      if(course==='iv'||course==='medtech'){show(status,'Registration and payment are temporarily unavailable for the selected course.','error');return}
       if(!course||!option){show(status,'Select a course and payment option before continuing.','error');return}
       btn.disabled=true;btn.textContent='Submitting…';
       var response=await window.ItasaPublicHubVNext.submitRegistration({
